@@ -15,10 +15,12 @@ import com.example.sea2_bora.repository.BenutzerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,6 +65,18 @@ class BenutzerServiceTest {
         verify(repository, never()).save(any());
     }
 
+    @Test
+    void registrieren_speichertBenutzerMitKorrektemNamen() {
+        when(repository.findByEmail("neu@example.com")).thenReturn(Optional.empty());
+
+        service.registrieren("NeuerNutzer", "neu@example.com", "pw");
+
+        ArgumentCaptor<Benutzer> captor = ArgumentCaptor.forClass(Benutzer.class);
+        verify(repository).save(captor.capture());
+        assertEquals("NeuerNutzer", captor.getValue().getBenutzername());
+        assertEquals("neu@example.com", captor.getValue().getEmail());
+    }
+
     // login()
 
     @Test
@@ -93,6 +107,13 @@ class BenutzerServiceTest {
         assertNull(service.getAktuellerNutzer());
     }
 
+    @Test
+    void logout_ohneVorherinLogin_wirftKeineException() {
+        assertDoesNotThrow(() -> service.logout());
+        assertNull(service.getAktuellerNutzer());
+    }
+
+
     // aenderePasswort()
 
     @Test
@@ -120,5 +141,54 @@ class BenutzerServiceTest {
     void aenderePasswort_keinBenutzerEingeloggt_gibtFalse() {
         assertFalse(service.aenderePasswort("passwort123", "neuesPasswort!"));
         verify(repository, never()).save(any());
+    }
+
+    @Test
+    void aenderePasswort_speichertNeuenWert_imRepository() {
+        when(repository.findById(1L)).thenReturn(Optional.of(testBenutzer));
+        service.login(1L);
+        service.aenderePasswort("passwort123", "sicheresPasswort!");
+
+        ArgumentCaptor<Benutzer> captor = ArgumentCaptor.forClass(Benutzer.class);
+        verify(repository).save(captor.capture());
+        assertEquals("sicheresPasswort!", captor.getValue().getPasswort());
+    }
+
+
+    // emailPruefen()
+
+    @Test
+    void emailPruefen_emailExistiert_gibtTrue() {
+        when(repository.findByEmail("max@example.com")).thenReturn(Optional.of(testBenutzer));
+
+        assertTrue(service.emailPruefen("max@example.com"));
+    }
+
+    @Test
+    void emailPruefen_emailNichtVorhanden_gibtFalse() {
+        when(repository.findByEmail("unbekannt@example.com")).thenReturn(Optional.empty());
+
+        assertFalse(service.emailPruefen("unbekannt@example.com"));
+    }
+
+
+    // getAlleBenutzer()
+
+    @Test
+    void getAlleBenutzer_gibtAlleZurueck() {
+        Benutzer zweiter = new Benutzer("Anna", "anna@example.com", "pw", "Berlin");
+        when(repository.findAll()).thenReturn(List.of(testBenutzer, zweiter));
+
+        List<Benutzer> ergebnis = service.getAlleBenutzer();
+
+        assertEquals(2, ergebnis.size());
+        assertTrue(ergebnis.contains(testBenutzer));
+    }
+
+    @Test
+    void getAlleBenutzer_leereDatenbank_gibtLeereListeZurueck() {
+        when(repository.findAll()).thenReturn(List.of());
+
+        assertTrue(service.getAlleBenutzer().isEmpty());
     }
 }
