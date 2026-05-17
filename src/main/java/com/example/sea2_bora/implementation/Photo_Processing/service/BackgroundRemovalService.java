@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 @Service
-public class BackgroundRemovalService {
+public class  BackgroundRemovalService {
 
     private final StorageProperties properties;
 
