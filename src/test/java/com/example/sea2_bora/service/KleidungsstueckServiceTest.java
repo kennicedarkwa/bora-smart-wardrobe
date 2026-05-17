@@ -11,10 +11,12 @@ package com.example.sea2_bora.service;
 
 import com.example.sea2_bora.implementation.Kleidungsstueck;
 import com.example.sea2_bora.implementation.MainCategory;
+import com.example.sea2_bora.implementation.Tags;
 import com.example.sea2_bora.repository.KleidungsstueckRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -49,6 +51,30 @@ class KleidungsstueckServiceTest {
         verify(repository, times(1)).save(testStueck);
     }
 
+    @Test
+    void createKleidungsstueck_speichertGenauDiesesObjekt() {
+        service.createKleidungsstueck(testStueck);
+
+        ArgumentCaptor<Kleidungsstueck> captor = ArgumentCaptor.forClass(Kleidungsstueck.class);
+        verify(repository).save(captor.capture());
+        assertEquals("Weißes T-Shirt", captor.getValue().get_name());
+        assertEquals(MainCategory.OBERTEIL, captor.getValue().get_hauptkategorie());
+    }
+
+    @Test
+    void createKleidungsstueck_mitTags_wirdKorrektGespeichert() {
+        testStueck.addTag(Tags.ALLTAG);
+        testStueck.addTag(Tags.FITNESS);
+
+        service.createKleidungsstueck(testStueck);
+
+        ArgumentCaptor<Kleidungsstueck> captor = ArgumentCaptor.forClass(Kleidungsstueck.class);
+        verify(repository).save(captor.capture());
+        assertTrue(captor.getValue().get_tags().contains(Tags.ALLTAG));
+        assertTrue(captor.getValue().get_tags().contains(Tags.FITNESS));
+    }
+
+
     // getAll()
 
     @Test
@@ -68,6 +94,16 @@ class KleidungsstueckServiceTest {
         assertTrue(service.getAll().isEmpty());
     }
 
+    @Test
+    void getAll_gibtExaktDieListeAusRepositoryZurueck() {
+        when(repository.findAll()).thenReturn(List.of(testStueck));
+
+        List<Kleidungsstueck> ergebnis = service.getAll();
+
+        assertTrue(ergebnis.contains(testStueck));
+    }
+
+
     // delete()
 
     @Test
@@ -75,5 +111,18 @@ class KleidungsstueckServiceTest {
         service.delete(1L);
 
         verify(repository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void delete_mitVerschiedenenIds_ruftJeweiligeIdAuf() {
+        service.delete(42L);
+        verify(repository, times(1)).deleteById(42L);
+        verify(repository, never()).deleteById(1L);
+    }
+
+    @Test
+    void delete_nichtExistierendeId_wirftKeineException() {
+        doNothing().when(repository).deleteById(999L);
+        assertDoesNotThrow(() -> service.delete(999L));
     }
 }
