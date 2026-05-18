@@ -11,8 +11,12 @@ import java.util.List;
 @RequestMapping("/api/kleidung")
 public class KleidungsstueckController
 {
-    @Autowired
+
     private KleidungsstueckService _service;
+
+    public KleidungsstueckController(KleidungsstueckService service) {
+        this._service = service;
+    }
 
     /**
      * Alle Kleidungsstuecke anzeigen lassen
