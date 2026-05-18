@@ -36,6 +36,15 @@ dependencies {
 
 }
 
+tasks.named("processResources") {
+    from("scripts") {
+        into("scripts")
+    }
+    from("python") {
+        into("python")
+    }
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
