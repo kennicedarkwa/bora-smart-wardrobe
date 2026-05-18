@@ -1,4 +1,4 @@
-package com.example.sea2_bora.backend.wetter;
+package com.example.sea2_bora.implementation.wetter;
 
 public enum PrecipitationType {
     NONE,
