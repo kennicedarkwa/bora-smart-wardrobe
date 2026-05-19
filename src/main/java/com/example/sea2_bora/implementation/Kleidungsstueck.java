@@ -10,68 +10,55 @@ import lombok.Data;
 public class Kleidungsstueck
 {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long _id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private String _name;
-    private int _temperaturIndex; // Der Index für welche Temperatur das Kleidungsstück geeignet ist.
-    private boolean _istFuerRegenGeeignet;
+    private String name;
+    private int temperaturIndex;
+    private boolean istFuerRegenGeeignet;
 
-    //Die "Hauptkategorie": Nur eine Kategorie möglich (zb. Oberteil oder Unterteil etc.)
     @Enumerated(EnumType.STRING)
-    private MainCategory _hauptkategorie;
+    private MainCategory hauptkategorie;
 
     @ElementCollection
     @Enumerated(EnumType.STRING)
-    private List<Tags> _tags = new ArrayList<>();
+    private List<Tags> tags = new ArrayList<>();
 
-    private String _bildURL; // später für die Bilder
+    private String bildURL;
 
-
-    // Leerer Konstruktor für JPA ( !Muss drinnen sein!)
+    // Leerer Konstruktor für JPA
     public Kleidungsstueck()
     {
     }
 
     /**
      * Initialisiert ein neues Kleidungsstück
-     *
-     * @param name der gewünschte Name
-     * @param temperaturIndex der Temperatur-Index, zu welchen das Kleidungsstück geeignet ist
-     * @param istfuerRegenGeeignet true -> ees ist für Regen geeignet , false -> es ist nicht für Regen geeignet
-     * @param hauptkategorie die Hauptkategorie in dem sich das Kleidungsstück einordnen lässt
-     * @param bildURL die URL des Bildes
      */
-    public Kleidungsstueck(String name, int temperaturIndex, boolean istfuerRegenGeeignet, MainCategory hauptkategorie, String bildURL)
+    public Kleidungsstueck(String name, int temperaturIndex, boolean istFuerRegenGeeignet, MainCategory hauptkategorie, String bildURL)
     {
-        _name = name;
-        _temperaturIndex = temperaturIndex;
-        _istFuerRegenGeeignet = istfuerRegenGeeignet;
-        _hauptkategorie = hauptkategorie;
-        _bildURL = bildURL;
+        this.name = name;
+        this.temperaturIndex = temperaturIndex;
+        this.istFuerRegenGeeignet = istFuerRegenGeeignet;
+        this.hauptkategorie = hauptkategorie;
+        this.bildURL = bildURL;
     }
 
     /**
      * Fügt dem Kleidungsstück einen Tag hinzu
-     *
-     * @param tag der gewünschte Tag
      */
     public void addTag(Tags tag)
     {
-        if(!_tags.contains(tag))
+        if (!this.tags.contains(tag))
         {
-            _tags.add(tag);
+            this.tags.add(tag);
         }
     }
 
     /**
      * Entfernt einen Tag von einem Kleidungsstück
-     *
-     * @param tag der gewünschte Tag
      */
     public void deleteTag(Tags tag)
     {
-        _tags.remove(tag);
+        this.tags.remove(tag);
     }
-
 }
