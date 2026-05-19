@@ -16,6 +16,7 @@ public class Kleidungsstueck
     private String name;
     private int temperaturIndex;
     private boolean istFuerRegenGeeignet;
+    private boolean istImWaeschekorb = false;
 
     @Enumerated(EnumType.STRING)
     private MainCategory hauptkategorie;
