@@ -2,46 +2,51 @@ package com.example.sea2_bora.controller;
 
 import com.example.sea2_bora.implementation.Kleidungsstueck;
 import com.example.sea2_bora.service.KleidungsstueckService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/kleidung")
 public class KleidungsstueckController
 {
-    private final KleidungsstueckService service;
 
-    public KleidungsstueckController(KleidungsstueckService service)
-    {
-        this.service = service;
+    private KleidungsstueckService _service;
+
+    public KleidungsstueckController(KleidungsstueckService service) {
+        this._service = service;
     }
 
     /**
      * Alle Kleidungsstuecke anzeigen lassen
+     *
+     * @return alle Kleidungsstuecke
      */
-    @GetMapping
+    @GetMapping // (GET http://localhost:8080/api/kleidung)
     public List<Kleidungsstueck> getAllKleidungsstueck()
     {
-        return service.getAll();
+        return _service.getAll();
     }
 
     /**
      * Ein neues Kleidungsstueck anlegen
      */
-    @PostMapping
+    @PostMapping // (POST http://localhost:8080/api/kleidung)
     public String addKleidungsstueck(@RequestBody Kleidungsstueck kleidungsstueck)
     {
-        service.createKleidungsstueck(kleidungsstueck);
-        // .getName() greift jetzt perfekt auf die korrigierte Entity zu!
-        return "Kleidungsstück " + kleidungsstueck.getName() + " wurde erfolgreich gespeichert!";
+        _service.createKleidungsstueck(kleidungsstueck);
+        return "Kleidungsstück " + kleidungsstueck.get_name() + " wurde erfolgreich gespeichert!";
     }
 
     /**
      * Löscht ein Kleidungsstueck anhand seiner ID
+     *
+     * @param id
      */
     @DeleteMapping("/{id}")
     public void deleteKleidung(@PathVariable Long id)
     {
-        service.delete(id);
+        _service.delete(id);
     }
 }
