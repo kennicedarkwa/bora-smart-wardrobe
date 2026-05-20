@@ -41,23 +41,24 @@ public class Waechekorb {
             items.add(k);
         }
     }
-
-    // NEU: Filter nach Temperatur + Regen
-    public List<Kleidungsstueck> filterByWeather(int temperaturIndex, boolean regen) {
-        return items.stream()
-                .filter(k -> k.getTemperaturIndex() == temperaturIndex)
-                .filter(k -> !regen || k.isIstFuerRegenGeeignet())
-                .toList();
-    }
-
-    // NEU: Alle Items die nicht im Wäschekorb sind + Wetter-Filter
-    public static List<Kleidungsstueck> filterAvailableByWeather(List<Kleidungsstueck> allItems, int temperaturIndex, boolean regen) {
-        return allItems.stream()
-                .filter(k -> !k.isIstImWaeschekorb())
-                .filter(k -> k.getTemperaturIndex() == temperaturIndex)
-                .filter(k -> !regen || k.isIstFuerRegenGeeignet())
-                .toList();
-    }
+//
+//    // NEU: Filter nach Temperatur + Regen
+//    public List<Kleidungsstueck> filterByWeather(int temperaturIndex, boolean regen) {
+//        return items.stream()
+//                .filter(k -> k.getTemperaturIndex() == temperaturIndex)
+//                .filter(k -> !regen || k.isIstFuerRegenGeeignet())
+//                .toList();
+//    }
+//
+//    // NEU: Alle Items die nicht im Wäschekorb sind + Wetter-Filter
+//    public static List<Kleidungsstueck> filterAvailableByWeather
+//    (List<Kleidungsstueck> allItems, int temperaturIndex, boolean regen) {
+//        return allItems.stream()
+//                .filter(k -> !k.isIstImWaeschekorb())
+//                .filter(k -> k.getTemperaturIndex() == temperaturIndex)
+//                .filter(k -> !regen || k.isIstFuerRegenGeeignet())
+//                .toList();
+//    }
 
     public void addItems(Iterable<Kleidungsstueck> ks) {
         ks.forEach(this::addItem);
