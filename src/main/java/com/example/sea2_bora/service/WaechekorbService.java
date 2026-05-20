@@ -87,4 +87,16 @@ public class WaechekorbService {
         }
         return waechekorbRepository.save(basket);
     }
+
+    //  Verfügbare Kleidung nach Wetter filtern (wie in EmpfehlungService)
+    public List<Kleidungsstueck> getAvailableByWeather(int temperaturIndex, boolean regen) {
+        List<Kleidungsstueck> allItems = kleidungsstueckRepository.findAll();
+        return Waechekorb.filterAvailableByWeather(allItems, temperaturIndex, regen);
+    }
+
+    // Items im Korb nach Wetter filtern
+    public List<Kleidungsstueck> getBasketItemsByWeather(Long basketId, int temperaturIndex, boolean regen) {
+        Waechekorb basket = waechekorbRepository.findById(basketId).orElseThrow(() -> new RuntimeException("Basket not found"));
+        return basket.filterByWeather(temperaturIndex, regen);
+    }
 }
