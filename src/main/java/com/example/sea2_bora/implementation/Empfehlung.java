@@ -1,7 +1,6 @@
 package com.example.sea2_bora.implementation;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -12,7 +11,10 @@ import java.util.List;
 @Data
 public class Empfehlung
 {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     private LocalDate datum;
 
     @ManyToMany
@@ -27,9 +29,4 @@ public class Empfehlung
     {
         this.datum = datum;
     }
-
-
-
-
-
 }
