@@ -111,13 +111,17 @@ class BenutzerTest {
     @Test
     void kleidungsstueckHinzufuegen_wirftKeineException() {
         Benutzer b = new Benutzer("Max", "max@example.com", "pw", "Hamburg");
-        assertDoesNotThrow(() -> b.kleidungsstueckHinzufuegen(new Object()));
+        Kleidungsstueck ks = new Kleidungsstueck("Test", 10, false, MainCategory.OBERTEIL, null);
+
+        assertDoesNotThrow(() -> b.kleidungsstueckHinzufuegen(ks));
     }
 
     @Test
     void kleidungsstueckEntfernen_wirftKeineException() {
         Benutzer b = new Benutzer("Max", "max@example.com", "pw", "Hamburg");
-        assertDoesNotThrow(() -> b.kleidungsstueckEntfernen(new Object()));
+        Kleidungsstueck ks = new Kleidungsstueck("Test", 10, false, MainCategory.OBERTEIL, null);
+
+        assertDoesNotThrow(() -> b.kleidungsstueckEntfernen(ks));
     }
 
 }

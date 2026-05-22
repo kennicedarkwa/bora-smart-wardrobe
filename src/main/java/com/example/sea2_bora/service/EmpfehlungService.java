@@ -1,0 +1,44 @@
+package com.example.sea2_bora.service;
+
+import com.example.sea2_bora.implementation.Empfehlung;
+import com.example.sea2_bora.implementation.Kleidungsstueck;
+import com.example.sea2_bora.implementation.wetter.DailyForecast;
+import com.example.sea2_bora.repository.EmpfehlungRepository;
+import com.example.sea2_bora.repository.KleidungsstueckRepository;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Service
+public class EmpfehlungService
+{
+    private final EmpfehlungRepository empfehlungRepository;
+    private final KleidungsstueckRepository kleidungsstueckRepository;
+
+    public EmpfehlungService(EmpfehlungRepository empfehlungRepository, KleidungsstueckRepository kleidungsstueckRepository)
+    {
+        this.empfehlungRepository = empfehlungRepository;
+        this.kleidungsstueckRepository = kleidungsstueckRepository;
+    }
+
+    public Empfehlung generiereEmpfehlung(DailyForecast dailyForecast)
+    {
+        int wetterTemperaturIndex = dailyForecast.getTemperature().getTemperatureIndex();
+        boolean regen = dailyForecast.getPrecipitation().isLikely();
+
+        List<Kleidungsstueck> alleKlamotten = kleidungsstueckRepository.findAll();
+
+        List<Kleidungsstueck> passendeKlamotten = alleKlamotten.stream()
+                .filter(k -> !k.isIstImWaeschekorb())
+                .filter(k -> k.getTemperaturIndex() == wetterTemperaturIndex)
+                .filter(k -> !regen || k.isIstFuerRegenGeeignet())
+                .toList();
+
+        Empfehlung neueEmpfehlung = new Empfehlung(LocalDate.now());
+
+        neueEmpfehlung.getKleidungsstuecke().addAll(passendeKlamotten);
+
+        return empfehlungRepository.save(neueEmpfehlung);
+    }
+}

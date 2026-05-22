@@ -1,0 +1,91 @@
+@startuml
+' Paketstruktur
+package "implementation" {
+  class Kleidungsstueck {
+    +Long id
+    +String _name
+    +int _temperaturIndex
+    +boolean _istFuerRegenGeeignet
+    +MainCategory _hauptkategorie
+    +List<Tags> _tags
+    +String _bildURL
+    +addTag(tag: Tags)
+    +deleteTag(tag: Tags)
+  }
+
+  class Waechekorb {
+    +Long id
+    +String name
+    +List<Kleidungsstueck> items
+    +addItem(k: Kleidungsstueck)
+    +addItems(ids: List<Long>)
+    +removeItem(k: Kleidungsstueck)
+    +removeItemsByIds(ids: List<Long>)
+    +clear()
+  }
+}
+
+package "repository" {
+  interface KleidungsstueckRepository <<interface>> {
+    +save(...)
+    +findById(id: Long)
+    +findAll()
+    +deleteById(id: Long)
+  }
+  interface WaechekorbRepository <<interface>> {
+    +save(...)
+    +findById(id: Long)
+    +findAll()
+    +deleteById(id: Long)
+  }
+}
+
+package "service" {
+  class KleidungsstueckService {
+    +createKleidungsstueck(k: Kleidungsstueck)
+    +getAll(): List<Kleidungsstueck>
+    +delete(id: Long)
+  }
+  class WaechekorbService {
+    +create(name: String): Waechekorb
+    +getAll(): List<Waechekorb>
+    +getById(id: Long): Optional<Waechekorb>
+    +addItem(basketId: Long, itemId: Long): Waechekorb
+    +addItems(basketId: Long, itemIds: List<Long>): Waechekorb
+    +removeItem(basketId: Long, itemId: Long): Waechekorb
+    +removeItems(basketId: Long, itemIds: List<Long>): Waechekorb
+    +clear(basketId: Long): Waechekorb
+  }
+}
+
+package "controller" {
+  class WaechekorbController {
+    +create(name: String)
+    +getAll()
+    +getById(id: Long)
+    +delete(id: Long)
+    +addItem(id: Long, itemId: Long)
+    +addItems(id: Long, ids: IdsRequest)
+    +removeItem(id: Long, itemId: Long)
+    +removeItems(id: Long, ids: IdsRequest)
+    +clear(id: Long)
+  }
+
+  class IdsRequest {
+    +List<Long> ids
+  }
+}
+
+' Beziehungen / Abhängigkeiten
+Waechekorb "0..*" -- "0..*" Kleidungsstueck : items
+KleidungsstueckRepository ..> Kleidungsstueck : manages
+WaechekorbRepository ..> Waechekorb : manages
+
+KleidungsstueckService --> KleidungsstueckRepository : uses
+WaechekorbService --> WaechekorbRepository : uses
+WaechekorbService --> KleidungsstueckRepository : uses
+
+WaechekorbController --> WaechekorbService : uses
+WaechekorbController --> IdsRequest : reads
+
+@enduml

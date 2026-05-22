@@ -33,7 +33,20 @@ dependencies {
 	testAnnotationProcessor 'org.projectlombok:lombok'
 	implementation 'com.h2database:h2'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'org.springframework.boot:spring-boot-starter-security' //wegen login
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // wegen test
+    testImplementation 'org.springframework.security:spring-security-test' //  eine zusätzliche Test-Bibliothek von Spring Security
 
+
+}
+
+tasks.named("processResources") {
+    from("scripts") {
+        into("scripts")
+    }
+    from("python") {
+        into("python")
+    }
 }
 
 tasks.named('test') {
