@@ -48,7 +48,7 @@ class KleidungsstueckTest {
     void deleteTag_nichtVorhandenerTag_keineAenderung() {
         Kleidungsstueck stueck = new Kleidungsstueck("Shirt", 3, false, MainCategory.OBERTEIL, "");
         stueck.addTag(Tags.ALLTAG);
-        stueck.deleteTag(Tags.FORMAL);
+        stueck.deleteTag(Tags.ELEGANT);
 
         assertEquals(1, stueck.get_tags().size());
     }

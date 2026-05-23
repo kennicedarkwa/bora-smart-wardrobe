@@ -1,4 +1,4 @@
-package com.example.sea2_bora.backend.wetter;
+package com.example.sea2_bora.service;
 
 import com.example.sea2_bora.implementation.wetter.CityWeather;
 import com.example.sea2_bora.implementation.wetter.DailyForecast;

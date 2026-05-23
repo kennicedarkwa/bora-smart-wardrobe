@@ -7,6 +7,8 @@ public class Precipitation {
         private int probability_percent;
 
 
+    public Precipitation() {
+    }
 
     public Precipitation(PrecipitationType type, int probability_percent) {
 

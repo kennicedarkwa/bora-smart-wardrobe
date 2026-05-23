@@ -6,6 +6,10 @@ public class Temperature {
     private int min_celsius;
     private int max_celsius;
 
+
+    public Temperature() {
+    }
+
     public Temperature(int min_celsius, int max_celsius) {
 
         if (min_celsius > max_celsius) {

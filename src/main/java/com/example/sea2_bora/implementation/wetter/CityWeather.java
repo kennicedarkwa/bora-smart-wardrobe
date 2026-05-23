@@ -4,10 +4,13 @@ import java.util.List;
 /*** Represents weather of a city */
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CityWeather {
     private String city;
+
+    @JsonProperty("daily_forecast")
     private List<DailyForecast> daily_forecast;
 
     public String getCity() {
@@ -28,7 +31,7 @@ public class CityWeather {
 
     }
 
-    public void setDailyWeathers(List<DailyForecast> dailyWeathers) {
+    public void setDailyForecast(List<DailyForecast> dailyWeathers) {
 
         this.daily_forecast = dailyWeathers;
 
