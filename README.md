@@ -9,4 +9,4 @@ Wir nutzen **Spring Boot** mit Gradle.
 
 ##  Aktueller Stand (Backend )
 - **Merwe:** Hat den bisherigen Stand des Users angelegt und implementiert ( noch unvollständig)
-- **Lorenza:** Hat den bisherigen Stand des Kleidungsstücks und der Tags angelegt ( noch unvollständig)
+- **Ehsan:** Hat die Komponente Userlogin und Wäschekorb geeschrieben und implementiert.Allerdings fehlen die Kommentare!!!!

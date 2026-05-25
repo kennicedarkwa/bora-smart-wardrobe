@@ -1,0 +1,130 @@
+{
+  "cities": [
+    {
+      "city": "Hamburg",
+      "country": "DE",
+      "daily_forecast": [
+        {
+          "date": "2026-05-03",
+          "temperature": {
+            "min_celsius": 10,
+            "max_celsius": 15
+          },
+          "uv_index": 3,
+          "precipitation": {
+            "type": "rain",
+            "probability_percent": 40
+          }
+        },
+        {
+          "date": "2026-05-04",
+          "temperature": {
+            "min_celsius": 9,
+            "max_celsius": 17
+          },
+          "uv_index": 5,
+          "precipitation": {
+            "type": "none",
+            "probability_percent": 0
+          }
+        },
+        {
+          "date": "2026-05-05",
+          "temperature": {
+            "min_celsius": 10,
+            "max_celsius": 17
+          },
+          "uv_index": 4,
+          "precipitation": {
+            "type": "drizzle",
+            "probability_percent": 15
+          }
+        }
+      ]
+    },
+    {
+      "city": "Berlin",
+      "country": "DE",
+      "daily_forecast": [
+        {
+          "date": "2026-05-03",
+          "temperature": {
+            "min_celsius": 11,
+            "max_celsius": 18
+          },
+          "uv_index": 4,
+          "precipitation": {
+            "type": "cloudy",
+            "probability_percent": 20
+          }
+        },
+        {
+          "date": "2026-05-04",
+          "temperature": {
+            "min_celsius": 12,
+            "max_celsius": 20
+          },
+          "uv_index": 6,
+          "precipitation": {
+            "type": "none",
+            "probability_percent": 0
+          }
+        },
+        {
+          "date": "2026-05-05",
+          "temperature": {
+            "min_celsius": 13,
+            "max_celsius": 19
+          },
+          "uv_index": 5,
+          "precipitation": {
+            "type": "rain",
+            "probability_percent": 35
+          }
+        }
+      ]
+    },
+    {
+      "city": "Munich",
+      "country": "DE",
+      "daily_forecast": [
+        {
+          "date": "2026-05-03",
+          "temperature": {
+            "min_celsius": 8,
+            "max_celsius": 16
+          },
+          "uv_index": 5,
+          "precipitation": {
+            "type": "thunderstorm",
+            "probability_percent": 50
+          }
+        },
+        {
+          "date": "2026-05-04",
+          "temperature": {
+            "min_celsius": 9,
+            "max_celsius": 18
+          },
+          "uv_index": 7,
+          "precipitation": {
+            "type": "sunny",
+            "probability_percent": 5
+          }
+        },
+        {
+          "date": "2026-05-05",
+          "temperature": {
+            "min_celsius": 10,
+            "max_celsius": 19
+          },
+          "uv_index": 6,
+          "precipitation": {
+            "type": "partly_cloudy",
+            "probability_percent": 10
+          }
+        }
+      ]
+    }
+  ]
+}

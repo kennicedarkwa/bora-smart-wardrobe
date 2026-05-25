@@ -8,10 +8,6 @@ public enum Tags
 {
     ELEGANT,
     FITNESS,
-    CHILLIG,
     ALLTAG,
-    ARBEIT,
-    PARTY,
-    FORMAL
 
 }

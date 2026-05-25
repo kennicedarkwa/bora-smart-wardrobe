@@ -1,6 +1,10 @@
 package com.example.sea2_bora.implementation.Photo_Processing.entity;
 
+import com.example.sea2_bora.implementation.Kleidungsstueck;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,20 +15,30 @@ public class StoredImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(nullable = false)
     private String originalFilename;
 
+    @Setter
     @Column(nullable = false, unique = true, length = 1000)
     private String storedPath;
 
+    @Setter
     @Column(nullable = false)
     private String contentType;
 
+    @Setter
     @Column(nullable = false)
     private long fileSize;
 
+    @Setter
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "_id", nullable = false)
+    private Kleidungsstueck kleidungsstueck;
 
     public Long getId() {
         return id;
@@ -34,39 +48,25 @@ public class StoredImage {
         return originalFilename;
     }
 
-    public void setOriginalFilename(String originalFilename) {
-        this.originalFilename = originalFilename;
-    }
 
     public String getStoredPath() {
         return storedPath;
-    }
-
-    public void setStoredPath(String storedPath) {
-        this.storedPath = storedPath;
     }
 
     public String getContentType() {
         return contentType;
     }
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
     public long getFileSize() {
         return fileSize;
-    }
-
-    public void setFileSize(long fileSize) {
-        this.fileSize = fileSize;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public Kleidungsstueck getKleidungsstueck() {
+        return kleidungsstueck;
     }
+
 }

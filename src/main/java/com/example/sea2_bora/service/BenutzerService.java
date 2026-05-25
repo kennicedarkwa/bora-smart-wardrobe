@@ -5,67 +5,51 @@ import com.example.sea2_bora.repository.BenutzerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-
 @Service
 public class BenutzerService {
 
-    // + alleBenutzer: List<Benutzer>
     private final BenutzerRepository repository;
-
-    // + aktueller Benutzer: Benutzer
     private Benutzer aktuellerBenutzer;
 
     public BenutzerService(BenutzerRepository repository) {
         this.repository = repository;
     }
 
-    // + registrieren(Benutzername, Email-Adresse, Passwort): boolean
-    public boolean registrieren(String benutzername, String emailAdresse, String passwort) {
-        if (emailPruefen(emailAdresse)) {
-            return false; // Email schon vergeben
-        }
-        Benutzer benutzer = new Benutzer(benutzername, emailAdresse, passwort, "unbekannt");
+    public boolean registrieren(String benutzername, String email, String passwort) {
+        if (emailPruefen(email)) return false;
+
+        Benutzer benutzer = new Benutzer(benutzername, email, passwort, "unbekannt");
         repository.save(benutzer);
         return true;
     }
 
-    // + login(Benutzer_ID): boolean
     public boolean login(Long benutzerId) {
-        Optional<Benutzer> gefunden = repository.findById(benutzerId);
-        if (gefunden.isPresent()) {
-            aktuellerBenutzer = gefunden.get();
-            return true;
-        }
-        return false;
+        return repository.findById(benutzerId)
+                .map(b -> { aktuellerBenutzer = b; return true; })
+                .orElse(false);
     }
 
-    // + logout(): void
     public void logout() {
         aktuellerBenutzer = null;
     }
 
-    // + emailPruefen(email): boolean
     public boolean emailPruefen(String email) {
         return repository.findByEmail(email).isPresent();
     }
 
-    // + getAktuellerNutzer(): Benutzer
     public Benutzer getAktuellerNutzer() {
         return aktuellerBenutzer;
     }
 
-    // + aenderePasswort(altesPasswort, neuesPasswort)
-    public boolean aenderePasswort(String altesPasswort, String neuesPasswort) {
+    public boolean aenderePasswort(String alt, String neu) {
         if (aktuellerBenutzer == null) return false;
-        if (!aktuellerBenutzer.getPasswort().equals(altesPasswort)) return false;
+        if (!aktuellerBenutzer.getPasswort().equals(alt)) return false;
 
-        aktuellerBenutzer.setPasswort(neuesPasswort);
+        aktuellerBenutzer.setPasswort(neu);
         repository.save(aktuellerBenutzer);
         return true;
     }
 
-    // Hilfsmethode, falls du alleBenutzer aus UML explizit brauchst
     public List<Benutzer> getAlleBenutzer() {
         return repository.findAll();
     }

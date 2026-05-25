@@ -1,0 +1,8 @@
+Pillow
+withoutbg
+
+
+#kann jedes mal ausgeführt werden um das ganze zu insatlieren
+#pip install -r python/requirements.txt
+# testen kann durch : .venv/bin/python scripts/remove_bg.py test.jpg output.png
+# soll jesdes mal getestet werden
