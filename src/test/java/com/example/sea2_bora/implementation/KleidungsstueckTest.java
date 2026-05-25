@@ -11,7 +11,7 @@ class KleidungsstueckTest {
         Kleidungsstueck stueck = new Kleidungsstueck("Shirt", 3, false, MainCategory.OBERTEIL, "");
         stueck.addTag(Tags.ALLTAG);
 
-        assertTrue(stueck.get_tags().contains(Tags.ALLTAG));
+        assertTrue(stueck.getTags().contains(Tags.ALLTAG));
     }
 
     @Test
@@ -20,16 +20,16 @@ class KleidungsstueckTest {
         stueck.addTag(Tags.ALLTAG);
         stueck.addTag(Tags.ALLTAG);
 
-        assertEquals(1, stueck.get_tags().size());
+        assertEquals(1, stueck.getTags().size());
     }
 
     @Test
-    void addTag_mehrereVerschiedeneTagsWerdenAlleHinzugefuegt() {
+    void addTag_mehrereVerschiedeneTagsWerdenAlleHinzegufeegt() {
         Kleidungsstueck stueck = new Kleidungsstueck("Shirt", 3, false, MainCategory.OBERTEIL, "");
         stueck.addTag(Tags.ALLTAG);
         stueck.addTag(Tags.FITNESS);
         stueck.addTag(Tags.ELEGANT);
-        assertEquals(3, stueck.get_tags().size());
+        assertEquals(3, stueck.getTags().size());
     }
 
 
@@ -41,7 +41,7 @@ class KleidungsstueckTest {
         stueck.addTag(Tags.FITNESS);
         stueck.deleteTag(Tags.FITNESS);
 
-        assertFalse(stueck.get_tags().contains(Tags.FITNESS));
+        assertFalse(stueck.getTags().contains(Tags.FITNESS));
     }
 
     @Test
@@ -50,7 +50,7 @@ class KleidungsstueckTest {
         stueck.addTag(Tags.ALLTAG);
         stueck.deleteTag(Tags.ELEGANT);
 
-        assertEquals(1, stueck.get_tags().size());
+        assertEquals(1, stueck.getTags().size());
     }
 
 
@@ -60,32 +60,32 @@ class KleidungsstueckTest {
     void konstruktor_setztAlleFelder_korrekt() {
         Kleidungsstueck stueck = new Kleidungsstueck("Jeans", 2, true, MainCategory.UNTERTEIL, "http://bild.de/jeans.jpg");
 
-        assertEquals("Jeans",                      stueck.get_name());
-        assertEquals(2,                            stueck.get_temperaturIndex());
-        assertTrue(stueck.is_istFuerRegenGeeignet());
-        assertEquals(MainCategory.UNTERTEIL,       stueck.get_hauptkategorie());
-        assertEquals("http://bild.de/jeans.jpg",  stueck.get_bildURL());
+        assertEquals("Jeans",                      stueck.getName());
+        assertEquals(2,                            stueck.getTemperaturIndex());
+        assertTrue(stueck.isIstFuerRegenGeeignet());
+        assertEquals(MainCategory.UNTERTEIL,       stueck.getHauptkategorie());
+        assertEquals("http://bild.de/jeans.jpg",  stueck.getBildURL());
     }
 
     @Test
     void konstruktor_tags_istAnfangsLeer() {
         Kleidungsstueck stueck = new Kleidungsstueck("Hut", 1, false, MainCategory.KOPFBEDECKUNG, "");
-        assertNotNull(stueck.get_tags());
-        assertTrue(stueck.get_tags().isEmpty());
+        assertNotNull(stueck.getTags());
+        assertTrue(stueck.getTags().isEmpty());
     }
 
 
     @Test
     void konstruktor_regentauglichFalse_wirdKorrektGesetzt() {
         Kleidungsstueck stueck = new Kleidungsstueck("Sandalen", 5, false, MainCategory.SCHUHE, "");
-        assertFalse(stueck.is_istFuerRegenGeeignet());
+        assertFalse(stueck.isIstFuerRegenGeeignet());
     }
 
     @Test
     void konstruktor_alleHauptkategorienMoeglich() {
         for (MainCategory kat : MainCategory.values()) {
             Kleidungsstueck stueck = new Kleidungsstueck("Item", 3, false, kat, "");
-            assertEquals(kat, stueck.get_hauptkategorie());
+            assertEquals(kat, stueck.getHauptkategorie());
         }
     }
 }

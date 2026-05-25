@@ -1,12 +1,3 @@
-/**
- * Testklasse für KleidungsstueckService.
- *
- * Warum Mockito?
- * KleidungsstueckService hängt vom KleidungsstueckRepository ab, das mit einer
- * echten Datenbank kommuniziert. Mockito ersetzt das Repository durch ein
- * Fake-Objekt, damit wir die Service-Methoden isoliert testen können.
- *
- */
 package com.example.sea2_bora.service;
 
 import com.example.sea2_bora.implementation.Kleidungsstueck;
@@ -57,8 +48,8 @@ class KleidungsstueckServiceTest {
 
         ArgumentCaptor<Kleidungsstueck> captor = ArgumentCaptor.forClass(Kleidungsstueck.class);
         verify(repository).save(captor.capture());
-        assertEquals("Weißes T-Shirt", captor.getValue().get_name());
-        assertEquals(MainCategory.OBERTEIL, captor.getValue().get_hauptkategorie());
+        assertEquals("Weißes T-Shirt", captor.getValue().getName());
+        assertEquals(MainCategory.OBERTEIL, captor.getValue().getHauptkategorie());
     }
 
     @Test
@@ -70,8 +61,8 @@ class KleidungsstueckServiceTest {
 
         ArgumentCaptor<Kleidungsstueck> captor = ArgumentCaptor.forClass(Kleidungsstueck.class);
         verify(repository).save(captor.capture());
-        assertTrue(captor.getValue().get_tags().contains(Tags.ALLTAG));
-        assertTrue(captor.getValue().get_tags().contains(Tags.FITNESS));
+        assertTrue(captor.getValue().getTags().contains(Tags.ALLTAG));
+        assertTrue(captor.getValue().getTags().contains(Tags.FITNESS));
     }
 
 
