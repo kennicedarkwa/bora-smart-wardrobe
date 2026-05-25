@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Tages-Empfehlung</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .kleidungsstueck {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Empfehlung</h1>
+
+<div class="container">
+    <label for="tempIndex">Temperatur-Index (1-5):</label>
+    <input type="number" id="tempIndex" min="1" max="5" placeholder="z.B. 3">
+
+    <label for="regen">Regen erwartet?</label>
+    <select id="regen">
+        <option value="false">Nein</option>
+        <option value="true">Ja</option>
+    </select>
+
+    <button onclick="holeEmpfehlung()">Outfit abrufen</button>
+
+    <p id="error" class="error"></p>
+
+    <div id="ergebnisContainer" style="display: none; margin-top: 20px;">
+        <h3 style="text-align: center; font-size: 16px; margin-bottom: 10px;">Passende Kleidung:</h3>
+        <div id="outfitListe"></div>
+    </div>
+</div>
+
+<script src="empfehlung.js"></script>
+</body>
+</html>
