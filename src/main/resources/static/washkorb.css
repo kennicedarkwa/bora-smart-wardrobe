@@ -1,0 +1,101 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+
+    background-color: #bfe6ff;
+
+    background-image: repeating-linear-gradient(
+            135deg,
+            rgba(127, 89, 207, 0.18) 0px,
+            rgba(127, 89, 207, 0.18) 6px,
+            transparent 6px,
+            transparent 12px
+    );
+
+    color: #1e0033;
+
+    min-height: 100vh;
+
+    /*display: flex;*/
+    /*justify-content: center;*/
+    /*align-items: center;*/
+
+    border: 45px solid #7f59cf;
+    box-sizing: border-box;
+
+    position: relative;
+    overflow: hidden;
+}
+
+.page {
+    padding: 40px;
+}
+
+/* 🔝 TITLE oben links (nicht fixed rechts!) */
+.title {
+    position: fixed;
+    top: 24px;
+    left: 32px;
+
+    font-size: 70px;
+    font-weight: 1000;
+
+    color: #5a3ea6;
+
+    text-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* 📋 LISTE */
+#clothesList {
+    list-style: none;
+    padding: 0;
+    margin: 80px 0 0 0; /* Platz für fixed header */
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 👕 ITEMS (besser sichtbar!) */
+#clothesList li {
+    background: rgba(255, 255, 255, 0.9);
+
+    color: #2b2b2b;
+
+    padding: 12px 16px;
+    border-radius: 12px;
+
+    border: 2px solid #b8a2ff;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* hover effect */
+#clothesList li:hover {
+    transform: translateX(4px);
+    border-color: #7f59cf;
+}
+
+/* ✨ selected */
+#clothesList li.selected {
+    background: #7f59cf;
+    color: white;
+    border: 2px solid #5a3ea6;
+}
+
+/* 📍 EMPTY unten rechts */
+.empty {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+
+    color: #5a3ea6;
+    font-size: 14px;
+
+    background: rgba(255, 255, 255, 0.7);
+    padding: 6px 10px;
+    border-radius: 8px;
+
+    border: 1px solid rgba(90, 62, 166, 0.25);
+}
