@@ -2,32 +2,47 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Outfit</title>
+    <title>Outfit Zusammenstellung</title>
+
+    <link rel="stylesheet" href="outfit.css">
+
+    <style>
+        .kleidungsstueck {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            background-color: #fafafa;
+            color: black;
+        }
+
+        .infoBox {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #ffcc00;
+            color: black;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
-<h2>👕 Outfit Empfehlung</h2>
+<div class="wrapper">
+    <div class="container">
 
-<input type="number" id="temp" placeholder="Temperatur (°C)">
-<br><br>
+        <h1>Dein Outfit</h1>
 
-<select id="weather">
-    <option value="sun">Sonnig</option>
-    <option value="rain">Regen</option>
-    <option value="cold">Kalt</option>
-</select>
+        <div id="outfitListe"></div>
 
-<br><br>
+        <!-- ✅ Fehlermeldung -->
+        <div id="infoBox" class="infoBox" style="display:none;">
+            ⚠️ Ups! Datenbank ist leer oder Seiten sind noch nicht verbunden.
+        </div>
 
-<button onclick="getOutfit()">Empfehlung anzeigen</button>
+    </div>
+</div>
 
-<hr>
-
-<div id="result"></div>
-
-<!-- ✅ Script korrekt -->
 <script src="outfit.js"></script>
-
 </body>
 </html>
-``
