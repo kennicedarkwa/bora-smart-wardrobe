@@ -1,4 +1,3 @@
-
 @startuml
 ' Paketstruktur
 package "implementation" {
@@ -19,9 +18,9 @@ package "implementation" {
     +String name
     +List<Kleidungsstueck> items
     +addItem(k: Kleidungsstueck)
-    +addItems(ids: List<Kleidungsstueck>)
+    +addItems(ids: List<Long>)
     +removeItem(k: Kleidungsstueck)
-    +removeItemsByIds(ids: List<Kleidungsstueck>)
+    +removeItemsByIds(ids: List<Long>)
     +clear()
   }
 }
@@ -35,7 +34,8 @@ package "repository" {
   }
   interface WaechekorbRepository <<interface>> {
     +save(...)
-    +findFirstByOrderByIdAsc(): Optional<Waechekorb>
+    +findById(id: Long)
+    +findAll()
     +deleteById(id: Long)
   }
 }
@@ -47,43 +47,39 @@ package "service" {
     +delete(id: Long)
   }
   class WaechekorbService {
-    -WaechekorbRepository waechekorbRepository
-    -KleidungsstueckRepository kleidungsstueckRepository
-    +getSingletonWaechekorb(): Waechekorb
-    +getBasket(): Waechekorb
-    +addItem(itemId: Long): Waechekorb
-    +addItems(itemIds: List<Long>): Waechekorb
-    +removeItem(itemId: Long): Waechekorb
-    +removeItems(itemIds: List<Long>): Waechekorb
-    +clear(): Waechekorb
-    +delete(): void
+    +create(name: String): Waechekorb
+    +getAll(): List<Waechekorb>
+    +getById(id: Long): Optional<Waechekorb>
+    +addItem(basketId: Long, itemId: Long): Waechekorb
+    +addItems(basketId: Long, itemIds: List<Long>): Waechekorb
+    +removeItem(basketId: Long, itemId: Long): Waechekorb
+    +removeItems(basketId: Long, itemIds: List<Long>): Waechekorb
+    +clear(basketId: Long): Waechekorb
   }
 }
 
 package "controller" {
   class WaechekorbController {
-    -WaechekorbService service
-    +get(): Waechekorb
-    +getOrCreate(): Waechekorb
-    +delete(): void
-    +addItem(itemId: Long): Waechekorb
-    +addItems(ids: IdsRequest): Waechekorb
-    +removeItem(itemId: Long): Waechekorb
-    +removeItems(ids: IdsRequest): Waechekorb
-    +clear(): Waechekorb
+    +create(name: String)
+    +getAll()
+    +getById(id: Long)
+    +delete(id: Long)
+    +addItem(id: Long, itemId: Long)
+    +addItems(id: Long, ids: IdsRequest)
+    +removeItem(id: Long, itemId: Long)
+    +removeItems(id: Long, ids: IdsRequest)
+    +clear(id: Long)
   }
 
   class IdsRequest {
     +List<Long> ids
-    +getIds(): List<Long>
-    +setIds(ids: List<Long>)
   }
 }
 
 ' Beziehungen / Abhängigkeiten
-Waechekorb "1" -- "0..*" Kleidungsstueck : contains
+Waechekorb "0..*" -- "0..*" Kleidungsstueck : items
 KleidungsstueckRepository ..> Kleidungsstueck : manages
-WaechekorbRepository ..> Waechekorb : manages (Singleton)
+WaechekorbRepository ..> Waechekorb : manages
 
 KleidungsstueckService --> KleidungsstueckRepository : uses
 WaechekorbService --> WaechekorbRepository : uses
@@ -91,7 +87,5 @@ WaechekorbService --> KleidungsstueckRepository : uses
 
 WaechekorbController --> WaechekorbService : uses
 WaechekorbController --> IdsRequest : reads
-
-
 
 @enduml
