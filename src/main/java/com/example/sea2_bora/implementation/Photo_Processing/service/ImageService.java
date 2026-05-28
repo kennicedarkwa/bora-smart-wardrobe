@@ -43,6 +43,11 @@ public class ImageService {
             throw new IllegalArgumentException("Datei ist leer.");
         }
 
+        // ← neu Kennice
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException("Datei darf maximal 5MB groß sein.");
+        }
+
         Kleidungsstueck kleidungsstueck = kleidungsstueckRepository.findById(kleidungsstueckId)
                 .orElseThrow(() -> new RuntimeException("Kleidungsstück nicht gefunden: " + kleidungsstueckId));
 

@@ -17,6 +17,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class KleidungsstueckControllerTest {
@@ -84,5 +85,15 @@ class KleidungsstueckControllerTest {
     void deleteKleidung_nichtExistierendeId_ruftServiceTrotzdemAuf() throws Exception {
         mockMvc.perform(delete("/api/kleidung/999"));
         verify(service, atLeast(0)).delete(anyLong());
+    }
+
+    @Test
+    void addKleidungsstueck_ohneKategorie_gibt400() throws Exception {
+        String body = "{\"name\":\"Shirt\",\"warmIndex\":3}"; // kategorie fehlt
+
+        mockMvc.perform(post("/api/kleidung")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isBadRequest());
     }
 }

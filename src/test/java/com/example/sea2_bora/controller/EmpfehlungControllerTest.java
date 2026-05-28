@@ -98,4 +98,23 @@ class EmpfehlungControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }
+
+    @Test
+    void getEmpfehlung_antwortEnthaeltBegruendung() throws Exception {
+        DailyForecast forecast = new DailyForecast(
+                "2025-07-01",
+                new Temperature(18, 22),
+                4,
+                new Precipitation(PrecipitationType.CLEAR, 5)
+        );
+        Empfehlung empfehlung = new Empfehlung(LocalDate.now());
+        empfehlung.setBegruendung("Heute 20°C – passende Kleidung für heute.");
+        when(empfehlungService.generiereEmpfehlung(any(DailyForecast.class))).thenReturn(empfehlung);
+
+        mockMvc.perform(post("/api/empfehlung")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(forecast)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.begruendung").isNotEmpty());
+    }
 }
