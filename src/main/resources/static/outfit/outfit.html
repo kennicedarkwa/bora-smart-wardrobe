@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Outfit Zusammenstellung</title>
+
+    <link rel="stylesheet" href="outfit.css">
+
+    <style>
+        .kleidungsstueck {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            background-color: #fafafa;
+            color: black;
+        }
+
+        .infoBox {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #ffcc00;
+            color: black;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="container">
+
+        <h1>Dein Outfit</h1>
+
+        <div id="outfitListe"></div>
+
+        <!-- ✅ Fehlermeldung -->
+        <div id="infoBox" class="infoBox" style="display:none;">
+            ⚠️ Ups! Datenbank ist leer oder Seiten sind noch nicht verbunden.
+        </div>
+
+    </div>
+</div>
+
+<script src="outfit.js"></script>
+</body>
+</html>
