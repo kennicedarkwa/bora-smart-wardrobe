@@ -12,21 +12,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
- * Testklasse für WaechekorbService.
+ * Testklasse für WaechekorbService mit Singleton-Logik.
  *
- * Mockito ersetzt WaechekorbRepository und KleidungsstueckRepository,
- * damit die Service-Logik isoliert und ohne Datenbankverbindung getestet wird.
+ * Mockito ersetzt die Repositories, um die Service-Logik isoliert zu testen.
  */
 @ExtendWith(MockitoExtension.class)
-class WaechekorbServiceTest {
+class WaeschekorbServiceTest {
 
     @Mock
     private WaechekorbRepository waechekorbRepository;
@@ -37,180 +36,141 @@ class WaechekorbServiceTest {
     @InjectMocks
     private WaechekorbService waechekorbService;
 
-    private Waechekorb korb;
+    private Waechekorb singletonKorb;
     private Kleidungsstueck shirt;
+    private Kleidungsstueck hose;
 
     @BeforeEach
     void setUp() {
-        korb = new Waechekorb("Testkorb");
+        singletonKorb = new Waechekorb("Singleton Korb");
+        singletonKorb.setId(1L); // Feste ID für den Singleton
         shirt = new Kleidungsstueck("Shirt", 3, false, MainCategory.OBERTEIL, "");
+        shirt.setId(10L);
+        hose = new Kleidungsstueck("Hose", 2, true, MainCategory.UNTERTEIL, "");
+        hose.setId(20L);
     }
 
-    // --- create() ---
+    // --- getSingletonBasket() Tests ---
 
     @Test
-    void create_speichertNeuenKorbUndGibtIhnZurueck() {
-        when(waechekorbRepository.save(any(Waechekorb.class))).thenReturn(korb);
+    void getSingletonBasket_gibtVorhandenenKorbZurueck() {
+        // Arrange: Der Korb existiert bereits in der DB
+        when(waechekorbRepository.findFirstByOrderByIdAsc()).thenReturn(Optional.of(singletonKorb));
 
-        Waechekorb result = waechekorbService.create("Testkorb");
+        // Act
+        Waechekorb result = waechekorbService.getSingletonWaechekorb();
 
+        // Assert
         assertNotNull(result);
-        assertEquals("Testkorb", result.getName());
-        verify(waechekorbRepository).save(any(Waechekorb.class));
+        assertEquals(singletonKorb.getId(), result.getId());
+        // Wichtig: save() darf nicht aufgerufen werden, wenn der Korb schon existiert
+        verify(waechekorbRepository, never()).save(any(Waechekorb.class));
     }
 
     @Test
-    void create_ohneNamen_speichertMitNull() {
-        Waechekorb ohneNamen = new Waechekorb(null);
-        when(waechekorbRepository.save(any(Waechekorb.class))).thenReturn(ohneNamen);
+    void getSingletonBasket_erstelltNeuenKorbWennKeinerExistiert() {
+        // Arrange: Kein Korb in der DB
+        when(waechekorbRepository.findFirstByOrderByIdAsc()).thenReturn(Optional.empty());
+        when(waechekorbRepository.save(any(Waechekorb.class))).thenReturn(singletonKorb);
 
-        Waechekorb result = waechekorbService.create(null);
+        // Act
+        Waechekorb result = waechekorbService.getSingletonWaechekorb();
 
+        // Assert
         assertNotNull(result);
-        assertNull(result.getName());
+        // Wichtig: save() muss genau einmal aufgerufen werden
+        verify(waechekorbRepository, times(1)).save(any(Waechekorb.class));
     }
 
-    // --- getAll() ---
-
+    // --- getBasket() ---
     @Test
-    void getAll_gibtAlleKoerbeZurueck() {
-        when(waechekorbRepository.findAll()).thenReturn(List.of(korb));
-
-        List<Waechekorb> result = waechekorbService.getAll();
-
-        assertEquals(1, result.size());
+    void getBasket_gibtDenSingletonKorbZurueck() {
+        when(waechekorbRepository.findFirstByOrderByIdAsc()).thenReturn(Optional.of(singletonKorb));
+        Waechekorb result = waechekorbService.getSingletonWaechekorb();
+        assertEquals(singletonKorb, result);
+        verify(waechekorbRepository, never()).save(any());
     }
 
-    // --- getById() ---
-
-    @Test
-    void getById_vorhandeneId_gibtOptionalMitKorbZurueck() {
-        when(waechekorbRepository.findById(1L)).thenReturn(Optional.of(korb));
-
-        Optional<Waechekorb> result = waechekorbService.getById(1L);
-
-        assertTrue(result.isPresent());
-        assertEquals("Testkorb", result.get().getName());
-    }
-
-    @Test
-    void getById_nichtVorhandeneId_gibtLeereOptionalZurueck() {
-        when(waechekorbRepository.findById(99L)).thenReturn(Optional.empty());
-
-        Optional<Waechekorb> result = waechekorbService.getById(99L);
-
-        assertFalse(result.isPresent());
-    }
-
-    // --- delete() ---
-
-    @Test
-    void delete_ruftDeleteByIdAuf() {
-        waechekorbService.delete(1L);
-
-        verify(waechekorbRepository).deleteById(1L);
-    }
 
     // --- addItem() ---
 
     @Test
-    void addItem_fuegtKleidungsstueckZumKorbHinzu() {
-        when(waechekorbRepository.findById(1L)).thenReturn(Optional.of(korb));
-        when(kleidungsstueckRepository.findById(10L)).thenReturn(Optional.of(shirt));
-        when(waechekorbRepository.save(korb)).thenReturn(korb);
+    void addItem_fuegtItemZumSingletonKorbHinzu() {
+        // Arrange
+        when(waechekorbRepository.findFirstByOrderByIdAsc()).thenReturn(Optional.of(singletonKorb));
+        when(kleidungsstueckRepository.findById(shirt.getId())).thenReturn(Optional.of(shirt));
+        when(waechekorbRepository.save(singletonKorb)).thenReturn(singletonKorb);
 
-        Waechekorb result = waechekorbService.addItem(1L, 10L);
+        // Act
+        Waechekorb result = waechekorbService.addItem(shirt.getId());
 
+        // Assert
         assertTrue(result.getItems().contains(shirt));
-        verify(waechekorbRepository).save(korb);
-    }
-
-    @Test
-    void addItem_korbNichtGefunden_wirftException() {
-        when(waechekorbRepository.findById(99L)).thenReturn(Optional.empty());
-
-        assertThrows(RuntimeException.class, () -> waechekorbService.addItem(99L, 1L));
+        verify(waechekorbRepository).save(singletonKorb); // Speichern wird aufgerufen
     }
 
     @Test
     void addItem_itemNichtGefunden_wirftException() {
-        when(waechekorbRepository.findById(1L)).thenReturn(Optional.of(korb));
+        // Arrange
+        when(waechekorbRepository.findFirstByOrderByIdAsc()).thenReturn(Optional.of(singletonKorb));
         when(kleidungsstueckRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> waechekorbService.addItem(1L, 99L));
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> waechekorbService.addItem(99L));
+        verify(waechekorbRepository, never()).save(any()); // Darf nicht speichern
     }
 
     // --- addItems() ---
 
     @Test
-    void addItems_fuegtMehrereItemsHinzu() {
-        Kleidungsstueck hose = new Kleidungsstueck("Hose", 3, false, MainCategory.UNTERTEIL, "");
-        when(waechekorbRepository.findById(1L)).thenReturn(Optional.of(korb));
-        when(kleidungsstueckRepository.findById(10L)).thenReturn(Optional.of(shirt));
-        when(kleidungsstueckRepository.findById(20L)).thenReturn(Optional.of(hose));
-        when(waechekorbRepository.save(korb)).thenReturn(korb);
+    void addItems_fuegtMehrereItemsZumSingletonKorbHinzu() {
+        // Arrange
+        when(waechekorbRepository.findFirstByOrderByIdAsc()).thenReturn(Optional.of(singletonKorb));
+        when(kleidungsstueckRepository.findById(shirt.getId())).thenReturn(Optional.of(shirt));
+        when(kleidungsstueckRepository.findById(hose.getId())).thenReturn(Optional.of(hose));
+        when(waechekorbRepository.save(singletonKorb)).thenReturn(singletonKorb);
 
-        Waechekorb result = waechekorbService.addItems(1L, List.of(10L, 20L));
+        // Act
+        Waechekorb result = waechekorbService.addItems(List.of(shirt.getId(), hose.getId()));
 
+        // Assert
         assertEquals(2, result.getItems().size());
+        assertTrue(result.getItems().containsAll(List.of(shirt, hose)));
+        verify(waechekorbRepository).save(singletonKorb);
     }
 
     // --- removeItem() ---
 
     @Test
-    void removeItem_entferntItemAusKorb() {
-        korb.addItem(shirt);
-        when(waechekorbRepository.findById(1L)).thenReturn(Optional.of(korb));
-        when(kleidungsstueckRepository.findById(10L)).thenReturn(Optional.of(shirt));
-        when(waechekorbRepository.save(korb)).thenReturn(korb);
+    void removeItem_entferntItemAusSingletonKorb() {
+        // Arrange
+        singletonKorb.addItem(shirt); // Vorher hinzufügen
+        when(waechekorbRepository.findFirstByOrderByIdAsc()).thenReturn(Optional.of(singletonKorb));
+        when(kleidungsstueckRepository.findById(shirt.getId())).thenReturn(Optional.of(shirt));
+        when(waechekorbRepository.save(singletonKorb)).thenReturn(singletonKorb);
 
-        Waechekorb result = waechekorbService.removeItem(1L, 10L);
+        // Act
+        Waechekorb result = waechekorbService.removeItem(shirt.getId());
 
+        // Assert
         assertFalse(result.getItems().contains(shirt));
+        verify(waechekorbRepository).save(singletonKorb);
     }
 
     // --- clear() ---
 
     @Test
-    void clear_leertDenKorb() {
-        korb.addItem(shirt);
-        when(waechekorbRepository.findById(1L)).thenReturn(Optional.of(korb));
-        when(waechekorbRepository.save(korb)).thenReturn(korb);
+    void clear_leertDenSingletonKorb() {
+        // Arrange
+        singletonKorb.addItem(shirt);
+        when(waechekorbRepository.findFirstByOrderByIdAsc()).thenReturn(Optional.of(singletonKorb));
+        when(waechekorbRepository.save(singletonKorb)).thenReturn(singletonKorb);
 
-        Waechekorb result = waechekorbService.clear(1L);
+        // Act
+        Waechekorb result = waechekorbService.clear();
 
+        // Assert
         assertTrue(result.getItems().isEmpty());
-    }
-
-    @Test
-    void clear_korbNichtGefunden_wirftException() {
-        when(waechekorbRepository.findById(99L)).thenReturn(Optional.empty());
-
-        assertThrows(RuntimeException.class, () -> waechekorbService.clear(99L));
-    }
-
-    // --- addItemsToDefaultBasket() ---
-
-    @Test
-    void addItemsToDefaultBasket_verwendetVorhandenenKorb() {
-        when(waechekorbRepository.findAll()).thenReturn(List.of(korb));
-        when(kleidungsstueckRepository.findById(10L)).thenReturn(Optional.of(shirt));
-        when(waechekorbRepository.save(korb)).thenReturn(korb);
-
-        Waechekorb result = waechekorbService.addItemsToDefaultBasket(List.of(10L));
-
-        assertTrue(result.getItems().contains(shirt));
-    }
-
-    @Test
-    void addItemsToDefaultBasket_keinKorbVorhanden_erstelltDefault() {
-        when(waechekorbRepository.findAll()).thenReturn(List.of());
-        Waechekorb defaultKorb = new Waechekorb("Default");
-        when(waechekorbRepository.save(any(Waechekorb.class))).thenReturn(defaultKorb);
-        when(kleidungsstueckRepository.findById(10L)).thenReturn(Optional.of(shirt));
-
-        Waechekorb result = waechekorbService.addItemsToDefaultBasket(List.of(10L));
-
-        assertNotNull(result);
+        verify(waechekorbRepository).save(singletonKorb);
     }
 }

@@ -3,8 +3,10 @@ package com.example.sea2_bora;
 import com.example.sea2_bora.implementation.Benutzer;
 import com.example.sea2_bora.implementation.Kleidungsstueck;
 import com.example.sea2_bora.implementation.MainCategory;
+import com.example.sea2_bora.implementation.Waechekorb;
 import com.example.sea2_bora.repository.BenutzerRepository;
 import com.example.sea2_bora.repository.KleidungsstueckRepository;
+import com.example.sea2_bora.repository.WaechekorbRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,7 +22,8 @@ public class BoraApplication {
     @Bean
     CommandLineRunner seedData(
             BenutzerRepository benutzerRepository,
-            KleidungsstueckRepository kleidungsstueckRepository
+            KleidungsstueckRepository kleidungsstueckRepository,
+            WaechekorbRepository waechekorbRepository
     ) {
         return args -> {
             if (benutzerRepository.count() == 0) {
@@ -37,6 +40,11 @@ public class BoraApplication {
                 kleidungsstueckRepository.save(k1);
                 kleidungsstueckRepository.save(k2);
                 kleidungsstueckRepository.save(k3);
+                Waechekorb w1 = new Waechekorb();
+                w1.addItem(k1);
+                k1.setIstImWaeschekorb(true);
+                waechekorbRepository.save(w1);
+
             }
         };
     }
