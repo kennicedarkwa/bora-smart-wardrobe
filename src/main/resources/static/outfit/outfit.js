@@ -1,4 +1,4 @@
-// ✅ JSON (dein Wetter)
+// JSON (Wetter)
 const data = {
     cities: [
         {
@@ -13,7 +13,7 @@ const data = {
     ]
 };
 
-// ✅ sofort ausführen
+// sofort ausführen
 loadOutfit();
 
 async function loadOutfit() {
@@ -50,13 +50,13 @@ async function loadOutfit() {
 
         liste.innerHTML = "";
 
-        // ✅ WENN KEINE DATEN → MELDUNG
+        // WENN KEINE DATEN → MELDUNG
         if (!data.kleidungsstuecke || data.kleidungsstuecke.length === 0) {
             infoBox.style.display = "block";
             return;
         }
 
-        // ✅ SONST: ANZEIGEN
+        // SONST: ANZEIGEN
         data.kleidungsstuecke.forEach(item => {
 
             const div = document.createElement("div");

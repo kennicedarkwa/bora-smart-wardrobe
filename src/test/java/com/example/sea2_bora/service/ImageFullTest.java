@@ -116,4 +116,17 @@ class ImageFullTest {
 
         assertTrue(Files.exists(savedPath));
     }
+
+    @Test
+    void upload_pdfDatei_wirftException() throws Exception {
+        MockMultipartFile pdf = new MockMultipartFile(
+                "file", "test.pdf", "application/pdf", new byte[100]);
+
+        Kleidungsstueck kleidungsstueck = new Kleidungsstueck();
+        when(kleidungsstueckRepository.findById(1L))
+                .thenReturn(Optional.of(kleidungsstueck));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                imageService.storeWithoutBackground(1L, pdf));
+    }
 }

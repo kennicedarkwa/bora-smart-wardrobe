@@ -3,6 +3,7 @@ package com.example.sea2_bora.controller;
 import com.example.sea2_bora.implementation.Kleidungsstueck;
 import com.example.sea2_bora.service.KleidungsstueckService;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;  // Kennice
 import java.util.List;
 
 @RestController
@@ -28,8 +29,8 @@ public class KleidungsstueckController
     /**
      * Ein neues Kleidungsstueck anlegen
      */
-    @PostMapping
-    public String addKleidungsstueck(@RequestBody Kleidungsstueck kleidungsstueck)
+    @PostMapping //Kennice -> @Valid
+    public String addKleidungsstueck(@Valid @RequestBody Kleidungsstueck kleidungsstueck)
     {
         service.createKleidungsstueck(kleidungsstueck);
         // .getName() greift jetzt perfekt auf die korrigierte Entity zu!

@@ -39,6 +39,11 @@ public class EmpfehlungService
 
         neueEmpfehlung.getKleidungsstuecke().addAll(passendeKlamotten);
 
+        // ← neu Kennice
+        String begruendung = "Heute " + dailyForecast.getTemperature().getAverageCelsius() + "°C"
+                + (regen ? " & Regen – regengeeignete Kleidung empfohlen." : " – passende Kleidung für heute.");
+        neueEmpfehlung.setBegruendung(begruendung);
+
         return empfehlungRepository.save(neueEmpfehlung);
     }
 }

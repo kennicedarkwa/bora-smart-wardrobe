@@ -3,6 +3,9 @@ package com.example.sea2_bora.implementation;
 import jakarta.persistence.*;
 import java.util.List;
 import java.util.ArrayList;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Entity
@@ -14,10 +17,15 @@ public class Kleidungsstueck
     private Long id;
 
     private String name;
+
+    @Min(1) //Kennice
+    @Max(5)//Kennice
     private int temperaturIndex;
+
     private boolean istFuerRegenGeeignet;
     private boolean istImWaeschekorb = false;
 
+    @NotNull //Kennice
     @Enumerated(EnumType.STRING)
     private MainCategory hauptkategorie;
 

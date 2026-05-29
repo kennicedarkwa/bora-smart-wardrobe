@@ -17,6 +17,8 @@ public class Empfehlung
 
     private LocalDate datum;
 
+    private String begruendung; // ← neu Kennice
+
     @ManyToMany
     private List<Kleidungsstueck> kleidungsstuecke = new ArrayList<>();
 

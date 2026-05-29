@@ -35,6 +35,7 @@ dependencies {
 	implementation 'com.h2database:h2'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.springframework.boot:spring-boot-starter-security' //wegen login
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     testImplementation 'org.springframework.boot:spring-boot-starter-test' // wegen test
     testImplementation 'org.springframework.security:spring-security-test' //  eine zusätzliche Test-Bibliothek von Spring Security
 
