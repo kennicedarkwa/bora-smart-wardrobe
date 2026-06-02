@@ -1,9 +1,7 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-
     background-color: #bfe6ff;
-
     background-image: repeating-linear-gradient(
             135deg,
             rgba(127, 89, 207, 0.18) 0px,
@@ -11,91 +9,110 @@ body {
             transparent 6px,
             transparent 12px
     );
-
     color: #1e0033;
-
     min-height: 100vh;
-
-    /*display: flex;*/
-    /*justify-content: center;*/
-    /*align-items: center;*/
-
     border: 45px solid #7f59cf;
     box-sizing: border-box;
-
     position: relative;
     overflow: hidden;
 }
 
 .page {
     padding: 40px;
+    min-height: calc(100vh - 90px);
+    position: relative;
+    box-sizing: border-box;
 }
 
-/* 🔝 TITLE oben links (nicht fixed rechts!) */
-.title {
-    position: fixed;
-    top: 24px;
-    left: 32px;
-
-    font-size: 70px;
-    font-weight: 1000;
-
-    color: #5a3ea6;
-
-    text-shadow: 0 2px 10px rgba(0,0,0,0.08);
+.header h1 {
+    font-size: 50px;
+    font-weight: bold;
+    color: #1e0033;
+    margin-top: 0;
 }
 
-/* 📋 LISTE */
 #clothesList {
     list-style: none;
     padding: 0;
-    margin: 80px 0 0 0; /* Platz für fixed header */
+    margin: 40px 0 0 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 24px;
+}
 
+#clothesList li {
+    background: #ffffff;
+    width: 140px;
+    height: 140px;
+    border: 4px solid #000000;
+    border-radius: 0px;
+    position: relative;
+    box-sizing: border-box;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+#clothesList li:hover {
+    transform: scale(1.05);
+}
+
+.cloth-left {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
-/* 👕 ITEMS (besser sichtbar!) */
-#clothesList li {
-    background: rgba(255, 255, 255, 0.9);
-
-    color: #2b2b2b;
-
-    padding: 12px 16px;
-    border-radius: 12px;
-
-    border: 2px solid #b8a2ff;
-
+.cloth-left input[type="checkbox"] {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    transform: scale(1.3);
     cursor: pointer;
-    transition: 0.2s;
 }
 
-/* hover effect */
-#clothesList li:hover {
-    transform: translateX(4px);
-    border-color: #7f59cf;
+.cloth-emoji {
+    font-size: 50px;
+    margin-bottom: 5px;
 }
 
-/* ✨ selected */
-#clothesList li.selected {
-    background: #7f59cf;
-    color: white;
-    border: 2px solid #5a3ea6;
+.cloth-name {
+    font-size: 13px;
+    font-weight: bold;
+    color: #000000;
+    text-align: center;
 }
 
-/* 📍 EMPTY unten rechts */
-.empty {
-    position: fixed;
+.footer {
+    position: absolute;
     bottom: 20px;
     right: 20px;
+}
 
-    color: #5a3ea6;
-    font-size: 14px;
+#removeSelectedBtn {
+    background: #ffffff;
+    color: #000000;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px 25px;
+    border: 4px solid #000000;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0px #000000;
+    transition: all 0.1s;
+}
 
-    background: rgba(255, 255, 255, 0.7);
-    padding: 6px 10px;
-    border-radius: 8px;
+#removeSelectedBtn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px #000000;
+}
 
-    border: 1px solid rgba(90, 62, 166, 0.25);
+#removeSelectedBtn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #000000;
 }

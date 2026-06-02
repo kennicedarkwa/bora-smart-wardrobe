@@ -20,7 +20,8 @@ public class BoraApplication {
     @Bean
     CommandLineRunner seedData(
             BenutzerRepository benutzerRepository,
-            KleidungsstueckRepository kleidungsstueckRepository
+            KleidungsstueckRepository kleidungsstueckRepository,
+            com.example.sea2_bora.repository.WaechekorbRepository waechekorbRepository
     ) {
         return args -> {
             if (benutzerRepository.count() == 0) {
@@ -37,6 +38,22 @@ public class BoraApplication {
                 kleidungsstueckRepository.save(k1);
                 kleidungsstueckRepository.save(k2);
                 kleidungsstueckRepository.save(k3);
+            }
+
+
+            com.example.sea2_bora.implementation.Waechekorb korb = waechekorbRepository.findFirstByOrderByIdAsc()
+                    .orElseGet(() -> waechekorbRepository.save(new com.example.sea2_bora.implementation.Waechekorb("Standard-Wäschekorb")));
+
+
+            if (korb.getItems().isEmpty()) {
+                java.util.List<Kleidungsstueck> alleKlamotten = kleidungsstueckRepository.findAll();
+                if (!alleKlamotten.isEmpty()) {
+                    korb.addItem(alleKlamotten.get(0));
+                    if (alleKlamotten.size() > 1) {
+                        korb.addItem(alleKlamotten.get(1));
+                    }
+                    waechekorbRepository.save(korb);
+                }
             }
         };
     }
