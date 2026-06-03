@@ -67,20 +67,26 @@ class BenutzerControllerTest {
 
     @Test
     void login_benutzerGefunden_gibt200() throws Exception {
-        when(benutzerService.login(1L)).thenReturn(true);
+        when(benutzerService.login("test@example.com", "passwort"))
+                .thenReturn(true);
 
-        mockMvc.perform(post("/api/benutzer/login/1"))
+        mockMvc.perform(post("/api/benutzer/login")
+                        .param("email", "test@example.com")
+                        .param("passwort", "passwort"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Login erfolgreich"));
     }
 
     @Test
     void login_benutzerNichtGefunden_gibt400() throws Exception {
-        when(benutzerService.login(99L)).thenReturn(false);
+        when(benutzerService.login("falsch@example.com", "falsch"))
+                .thenReturn(false);
 
-        mockMvc.perform(post("/api/benutzer/login/99"))
+        mockMvc.perform(post("/api/benutzer/login")
+                        .param("email", "falsch@example.com")
+                        .param("passwort", "falsch"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Benutzer nicht gefunden"));
+                .andExpect(content().string("Login fehlgeschlagen"));
     }
 
 

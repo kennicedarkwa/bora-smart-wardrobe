@@ -15,8 +15,6 @@ public class BenutzerController {
         this.benutzerService = benutzerService;
     }
 
-    // UML: registrieren(Benutzername, Email-Adresse, Passwort)
-
     @PostMapping("/registrieren")
     public ResponseEntity<String> registrieren(@RequestBody Benutzer benutzer) {
 
@@ -33,29 +31,26 @@ public class BenutzerController {
         }
     }
 
-    // UML: login(Benutzer_ID)
+    // NEU: Login über Email + Passwort
+    @PostMapping("/login")
+    public ResponseEntity<String> login(
+            @RequestParam String email,
+            @RequestParam String passwort) {
 
-    @PostMapping("/login/{id}")
-    public ResponseEntity<String> login(@PathVariable Long id) {
-
-        boolean erfolgreich = benutzerService.login(id);
+        boolean erfolgreich = benutzerService.login(email, passwort);
 
         if (erfolgreich) {
             return ResponseEntity.ok("Login erfolgreich");
         } else {
-            return ResponseEntity.badRequest().body("Benutzer nicht gefunden");
+            return ResponseEntity.badRequest().body("Login fehlgeschlagen");
         }
     }
-
-    // UML: logout()
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
         benutzerService.logout();
         return ResponseEntity.ok("Logout erfolgreich");
     }
-
-    // UML: getAktuellerNutzer()
 
     @GetMapping("/aktueller")
     public ResponseEntity<Benutzer> aktuellerBenutzer() {
@@ -66,8 +61,6 @@ public class BenutzerController {
         }
         return ResponseEntity.ok(benutzer);
     }
-
-    // UML: aenderePasswort(altesPasswort, neuesPasswort)
 
     @PostMapping("/passwort-aendern")
     public ResponseEntity<String> passwortAendern(
@@ -82,8 +75,6 @@ public class BenutzerController {
             return ResponseEntity.badRequest().body("Passwort konnte nicht geändert werden");
         }
     }
-
-    // Zusatz: Email prüfen (UML: emailPruefen)
 
     @GetMapping("/email-pruefen")
     public ResponseEntity<Boolean> emailPruefen(@RequestParam String email) {

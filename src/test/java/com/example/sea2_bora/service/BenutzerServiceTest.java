@@ -19,6 +19,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,10 +37,24 @@ class BenutzerServiceTest {
     @InjectMocks
     private BenutzerService service;
 
+    private PasswordEncoder passwordEncoder = new PasswordEncoder() {
+        @Override
+        public String encode(CharSequence rawPassword) {
+            return rawPassword.toString(); // kein Hash
+        }
+
+        @Override
+        public boolean matches(CharSequence rawPassword, String encodedPassword) {
+            return rawPassword.toString().equals(encodedPassword);
+        }
+    };
+
     private Benutzer testBenutzer;
 
     @BeforeEach
     void setUp() {
+        service = new BenutzerService(repository, passwordEncoder); // NEU
+
         testBenutzer = new Benutzer("MaxMuster", "max@example.com", "passwort123", "Hamburg");
         testBenutzer.setBenutzerId(1L);
     }
@@ -81,17 +97,22 @@ class BenutzerServiceTest {
 
     @Test
     void login_benutzerGefunden_gibtTrue() {
-        when(repository.findById(1L)).thenReturn(Optional.of(testBenutzer));
+        // NEU: Passwort muss "gehasht" sein (hier: Klartext wegen Mock)
+        testBenutzer.setPasswort("passwort123");
 
-        assertTrue(service.login(1L));
+        when(repository.findByEmail("test@example.com"))
+                .thenReturn(Optional.of(testBenutzer));
+
+        assertTrue(service.login("test@example.com", "passwort123"));
         assertEquals(testBenutzer, service.getAktuellerNutzer());
     }
 
     @Test
     void login_benutzerNichtGefunden_gibtFalse() {
-        when(repository.findById(99L)).thenReturn(Optional.empty());
+        when(repository.findByEmail("falsch@example.com"))
+                .thenReturn(Optional.empty());
 
-        assertFalse(service.login(99L));
+        assertFalse(service.login("falsch@example.com", "irgendwas"));
         assertNull(service.getAktuellerNutzer());
     }
 
@@ -99,9 +120,12 @@ class BenutzerServiceTest {
 
     @Test
     void logout_setzt_aktuellerBenutzer_aufNull() {
-        when(repository.findById(1L)).thenReturn(Optional.of(testBenutzer));
-        service.login(1L);
+        testBenutzer.setPasswort("passwort123");
 
+        when(repository.findByEmail("test@example.com"))
+                .thenReturn(Optional.of(testBenutzer));
+
+        service.login("test@example.com", "passwort123");
         service.logout();
 
         assertNull(service.getAktuellerNutzer());
@@ -118,8 +142,13 @@ class BenutzerServiceTest {
 
     @Test
     void aenderePasswort_korrektesDaten_gibtTrue() {
-        when(repository.findById(1L)).thenReturn(Optional.of(testBenutzer));
-        service.login(1L);
+
+        // NEU: Login muss über Email laufen
+        testBenutzer.setPasswort("passwort123");
+        when(repository.findByEmail("max@example.com"))
+                .thenReturn(Optional.of(testBenutzer));
+
+        service.login("max@example.com", "passwort123");
 
         boolean ergebnis = service.aenderePasswort("passwort123", "neuesPasswort!");
 
@@ -130,8 +159,12 @@ class BenutzerServiceTest {
 
     @Test
     void aenderePasswort_falschesAltesPasswort_gibtFalse() {
-        when(repository.findById(1L)).thenReturn(Optional.of(testBenutzer));
-        service.login(1L);
+
+        testBenutzer.setPasswort("passwort123");
+        when(repository.findByEmail("max@example.com"))
+                .thenReturn(Optional.of(testBenutzer));
+
+        service.login("max@example.com", "passwort123");
 
         assertFalse(service.aenderePasswort("falsch", "neuesPasswort!"));
         verify(repository, never()).save(any());
@@ -145,8 +178,12 @@ class BenutzerServiceTest {
 
     @Test
     void aenderePasswort_speichertNeuenWert_imRepository() {
-        when(repository.findById(1L)).thenReturn(Optional.of(testBenutzer));
-        service.login(1L);
+
+        testBenutzer.setPasswort("passwort123");
+        when(repository.findByEmail("max@example.com"))
+                .thenReturn(Optional.of(testBenutzer));
+
+        service.login("max@example.com", "passwort123");
         service.aenderePasswort("passwort123", "sicheresPasswort!");
 
         ArgumentCaptor<Benutzer> captor = ArgumentCaptor.forClass(Benutzer.class);
