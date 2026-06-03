@@ -28,9 +28,9 @@ public class Benutzer {
     @OneToMany
     private List<Outfit> outfits = new ArrayList<>();
 
-    // Einstellungen (Platzhalter)
-    //@OneToOne
-    //private Einstellungen einstellungen;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "einstellungen_id")
+    private Einstellungen einstellungen;
 
     // Flag für Wäsche-Erinnerung
     private boolean waescheErinnerung = false;
@@ -42,6 +42,7 @@ public class Benutzer {
         this.email = email;
         this.passwort = passwort;
         this.standort = standort;
+        this.einstellungen = new Einstellungen(standort);
     }
 
     // UML: outfitEmpfehlungAnfordern(anlass, datum)
