@@ -1,78 +1,132 @@
 package com.example.sea2_bora.service;
 
-import com.example.sea2_bora.implementation.wetter.CityWeather;
-import com.example.sea2_bora.implementation.wetter.DailyForecast;
-import com.example.sea2_bora.implementation.wetter.Weather;
+import com.example.sea2_bora.DTO.Coordinates;
+import com.example.sea2_bora.implementation.wetter.*;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
-import java.util.List;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Service
 public class WeatherService {
 
-    private Weather weather;
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public WeatherService() {
-        loadWeatherFromFile();
+    private Optional<Coordinates> fetchCoordinatesForCity(String cityName) {
+        try {
+            String encodedCity = URLEncoder.encode(cityName, StandardCharsets.UTF_8);
+            String geocodeUrl = String.format("https://nominatim.openstreetmap.org/search?q=%s&format=json&limit=1", encodedCity);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(geocodeUrl))
+                    // CHANGE THIS LINE BELOW: Make it unique and add your real email
+                    .header("User-Agent", "Sea2BoraWeatherApp/1.0 (dadireddyjnanadha@gmail.com)")
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Logging
+            System.out.println("[DIAGNOSTIC] 2. Geocode HTTP Status: " + response.statusCode());
+            System.out.println("[DIAGNOSTIC] 3. Geocode Response Body: " + response.body());
+
+            if (response.statusCode() == 200) {
+                JsonNode arrayNode = objectMapper.readTree(response.body());
+                if (arrayNode.isArray() && arrayNode.size() > 0) {
+                    double lat = arrayNode.get(0).get("lat").asDouble();
+                    double lon = arrayNode.get(0).get("lon").asDouble();
+                    return Optional.of(new Coordinates(lat, lon));
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("[DIAGNOSTIC ERROR] Geocoding exception: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 
-    /**
-     * Loads weather.json from resources folder
-     */
-    private void loadWeatherFromFile() {
+    public Optional<DailyForecast> getWeatherForCityAndDate(String cityName, String date) {
+        Optional<Coordinates> liveCoords = fetchCoordinatesForCity(cityName);
+        if (liveCoords.isEmpty()) return Optional.empty();
+
+        Coordinates coords = liveCoords.get();
+
         try {
-            ObjectMapper mapper = new ObjectMapper();
+            // Using /weather with the date parameter to return the hourly array for that specific date
+            String url = String.format(
+                    "https://api.brightsky.dev/weather?lat=%s&lon=%s&date=%s",
+                    coords.lat(), coords.lon(), date
+            );
 
-            InputStream is = Thread.currentThread()
-                    .getContextClassLoader()
-                    .getResourceAsStream("wetter.json");
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Accept", "application/json")
+                    .GET()
+                    .build();
 
-            if (is == null) {
-                throw new RuntimeException("wetter.json NOT found on classpath");
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) return Optional.empty();
+
+            JsonNode rootNode = objectMapper.readTree(response.body());
+            JsonNode weatherArray = rootNode.get("weather");
+
+            if (weatherArray == null || !weatherArray.isArray() || weatherArray.size() == 0) {
+                return Optional.empty();
             }
 
-            this.weather = mapper.readValue(is, Weather.class);
+            // Process the 24 hours of that day into one single daily record
+            return Optional.of(aggregateHoursToSingleDay(date, weatherArray));
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load wetter.json", e);
+            e.printStackTrace();
+            return Optional.empty();
         }
     }
 
+    private DailyForecast aggregateHoursToSingleDay(String date, JsonNode weatherArray) {
+        double minTemp = Double.MAX_VALUE;
+        double maxTemp = -Double.MAX_VALUE;
+        int maxPrecipProbability = 0;
+        int maxUvIndex = 0;
+        String dominantCondition = "dry";
 
-    public Weather getWeather() {
-        return weather;
+        for (JsonNode hourRecord : weatherArray) {
+            if (hourRecord.has("temperature") && !hourRecord.get("temperature").isNull()) {
+                double temp = hourRecord.get("temperature").asDouble();
+                minTemp = Math.min(minTemp, temp);
+                maxTemp = Math.max(maxTemp, temp);
+            }
+            if (hourRecord.has("precipitation_probability") && !hourRecord.get("precipitation_probability").isNull()) {
+                maxPrecipProbability = Math.max(maxPrecipProbability, hourRecord.get("precipitation_probability").asInt());
+            }
+            if (hourRecord.has("condition") && !hourRecord.get("condition").isNull()) {
+                String condition = hourRecord.get("condition").asText();
+                if (condition.equals("rain") || condition.equals("thunderstorm") || condition.equals("snow")) {
+                    dominantCondition = condition;
+                }
+            }
+            if (hourRecord.has("solar") && !hourRecord.get("solar").isNull()) {
+                int approxUv = (int) Math.min(Math.max(hourRecord.get("solar").asDouble() / 100.0, 0), 11);
+                maxUvIndex = Math.max(maxUvIndex, approxUv);
+            }
+        }
+
+        Temperature tempEntity = new Temperature((int) Math.floor(minTemp), (int) Math.ceil(maxTemp));
+        PrecipitationType precipType = switch (dominantCondition.toLowerCase()) {
+            case "rain" -> PrecipitationType.RAIN;
+            case "snow" -> PrecipitationType.SNOW;
+            case "thunderstorm" -> PrecipitationType.THUNDERSTORM;
+            default -> PrecipitationType.NONE;
+        };
+
+        return new DailyForecast(date, tempEntity, maxUvIndex, new Precipitation(precipType, maxPrecipProbability));
     }
-
-    public List<CityWeather> getAllCities() {
-        return weather.getCities();
-    }
-
-    public Optional<CityWeather> getCity(String cityName) {
-        return weather.getCities()
-                .stream()
-                .filter(c -> c.getCity().equalsIgnoreCase(cityName))
-                .findFirst();
-    }
-
-    public List<DailyForecast> getForecasts(String cityName) {
-        return getCity(cityName)
-                .map(CityWeather::getDailyForecast)
-                .orElse(List.of());
-    }
-
-    public Optional<DailyForecast> getForecastByDate(String cityName, String date) {
-        return getCity(cityName)
-                .flatMap(city -> city.getDailyForecast()
-                        .stream()
-                        .filter(f -> f.getDate().equals(date))
-                        .findFirst());
-    }
-
-
-
-
 }

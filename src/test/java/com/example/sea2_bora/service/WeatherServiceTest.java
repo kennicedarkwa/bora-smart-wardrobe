@@ -1,147 +1,132 @@
 package com.example.sea2_bora.service;
 
-import com.example.sea2_bora.implementation.wetter.CityWeather;
 import com.example.sea2_bora.implementation.wetter.DailyForecast;
-import com.example.sea2_bora.implementation.wetter.Weather;
+import com.example.sea2_bora.implementation.wetter.PrecipitationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.List;
+import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
-/**
- * Testklasse für WeatherService.
- *
- * WeatherService liest wetter.json aus dem Classpath. Diese Tests prüfen,
- * ob die Datei korrekt geladen wird und die Such-/Filter-Methoden funktionieren.
- * Kein Mockito nötig – der Service ist zustandslos und hat keine DB-Abhängigkeit.
- */
+@ExtendWith(MockitoExtension.class)
 class WeatherServiceTest {
 
+    @Mock
+    private HttpClient httpClient;
+
+    @InjectMocks
     private WeatherService weatherService;
 
     @BeforeEach
     void setUp() {
-        // Konstruktor lädt wetter.json aus dem Classpath (src/main/resources)
-        weatherService = new WeatherService();
+        ReflectionTestUtils.setField(weatherService, "httpClient", httpClient);
     }
 
-    // --- Laden der Wetterdaten ---
-
+    @SuppressWarnings("unchecked")
     @Test
-    void getWeather_gibtNichtNullZurueck() {
-        Weather result = weatherService.getWeather();
-        assertNotNull(result);
+    void testGetWeatherForCityAndDate_Success() throws IOException, InterruptedException {
+        // 1. Setup Nominatim Geocoding Mock Response
+        String geocodeJson = "[{\"lat\":52.5200,\"lon\":13.4050}]";
+        HttpResponse<String> geocodeResponse = Mockito.mock(HttpResponse.class);
+        when(geocodeResponse.statusCode()).thenReturn(200);
+        when(geocodeResponse.body()).thenReturn(geocodeJson);
+
+        // 2. Setup BrightSky Weather Mock Response
+        String weatherJson = """
+                {
+                    "weather": [
+                        {
+                            "temperature": 15.5,
+                            "precipitation_probability": 10,
+                            "condition": "dry",
+                            "solar": 200.0
+                        },
+                        {
+                            "temperature": 22.1,
+                            "precipitation_probability": 80,
+                            "condition": "rain",
+                            "solar": 500.0
+                        }
+                    ]
+                }
+                """;
+        HttpResponse<String> brightSkyResponse = Mockito.mock(HttpResponse.class);
+        when(brightSkyResponse.statusCode()).thenReturn(200);
+        when(brightSkyResponse.body()).thenReturn(weatherJson);
+
+        // 3. Stub sequential calls
+        when(httpClient.send(
+                ArgumentMatchers.any(HttpRequest.class),
+                ArgumentMatchers.<HttpResponse.BodyHandler<String>>any()
+        )).thenReturn(geocodeResponse, brightSkyResponse);
+
+        // Act
+        Optional<DailyForecast> result = weatherService.getWeatherForCityAndDate("Berlin", "2026-06-08");
+
+        // Assert
+        assertTrue(result.isPresent(), "Forecast should be present");
+        DailyForecast forecast = result.get();
+
+        assertEquals("2026-06-08", forecast.getDate());
+        assertNotNull(forecast.getTemperature());
+        assertEquals(15, forecast.getTemperature().getMin_celsius());
+        assertEquals(23, forecast.getTemperature().getMax_celsius());
+        assertNotNull(forecast.getPrecipitation());
+        assertEquals(80, forecast.getPrecipitation().getProbability_percent());
+        assertEquals(PrecipitationType.RAIN, forecast.getPrecipitation().getType());
+        assertEquals(5, forecast.getUv_index());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    void getAllCities_gibtMindestensEineStadtZurueck() {
-        List<CityWeather> cities = weatherService.getAllCities();
-        assertNotNull(cities);
-        assertFalse(cities.isEmpty(), "wetter.json sollte mindestens eine Stadt enthalten");
+    void testGetWeatherForCityAndDate_GeocodingFails() throws IOException, InterruptedException {
+        HttpResponse<String> geocodeResponse = Mockito.mock(HttpResponse.class);
+        when(geocodeResponse.statusCode()).thenReturn(200);
+        when(geocodeResponse.body()).thenReturn("[]");
+
+        when(httpClient.send(
+                ArgumentMatchers.any(HttpRequest.class),
+                ArgumentMatchers.<HttpResponse.BodyHandler<String>>any()
+        )).thenReturn(geocodeResponse);
+
+        Optional<DailyForecast> result = weatherService.getWeatherForCityAndDate("UnknownCity", "2026-06-08");
+
+        assertTrue(result.isEmpty(), "Result should be empty when geocoding fails");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    void getAllCities_jedeStadtHatEinenNamen() {
-        weatherService.getAllCities().forEach(city ->
-                assertNotNull(city.getCity(), "Stadtname darf nicht null sein")
-        );
-    }
+    void testGetWeatherForCityAndDate_BrightSkyEmpty() throws IOException, InterruptedException {
+        String geocodeJson = "[{\"lat\":52.5200,\"lon\":13.4050}]";
+        HttpResponse<String> geocodeResponse = Mockito.mock(HttpResponse.class);
+        when(geocodeResponse.statusCode()).thenReturn(200);
+        when(geocodeResponse.body()).thenReturn(geocodeJson);
 
-    @Test
-    void getAllCities_jedeStadtHatMindestensEineVorhersage() {
-        weatherService.getAllCities().forEach(city ->
-                assertFalse(city.getDailyForecast().isEmpty(),
-                        "Stadt " + city.getCity() + " hat keine Vorhersagen")
-        );
-    }
+        String weatherJson = "{ \"weather\": [] }";
+        HttpResponse<String> brightSkyResponse = Mockito.mock(HttpResponse.class);
+        when(brightSkyResponse.statusCode()).thenReturn(200);
+        when(brightSkyResponse.body()).thenReturn(weatherJson);
 
-    // --- getCity() ---
+        when(httpClient.send(
+                ArgumentMatchers.any(HttpRequest.class),
+                ArgumentMatchers.<HttpResponse.BodyHandler<String>>any()
+        )).thenReturn(geocodeResponse, brightSkyResponse);
 
-    @Test
-    void getCity_vorhandeneStadt_gibtOptionalMitStadtZurueck() {
-        // Ersten vorhandenen Stadtnamen aus der JSON-Datei holen
-        String existingCity = weatherService.getAllCities().get(0).getCity();
+        Optional<DailyForecast> result = weatherService.getWeatherForCityAndDate("Berlin", "2026-06-08");
 
-        Optional<CityWeather> result = weatherService.getCity(existingCity);
-
-        assertTrue(result.isPresent());
-        assertEquals(existingCity.toLowerCase(), result.get().getCity().toLowerCase());
-    }
-
-    @Test
-    void getCity_grossKleinschreibungIstEgal_gibtStadtZurueck() {
-        String existingCity = weatherService.getAllCities().get(0).getCity();
-
-        Optional<CityWeather> upper = weatherService.getCity(existingCity.toUpperCase());
-        Optional<CityWeather> lower = weatherService.getCity(existingCity.toLowerCase());
-
-        assertTrue(upper.isPresent());
-        assertTrue(lower.isPresent());
-    }
-
-    @Test
-    void getCity_nichtVorhandeneStadt_gibtLeereOptionalZurueck() {
-        Optional<CityWeather> result = weatherService.getCity("XxxNichtVorhandenXxx");
-        assertFalse(result.isPresent());
-    }
-
-    // --- getForecasts() ---
-
-    @Test
-    void getForecasts_vorhandeneStadt_gibtVorhersagenZurueck() {
-        String existingCity = weatherService.getAllCities().get(0).getCity();
-
-        List<DailyForecast> forecasts = weatherService.getForecasts(existingCity);
-
-        assertNotNull(forecasts);
-        assertFalse(forecasts.isEmpty());
-    }
-
-    @Test
-    void getForecasts_nichtVorhandeneStadt_gibtLeereListeZurueck() {
-        List<DailyForecast> forecasts = weatherService.getForecasts("NichtVorhanden");
-        assertNotNull(forecasts);
-        assertTrue(forecasts.isEmpty());
-    }
-
-    @Test
-    void getForecasts_jedeForecastHatDatum() {
-        String existingCity = weatherService.getAllCities().get(0).getCity();
-
-        weatherService.getForecasts(existingCity).forEach(f ->
-                assertNotNull(f.getDate(), "Datum in DailyForecast darf nicht null sein")
-        );
-    }
-
-    // --- getForecastByDate() ---
-
-    @Test
-    void getForecastByDate_vorhandenesDatum_gibtForecastZurueck() {
-        CityWeather firstCity = weatherService.getAllCities().get(0);
-        String city = firstCity.getCity();
-        String date = firstCity.getDailyForecast().get(0).getDate();
-
-        Optional<DailyForecast> result = weatherService.getForecastByDate(city, date);
-
-        assertTrue(result.isPresent());
-        assertEquals(date, result.get().getDate());
-    }
-
-    @Test
-    void getForecastByDate_nichtVorhandenesDatum_gibtLeereOptionalZurueck() {
-        String existingCity = weatherService.getAllCities().get(0).getCity();
-
-        Optional<DailyForecast> result = weatherService.getForecastByDate(existingCity, "9999-99-99");
-
-        assertFalse(result.isPresent());
-    }
-
-    @Test
-    void getForecastByDate_nichtVorhandeneStadt_gibtLeereOptionalZurueck() {
-        Optional<DailyForecast> result = weatherService.getForecastByDate("NichtVorhanden", "2025-07-01");
-        assertFalse(result.isPresent());
+        assertTrue(result.isEmpty(), "Result should be empty when BrightSky returns no data");
     }
 }
