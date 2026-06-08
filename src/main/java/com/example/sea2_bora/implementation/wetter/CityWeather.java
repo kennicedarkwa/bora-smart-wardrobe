@@ -10,9 +10,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CityWeather {
     private String city;
 
-    @JsonProperty("daily_forecast")
+
     private List<DailyForecast> daily_forecast;
 
+    @JsonProperty("daily_forecast")
     public String getCity() {
 
         return city;
@@ -31,6 +32,7 @@ public class CityWeather {
 
     }
 
+    @JsonProperty("daily_forecast")
     public void setDailyForecast(List<DailyForecast> dailyWeathers) {
 
         this.daily_forecast = dailyWeathers;

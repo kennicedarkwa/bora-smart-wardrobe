@@ -7,17 +7,20 @@
 </head>
 <body>
 
-    <h1>Login</h1>
+<h1>Login</h1>
 
-    <div class="container">
-        <label for="id">Benutzer-ID:</label>
-        <input type="number" id="id">
+<div class="container">
+    <label for="email">E-Mail-Adresse:</label>
+    <input type="email" id="email" placeholder="beispiel@mail.de">
 
-        <button onclick="login()">Einloggen</button>
+    <label for="passwort">Passwort:</label>
+    <input type="password" id="passwort" placeholder="Dein Passwort">
 
-        <p id="error" class="error"></p>
-    </div>
+    <button onclick="login()">Einloggen</button>
 
-    <script src="login.js"></script>
+    <p id="error" class="error"></p>
+</div>
+
+<script src="login.js"></script>
 </body>
 </html>
