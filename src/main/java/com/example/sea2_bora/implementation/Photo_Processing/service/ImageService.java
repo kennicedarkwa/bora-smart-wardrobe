@@ -43,13 +43,9 @@ public class ImageService {
             throw new IllegalArgumentException("Datei ist leer.");
         }
 
-        // ← neu Kennice
         if (file.getSize() > 5 * 1024 * 1024) {
             throw new IllegalArgumentException("Datei darf maximal 5MB groß sein.");
         }
-
-        Kleidungsstueck kleidungsstueck = kleidungsstueckRepository.findById(kleidungsstueckId)
-                .orElseThrow(() -> new RuntimeException("Kleidungsstück nicht gefunden: " + kleidungsstueckId));
 
         String originalFilename = StringUtils.cleanPath(
                 file.getOriginalFilename() != null ? file.getOriginalFilename() : "upload"
@@ -78,7 +74,12 @@ public class ImageService {
             entity.setContentType("image/png");
             entity.setFileSize(Files.size(outputPath));
             entity.setCreatedAt(LocalDateTime.now());
-            entity.setKleidungsstueck(kleidungsstueck);
+
+            if (kleidungsstueckId != null) {
+                Kleidungsstueck kleidungsstueck = kleidungsstueckRepository.findById(kleidungsstueckId)
+                        .orElseThrow(() -> new RuntimeException("Kleidungsstück nicht gefunden: " + kleidungsstueckId));
+                entity.setKleidungsstueck(kleidungsstueck);
+            }
 
             StoredImage saved = storedImageRepository.save(entity);
 
@@ -96,6 +97,30 @@ public class ImageService {
         return storedImageRepository.findById(imageId)
                 .orElseThrow(() -> new RuntimeException("Bild nicht gefunden: " + imageId));
     }
+
+
+    public List<StoredImage> getUnassignedImages() {
+        return storedImageRepository.findByKleidungsstueckIdIsNull();
+    }
+
+    public ImageResponse assignImageToKleidungsstueck(Long imageId, Long kleidungsstueckId) {
+        StoredImage image = storedImageRepository.findById(imageId)
+                .orElseThrow(() -> new RuntimeException("Bild nicht gefunden: " + imageId));
+
+        Kleidungsstueck kleidungsstueck = kleidungsstueckRepository.findById(kleidungsstueckId)
+                .orElseThrow(() -> new RuntimeException("Kleidungsstück nicht gefunden: " + kleidungsstueckId));
+
+        image.setKleidungsstueck(kleidungsstueck);
+
+        StoredImage saved = storedImageRepository.save(image);
+
+        return new ImageResponse(
+                saved.getId(),
+                saved.getOriginalFilename(),
+                "/image/file/" + saved.getId()
+        );
+    }
+
 
     public List<StoredImage> getImagesByKleidungsstueck(Long kleidungsstueckId)
     {

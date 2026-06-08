@@ -36,8 +36,8 @@ public class StoredImage {
     private LocalDateTime createdAt;
 
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "kleidungsstueck_id", nullable = true)
     private Kleidungsstueck kleidungsstueck;
 
     public Long getId() {
