@@ -8,7 +8,6 @@ import com.example.sea2_bora.repository.KleidungsstueckRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
@@ -25,12 +24,14 @@ public class BoraApplication {
             com.example.sea2_bora.repository.WaechekorbRepository waechekorbRepository
     ) {
         return args -> {
+
             if (benutzerRepository.count() == 0) {
                 Benutzer u1 = new Benutzer("Max Mustermann", "abc@u1.com", "123", "HH");
                 Benutzer u2 = new Benutzer("Erika Musterfrau", "abc@u2.com", "123", "HH");
                 benutzerRepository.save(u1);
                 benutzerRepository.save(u2);
             }
+
 
             if (kleidungsstueckRepository.count() == 0) {
                 Kleidungsstueck k1 = new Kleidungsstueck("Regenjacke", 1, true, MainCategory.OBERTEIL, "/images/regenjacke.jpg");
@@ -45,16 +46,22 @@ public class BoraApplication {
             com.example.sea2_bora.implementation.Waechekorb korb = waechekorbRepository.findFirstByOrderByIdAsc()
                     .orElseGet(() -> waechekorbRepository.save(new com.example.sea2_bora.implementation.Waechekorb("Standard-Wäschekorb")));
 
+            if (korb.getItems().isEmpty()) { //Test Socken für Dashboard WaschErinnerung Test
+                for (int i = 1; i <= 12; i++) {
+                    Kleidungsstueck testSocke = new Kleidungsstueck(
+                            "Test-Socke " + i,
+                            1,
+                            false,
+                            MainCategory.UNTERTEIL,
+                            "/images/socke.jpg"
+                    );
 
-            if (korb.getItems().isEmpty()) {
-                java.util.List<Kleidungsstueck> alleKlamotten = kleidungsstueckRepository.findAll();
-                if (!alleKlamotten.isEmpty()) {
-                    korb.addItem(alleKlamotten.get(0));
-                    if (alleKlamotten.size() > 1) {
-                        korb.addItem(alleKlamotten.get(1));
-                    }
-                    waechekorbRepository.save(korb);
+                    kleidungsstueckRepository.save(testSocke);
+                    korb.addItem(testSocke);
                 }
+
+                waechekorbRepository.save(korb);
+                System.out.println("🤖 SEEDER: 12 Test-Socken erfolgreich in den Wäschekorb gelegt!");
             }
         };
     }
