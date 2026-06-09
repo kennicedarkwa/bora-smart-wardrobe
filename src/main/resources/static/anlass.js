@@ -27,6 +27,15 @@ async function loadAnlaesse() {
                 <b>${tag}</b>
             `;
 
+            // NEU von fatim alm. HIER IST DIE NEUE KLICK-FUNKTION!
+                        card.addEventListener("click", () => {
+                            // 1. Speichert das gewählte Wort (z.B. "FITNESS") im Browser
+                            localStorage.setItem("bora_anlass", tag);
+
+                            // 2. Leitet dich direkt zur Empfehlungs-Seite weiter!
+                            window.location.href = "empfehlung.html";
+                        });
+
             container.appendChild(card);
         });
 

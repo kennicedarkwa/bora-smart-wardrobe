@@ -1,5 +1,8 @@
-// Wir tun für diese Seite so, als hätte der Nutzer "CASUAL" gewählt
-const gewaehlterAnlass = "CASUAL";
+// 1. ANLASS HOLEN: Wir lesen den Anlass aus dem Speicher (von der vorherigen Seite)
+const gewaehlterAnlass = localStorage.getItem("bora_anlass") || "CASUAL";
+
+// Hier merken wir uns die IDs für den "wear" Button
+let aktuelleEmpfehlungsIds = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("anlassTitel").textContent = gewaehlterAnlass.toLowerCase();
@@ -10,36 +13,32 @@ async function ladeUndFiltereKleidung() {
     const container = document.getElementById("kategorienContainer");
 
     try {
-        // 1. NEU: Wetter direkt von DEINEM Java-Backend laden (WeatherController)
-        // Wir nehmen hier "Hamburg" und ein Datum aus deinen Mock-Daten
+        // 2. WETTER HOLEN: Verknüpfung mit dem WeatherController
         const stadt = "Hamburg";
-        const datum = "2026-05-03";
+        const datum = "2026-05-05"; // Dein aktuelles Datum aus der JSON
 
         const weatherResponse = await fetch(`/api/weather/${stadt}/${datum}`);
         if (!weatherResponse.ok) throw new Error("Wetter-API nicht erreichbar");
-
         const aktuellesWetter = await weatherResponse.json();
-        const tempCelsius = aktuellesWetter.temperature.max_celsius;
 
-        // 2. Temperatur in den Index (1-5) umwandeln
-        let tempIndex = 3;
-        if (tempCelsius < 10) tempIndex = 1;
-        else if (tempCelsius <= 14) tempIndex = 2;
-        else if (tempCelsius <= 19) tempIndex = 3;
-        else if (tempCelsius <= 24) tempIndex = 4;
-        else tempIndex = 5;
-
-        // "none" bedeutet kein Regen. Alles andere (rain, drizzle, etc.) wird als Regen gewertet
-        const isRaining = aktuellesWetter.precipitation.type !== "none" && aktuellesWetter.precipitation.probability_percent > 20;
-
-        // 3. Payload für dein Backend bauen (DailyForecast Klasse)
+        // 3. BACKEND ANFRAGEN: Das JSON muss EXAKT wie eure Java-Klasse "DailyForecast" aussehen
         const backendForecast = {
-            temperature: { temperatureIndex: tempIndex },
-            precipitation: { likely: isRaining }
+            date: datum,
+            temperature: {
+                min_celsius: aktuellesWetter.temperature.min_celsius,
+                max_celsius: aktuellesWetter.temperature.max_celsius
+            },
+            precipitation: {
+                type: aktuellesWetter.precipitation.type,
+                probability_percent: aktuellesWetter.precipitation.probability_percent
+            }
         };
 
-        // 4. Empfehlung vom Backend abrufen (EmpfehlungController)
-        const response = await fetch("/api/empfehlung", {
+        // ✅ HIER IST DIE ÄNDERUNG: Wir hängen den Anlass an die URL an!
+        const url = `/api/empfehlung?anlass=${gewaehlterAnlass}`;
+
+        // Ruft deinen EmpfehlungController in Java auf
+        const response = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(backendForecast)
@@ -48,17 +47,19 @@ async function ladeUndFiltereKleidung() {
         const empfehlungData = await response.json();
         container.innerHTML = "";
 
+        // Prüfen, ob das Backend Klamotten gefunden hat
         if (!empfehlungData.kleidungsstuecke || empfehlungData.kleidungsstuecke.length === 0) {
-            container.innerHTML = "<p style='text-align: center; color: #1e0033;'>Keine passenden Stücke im Schrank gefunden.</p>";
-            erstelleTestDesign(container); // Für das Wireframe-Design beim Testen
+            container.innerHTML = `<p style='text-align: center; font-weight:bold;'>Keine passenden Stücke für <b>${gewaehlterAnlass}</b> im Schrank.</p>`;
             return;
         }
 
-        // 5. NEU: VERKNÜPFUNG MIT DER KLASSE "Kleidungsstueck"
+        // IDs für den "wear" Button merken
+        aktuelleEmpfehlungsIds = empfehlungData.kleidungsstuecke.map(item => item.id);
+
+        // 4. ANZEIGEN: Nach "hauptkategorie" gruppieren (Oberteil, Hose, etc.)
         const gruppierteKleidung = {};
 
         empfehlungData.kleidungsstuecke.forEach(item => {
-            // HIER nutzen wir EXAKT die Variable 'hauptkategorie' aus deinem Java-Code!
             const kategorie = item.hauptkategorie ? item.hauptkategorie : "SONSTIGES";
 
             if (!gruppierteKleidung[kategorie]) {
@@ -67,18 +68,18 @@ async function ladeUndFiltereKleidung() {
             gruppierteKleidung[kategorie].push(item);
         });
 
-        // 6. Kategorien im HTML zeichnen
+        // HTML-Boxen zeichnen
         for (const [kategorieName, items] of Object.entries(gruppierteKleidung)) {
             zeichneKategorieReihe(kategorieName, items, container);
         }
 
     } catch (error) {
-        console.error("Fehler bei der Verbindung zum Backend:", error);
+        console.error("Fehler bei der Empfehlung:", error);
         container.innerHTML = "<p style='text-align: center; color: red;'>Fehler: Backend antwortet nicht.</p>";
-        erstelleTestDesign(container);
     }
 }
 
+// Hilfsfunktion: Zeichnet die hellblauen Reihen
 function zeichneKategorieReihe(kategorieName, items, parentContainer) {
     const reiheDiv = document.createElement("div");
     reiheDiv.className = "kategorie-reihe";
@@ -95,14 +96,11 @@ function zeichneKategorieReihe(kategorieName, items, parentContainer) {
         const box = document.createElement("div");
         box.className = "cloth-box";
 
-        // HIER: Nutzen wir exakt 'bildURL' aus deiner Java-Klasse
         if(item.bildURL) {
-            // Bild anzeigen, wenn eines in der Datenbank liegt
             box.innerHTML = `<img src="${item.bildURL}" alt="${item.name}">`;
         } else {
-            // Platzhalter-Emoji, wenn das Bildfeld leer ist
             let icon = "👕";
-            if(kategorieName.toLowerCase().includes("hose")) icon = "👖";
+            if(kategorieName.toLowerCase().includes("unterteil") || kategorieName.toLowerCase().includes("hose")) icon = "👖";
             if(kategorieName.toLowerCase().includes("schuhe")) icon = "👞";
             if(kategorieName.toLowerCase().includes("accessoire")) icon = "👜";
             box.textContent = icon;
@@ -114,7 +112,11 @@ function zeichneKategorieReihe(kategorieName, items, parentContainer) {
     parentContainer.appendChild(reiheDiv);
 }
 
-function erstelleTestDesign(container) {
-    zeichneKategorieReihe("OBERTEIL", [{hauptkategorie: "OBERTEIL"}, {hauptkategorie: "OBERTEIL"}], container);
-    zeichneKategorieReihe("ACCESSOIRE", [{hauptkategorie: "ACCESSOIRE"}, {hauptkategorie: "ACCESSOIRE"}], container);
+// WIRD GETRAGEN VERKNÜPFUNG (wear ! Button)
+function wearOutfit() {
+    if (aktuelleEmpfehlungsIds.length === 0) {
+        alert("Kein Outfit zum Anziehen da!");
+        return;
+    }
+    alert("Outfit getragen! Du siehst super aus heute!");
 }
