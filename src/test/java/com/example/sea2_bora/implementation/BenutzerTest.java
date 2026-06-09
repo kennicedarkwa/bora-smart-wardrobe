@@ -124,4 +124,73 @@ class BenutzerTest {
         assertDoesNotThrow(() -> b.kleidungsstueckEntfernen(ks));
     }
 
+
+    // kleidungsstueckHinzufuegen() – echte Logik testen
+
+    @Test
+    void kleidungsstueckHinzufuegen_fuegtKleidungZuKleiderschrankHinzu() {
+        Benutzer b = new Benutzer("Max", "max@example.com", "pw", "Hamburg");
+        Kleidungsstueck ks = new Kleidungsstueck("Shirt", 3, false, MainCategory.OBERTEIL, null);
+
+        b.kleidungsstueckHinzufuegen(ks);
+
+        assertTrue(b.getKleiderschrank().contains(ks));
+        assertEquals(1, b.getKleiderschrank().size());
+    }
+
+    @Test
+    void kleidungsstueckHinzufuegen_doppeltHinzufuegen_wirdNichtDupliziert() {
+        Benutzer b = new Benutzer("Max", "max@example.com", "pw", "Hamburg");
+        Kleidungsstueck ks = new Kleidungsstueck("Shirt", 3, false, MainCategory.OBERTEIL, null);
+
+        b.kleidungsstueckHinzufuegen(ks);
+        b.kleidungsstueckHinzufuegen(ks);
+
+        assertEquals(1, b.getKleiderschrank().size());
+    }
+
+    // kleidungsstueckEntfernen() – echte Logik testen
+
+    @Test
+    void kleidungsstueckEntfernen_entferntKleidungAusKleiderschrank() {
+        Benutzer b = new Benutzer("Max", "max@example.com", "pw", "Hamburg");
+        Kleidungsstueck ks = new Kleidungsstueck("Shirt", 3, false, MainCategory.OBERTEIL, null);
+
+        b.kleidungsstueckHinzufuegen(ks);
+        b.kleidungsstueckEntfernen(ks);
+
+        assertFalse(b.getKleiderschrank().contains(ks));
+        assertTrue(b.getKleiderschrank().isEmpty());
+    }
+
+    @Test
+    void kleidungsstueckEntfernen_nichtVorhandenes_wirftKeineException() {
+        Benutzer b = new Benutzer("Max", "max@example.com", "pw", "Hamburg");
+        Kleidungsstueck ks = new Kleidungsstueck("Shirt", 3, false, MainCategory.OBERTEIL, null);
+
+        assertDoesNotThrow(() -> b.kleidungsstueckEntfernen(ks));
+        assertTrue(b.getKleiderschrank().isEmpty());
+    }
+
+    // waescheErinnerungErhalten() – echte Logik testen
+
+    @Test
+    void waescheErinnerungErhalten_setzt_flag_auf_true() {
+        Benutzer b = new Benutzer("Max", "max@example.com", "pw", "Hamburg");
+
+        assertFalse(b.isWaescheErinnerung());
+        b.waescheErinnerungErhalten();
+        assertTrue(b.isWaescheErinnerung());
+    }
+
+    // Einstellungen – werden automatisch beim Konstruktor angelegt
+
+    @Test
+    void konstruktor_erstelltEinstellungenAutomatisch() {
+        Benutzer b = new Benutzer("Max", "max@example.com", "pw", "Hamburg");
+        // Einstellungen-Objekt muss existieren (Cascade ALL)
+        // Wir prüfen indirekt über validiereEinstellungen
+        assertTrue(b.validiereEinstellungen());
+    }
+
 }

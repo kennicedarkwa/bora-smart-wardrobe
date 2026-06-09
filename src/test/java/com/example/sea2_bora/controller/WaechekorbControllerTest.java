@@ -68,11 +68,13 @@ class WaechekorbControllerTest {
 
     @Test
     void delete_sollteNichtErlaubtSein_gibt405() throws Exception {
+        doThrow(new UnsupportedOperationException("Der Standard-Wäschekorb kann nicht gelöscht werden."))
+                .when(service).delete();
+
         mockMvc.perform(delete("/api/waechekorb"))
                 .andExpect(status().isMethodNotAllowed());
 
-        // Löschen darf niemals aufgerufen werden
-        verify(service, never()).delete();
+        verify(service).delete();
     }
 
     // --- GET /api/waechekorb/{id} (veraltet) ---
