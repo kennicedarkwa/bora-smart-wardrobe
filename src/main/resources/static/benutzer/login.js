@@ -21,8 +21,10 @@ async function login() {
 
     if (response.ok) {
         // ⭐ Jetzt: Login → Kleidung
-        window.location.href = "/kleidung/kleidung.html";
+        window.location.href = "/dashboard.html";
     } else {
         document.getElementById("error").textContent = "Login fehlgeschlagen.";
     }
 }
+
+

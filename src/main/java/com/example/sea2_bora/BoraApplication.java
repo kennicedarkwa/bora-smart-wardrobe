@@ -17,12 +17,6 @@ public class BoraApplication {
         SpringApplication.run(BoraApplication.class, args);
     }
 
-    // ❗❗❗ WICHTIG:
-    // Dieser Seed-Code verursacht den LazyInitializationException,
-    // sobald die Datenbank NICHT mehr bei jedem Start gelöscht wird.
-    // Deshalb kommentieren wir NUR die gefährlichen Stellen aus.
-    // NICHTS wird gelöscht. Testdaten bleiben erhalten.
-
     @Bean
     CommandLineRunner seedData(
             BenutzerRepository benutzerRepository,
@@ -31,10 +25,7 @@ public class BoraApplication {
     ) {
         return args -> {
 
-<<<<<<< HEAD
             // --- Benutzer nur anlegen, wenn DB leer ist ---
-=======
->>>>>>> e613587f366bad730ae8796ea7cc9737c87b099a
             if (benutzerRepository.count() == 0) {
                 Benutzer u1 = new Benutzer("Max Mustermann", "abc@u1.com", "123", "HH");
                 Benutzer u2 = new Benutzer("Erika Musterfrau", "abc@u2.com", "123", "HH");
@@ -42,11 +33,7 @@ public class BoraApplication {
                 benutzerRepository.save(u2);
             }
 
-<<<<<<< HEAD
             // --- Kleidungsstücke nur anlegen, wenn DB leer ist ---
-=======
-
->>>>>>> e613587f366bad730ae8796ea7cc9737c87b099a
             if (kleidungsstueckRepository.count() == 0) {
                 Kleidungsstueck k1 = new Kleidungsstueck("Regenjacke", 1, true, MainCategory.OBERTEIL, "/images/regenjacke.jpg");
                 Kleidungsstueck k2 = new Kleidungsstueck("T-Shirt", 3, false, MainCategory.OBERTEIL, "/images/tshirt.jpg");
@@ -63,11 +50,10 @@ public class BoraApplication {
                                     new com.example.sea2_bora.implementation.Waechekorb("Standard-Wäschekorb")
                             ));
 
-<<<<<<< HEAD
             // ❗❗❗ PROBLEMSTELLE:
             // korb.getItems() ist LAZY geladen.
             // Sobald echte Daten in der DB sind, führt dieser Zugriff zum Crash.
-            // Deshalb kommentieren wir NUR diesen Teil aus.
+            // Deshalb bleibt der gesamte Block auskommentiert.
 
             /*
             if (korb.getItems().isEmpty()) {
@@ -78,10 +64,13 @@ public class BoraApplication {
                         korb.addItem(alleKlamotten.get(1));
                     }
                     waechekorbRepository.save(korb);
-=======
-            com.example.sea2_bora.implementation.Waechekorb korb = waechekorbRepository.findFirstByOrderByIdAsc()
-                    .orElseGet(() -> waechekorbRepository.save(new com.example.sea2_bora.implementation.Waechekorb("Standard-Wäschekorb")));
+                }
+            }
+            */
 
+            // --- Test-Socken aus dem Remote-Code ---
+            // Dieser Block bleibt AUSKOMMENTIERT, damit dein Projekt nicht crasht.
+            /*
             if (korb.getItems().isEmpty()) { //Test Socken für Dashboard WaschErinnerung Test
                 for (int i = 1; i <= 12; i++) {
                     Kleidungsstueck testSocke = new Kleidungsstueck(
@@ -94,7 +83,6 @@ public class BoraApplication {
 
                     kleidungsstueckRepository.save(testSocke);
                     korb.addItem(testSocke);
->>>>>>> e613587f366bad730ae8796ea7cc9737c87b099a
                 }
 
                 waechekorbRepository.save(korb);

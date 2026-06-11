@@ -9,23 +9,109 @@
 <body>
 
 <header>
-    <h1>Kleidungsstücke</h1>
+    <h1>KLEIDUNG</h1>
     <nav>
-        <a href="/benutzer/login.html">Benutzer</a>
+        <a href="/dashboard.html">Dashboard</a>
         <a href="/kleidung/kleidung.html">Kleidung</a>
         <a href="/outfit/outfit.html">Outfits</a>
-        <a href="/waeschekorb/waeschekorb.html">Wäschekorb</a>
+        <a href="/washkorb.html">Wäschekorb</a>
+        <a href="/benutzer/profil.html">Profil</a>
+        <a href="/weather.html">Weather</a>
+        <a href="/anlass.html">Anlass</a>
+        <a href="/empfehlung.html">Empfehlung</a>
     </nav>
 </header>
 
-<section class="actions">
-    <button id="ladeKleidungBtn">Kleidungsstücke laden</button>
-    <button id="neuBtn">Neues Kleidungsstück</button>
-</section>
+<div class="wrapper">
+    <div class="container">
 
-<section id="kleidungListe" class="grid">
-    <p class="placeholder">Noch keine Kleidungsstücke geladen…</p>
-</section>
+        <h2>Deine Kleidungsstücke</h2>
+
+        <div class="actions">
+            <button id="ladeKleidungBtn">Laden</button>
+            <button id="neuBtn">Neu hinzufügen</button>
+        </div>
+
+        <div class="filter-bar">
+            <select id="filterKategorie">
+                <option value="">Kategorie</option>
+                <option>OBERTEIL</option>
+                <option>HOSE</option>
+                <option>JACKE</option>
+                <option>REGENJACKE</option>
+                <option>SCHUHE</option>
+                <option>ACCESSOIRE</option>
+            </select>
+
+            <select id="filterAnlass">
+                <option value="">Anlass</option>
+                <option>CASUAL</option>
+                <option>FANCY</option>
+                <option>SPORT</option>
+                <option>BUSINESS</option>
+            </select>
+
+            <select id="filterStatus">
+                <option value="">Status</option>
+                <option value="verfuegbar">verfügbar</option>
+                <option value="waeschekorb">im Wäschekorb</option>
+            </select>
+
+            <select id="filterWarm">
+                <option value="">Wärmeindex</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+
+            <select id="filterVerfuegbar">
+                <option value="">Verfügbarkeit</option>
+                <option value="true">Verfügbar</option>
+                <option value="false">Nicht verfügbar</option>
+            </select>
+
+            <input id="filterName" placeholder="Name suchen…">
+        </div>
+
+        <div id="kleidungListe" class="grid">
+            <p class="placeholder">Noch keine Kleidungsstücke geladen…</p>
+        </div>
+
+    </div>
+</div>
+
+<div id="popupNeu" class="popup hidden">
+    <div class="popup-content">
+        <h3>Neues Kleidungsstück</h3>
+
+        <label>Name:</label>
+        <input id="neuName">
+
+        <label>Kategorie (z.B. OBERTEIL):</label>
+        <input id="neuKategorie">
+
+        <label>Anlass-Tags (z.B. CASUAL,SPORT):</label>
+        <input id="neuAnlass">
+
+        <label>Wärmeindex (1–5):</label>
+        <input id="neuWarm" type="number" min="1" max="5">
+
+        <label>Regengeeignet (true/false):</label>
+        <input id="neuRegen">
+
+        <label>Bild-URL:</label>
+        <input id="neuBild">
+
+        <button id="speichernNeu">Speichern</button>
+        <button onclick="closePopup()">Abbrechen</button>
+    </div>
+</div>
+
+<div id="popupDetails" class="popup hidden">
+    <div class="popup-content" id="detailsContent"></div>
+</div>
 
 <script src="kleidung.js"></script>
 </body>
