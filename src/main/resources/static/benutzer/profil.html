@@ -3,16 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Profil</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
 
-<h1>Profil</h1>
+<h1>Dein Profil</h1>
 
 <div class="container">
-    <p><strong>ID:</strong> <span id="id"></span></p>
-    <p><strong>Name:</strong> <span id="name"></span></p>
+    <p><strong>Vorname:</strong> <span id="vorname"></span></p>
+    <p><strong>Nachname:</strong> <span id="nachname"></span></p>
     <p><strong>Email:</strong> <span id="email"></span></p>
+
+    <h3>Passwort ändern</h3>
+    <input type="password" id="neuPasswort" placeholder="Neues Passwort">
+    <button onclick="passwortAendern()">Ändern</button>
+
+    <h3>Account löschen</h3>
+    <button onclick="accountLoeschen()" style="background:red;">Account löschen</button>
 
     <button onclick="logout()">Logout</button>
 

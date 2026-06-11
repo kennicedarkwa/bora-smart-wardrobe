@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>BORA App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>Willkommen in deiner BORA‑App</h1>
+
+<nav>
+    <ul>
+        <li><a href="kleidung/kleidung.html">Klamotten</a></li>
+        <li><a href="outfit/outfit.html">Outfits</a></li>
+        <li><a href="waeschekorb/waeschekorb.html">Wäschekorb</a></li>
+        <li><a href="wetter/wetter.html">Wetter</a></li>
+        <li><a href="benutzer/profil.html">Profil</a></li>
+        <li><a href="#" onclick="logout()">Logout</a></li>
+    </ul>
+</nav>
+
+<script>
+async function logout() {
+    await fetch("http://localhost:1531/api/benutzer/logout", { method: "POST" });
+    window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>

@@ -1,8 +1,3 @@
-
-
-
-
-
 package com.example.sea2_bora;
 
 import org.springframework.context.annotation.Bean;
@@ -17,23 +12,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//
-//        http
-//                .csrf(csrf -> csrf.disable())
-//
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/benutzer/registrieren").permitAll()
-//                        .requestMatchers("/api/benutzer/login").permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .formLogin(form -> form.disable())
-//                .httpBasic(basic -> basic.disable());
-//
-//        return http.build();
-//    }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -43,19 +21,37 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
 
-                        .anyRequest().permitAll()
+                        // ⭐ API freigeben
+                        .requestMatchers("/api/benutzer/registrieren").permitAll()
+                        .requestMatchers("/api/benutzer/login").permitAll()
+                        .requestMatchers("/api/benutzer/logout").permitAll()
+                        .requestMatchers("/api/benutzer/**").permitAll()
 
+                        // ⭐ ALLE DEINE HTML-ORDNER freigeben
+                        .requestMatchers("/homepage/**").permitAll()
+                        .requestMatchers("/benutzer/**").permitAll()
+                        .requestMatchers("/kleidung/**").permitAll()
+                        .requestMatchers("/empfelung/**").permitAll()
+                        .requestMatchers("/washkorb/**").permitAll()
+                        .requestMatchers("/weather/**").permitAll()
+                        .requestMatchers("/outfit/**").permitAll()
+
+                        // ⭐ statische Dateien
+                        .requestMatchers("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg").permitAll()
+
+                        // ⭐ H2-Konsole
+                        .requestMatchers("/h2-console/**").permitAll()
+
+                        // ⭐ Rest nur für eingeloggte Benutzer
+                        .anyRequest().authenticated()
                 )
 
                 .formLogin(form -> form.disable())
-
                 .httpBasic(basic -> basic.disable());
-
 
         return http.build();
     }

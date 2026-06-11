@@ -2,10 +2,10 @@ package com.example.sea2_bora.service;
 
 import com.example.sea2_bora.implementation.Benutzer;
 import com.example.sea2_bora.repository.BenutzerRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -13,14 +13,17 @@ public class BenutzerService {
 
     private final BenutzerRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final HttpSession session;
 
-    private Benutzer aktuellerBenutzer;
-
-    public BenutzerService(BenutzerRepository repository, PasswordEncoder passwordEncoder) {
+    public BenutzerService(BenutzerRepository repository,
+                           PasswordEncoder passwordEncoder,
+                           HttpSession session) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.session = session;
     }
 
+    // REGISTRIERUNG
     public boolean registrieren(String benutzername, String email, String passwort) {
         if (emailPruefen(email)) return false;
 
@@ -30,43 +33,61 @@ public class BenutzerService {
         return true;
     }
 
-    // NEU: Login über Email + Passwort
+    // LOGIN
     public boolean login(String email, String passwort) {
         Optional<Benutzer> gefunden = repository.findByEmail(email);
 
-        if (gefunden.isPresent()) {
-            Benutzer b = gefunden.get();
-            if (passwordEncoder.matches(passwort, b.getPasswort())) {
-                aktuellerBenutzer = b;
-                return true;
-            }
+        if (gefunden.isEmpty()) return false;
+
+        Benutzer benutzer = gefunden.get();
+
+        // ⭐ WICHTIG: Passwortprüfung für Klartext + BCrypt
+        if (!passwortPruefen(passwort, benutzer.getPasswort())) {
+            return false;
         }
-        return false;
-    }
 
-    public void logout() {
-        aktuellerBenutzer = null;
-    }
-
-    public boolean emailPruefen(String email) {
-        return repository.findByEmail(email).isPresent();
-    }
-
-    public Benutzer getAktuellerNutzer() {
-        return aktuellerBenutzer;
-    }
-
-    public boolean aenderePasswort(String alt, String neu) {
-        if (aktuellerBenutzer == null) return false;
-        if (!passwordEncoder.matches(alt, aktuellerBenutzer.getPasswort())) return false;
-
-        String hashedNeu = passwordEncoder.encode(neu);
-        aktuellerBenutzer.setPasswort(hashedNeu);
-        repository.save(aktuellerBenutzer);
+        session.setAttribute("benutzerId", benutzer.getBenutzerId());
         return true;
     }
 
-    public List<Benutzer> getAlleBenutzer() {
-        return repository.findAll();
+    // BENUTZER PER EMAIL FINDEN
+    public Benutzer findByEmail(String email) {
+        return repository.findByEmail(email).orElse(null);
+    }
+
+    // BENUTZER PER ID FINDEN
+    public Benutzer findById(Long id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    // ⭐ NEUE PASSWORTPRÜFUNG – unterstützt Klartext + BCrypt
+    public boolean passwortPruefen(String eingegeben, String gespeichert) {
+
+        // Fall 1: Passwort ist verschlüsselt (BCrypt)
+        if (gespeichert.startsWith("$2a$")) {
+            return passwordEncoder.matches(eingegeben, gespeichert);
+        }
+
+        // Fall 2: Passwort ist Klartext (Testdaten)
+        return gespeichert.equals(eingegeben);
+    }
+
+    // AKTUELLER BENUTZER
+    public Benutzer getAktuellerNutzer() {
+        Long id = (Long) session.getAttribute("benutzerId");
+
+        if (id == null) return null;
+
+        return repository.findById(id).orElse(null);
+    }
+
+    // LOGOUT
+    public void logout() {
+        session.invalidate();
+    }
+
+    // EMAIL PRÜFEN
+    public boolean emailPruefen(String email) {
+        return repository.findByEmail(email).isPresent();
     }
 }

@@ -1,38 +1,28 @@
+console.log("login.js wurde geladen");
+
 async function login() {
-    // 1. Get email and password from your input fields
-    const email = document.getElementById("email").value;       // Make sure your input HTML id is "email"
-    const passwort = document.getElementById("passwort").value; // Make sure your input HTML id is "passwort"
+    const email = document.getElementById("email").value;
+    const passwort = document.getElementById("passwort").value;
 
     if (!email || !passwort) {
         document.getElementById("error").textContent = "Bitte Email und Passwort eingeben.";
         return;
     }
 
-    try {
-        // 2. Your backend expects @RequestParam, which means URL-encoded parameters
-        const urlParams = new URLSearchParams();
-        urlParams.append('email', email);
-        urlParams.append('passwort', passwort);
+    const params = new URLSearchParams();
+    params.append("email", email);
+    params.append("passwort", passwort);
 
-        // 3. Send a POST request to the matching Java endpoint
-        const response = await fetch('/api/benutzer/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: urlParams
-        });
+    const response = await fetch("http://localhost:1531/api/benutzer/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params
+    });
 
-        // 4. Handle the response
-        if (response.ok) {
-            // Success! Redirect to profile page
-            window.location.href = "profil.html";
-        } else {
-            const errorText = await response.text();
-            document.getElementById("error").textContent = errorText || "Login fehlgeschlagen.";
-        }
-    } catch (e) {
-        console.error(e);
-        document.getElementById("error").textContent = "Serverfehler.";
+    if (response.ok) {
+        // ⭐ Jetzt: Login → Kleidung
+        window.location.href = "/kleidung/kleidung.html";
+    } else {
+        document.getElementById("error").textContent = "Login fehlgeschlagen.";
     }
 }

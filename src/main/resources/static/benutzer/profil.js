@@ -1,23 +1,44 @@
-async function loadProfile() {
-    try {
-        const response = await fetch("/api/benutzer/aktueller");
+async function loadProfil() {
+    const response = await fetch("/api/benutzer/aktueller");
 
-        if (response.ok) {
-            const user = await response.json();
-            document.getElementById("id").textContent = user.id;
-            document.getElementById("name").textContent = user.name;
-            document.getElementById("email").textContent = user.email;
-        } else {
-            document.getElementById("error").textContent = "Kein Benutzer eingeloggt.";
-        }
-    } catch (e) {
-        document.getElementById("error").textContent = "Serverfehler.";
+    if (!response.ok) {
+        window.location.href = "login.html";
+        return;
     }
+
+    const benutzer = await response.json();
+
+    document.getElementById("vorname").textContent = benutzer.vorname;
+    document.getElementById("nachname").textContent = benutzer.nachname;
+    document.getElementById("email").textContent = benutzer.email;
 }
 
-function logout() {
-    fetch("/api/benutzer/logout", { method: "POST" })
-        .then(() => window.location.href = "login.html");
+async function passwortAendern() {
+    const neu = document.getElementById("neuPasswort").value;
+
+    await fetch("/api/benutzer/passwort", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ neuesPasswort: neu })
+    });
+
+    alert("Passwort geändert!");
 }
 
-loadProfile();
+async function accountLoeschen() {
+    if (!confirm("Willst du deinen Account wirklich löschen?")) return;
+
+    await fetch("/api/benutzer/loeschen", {
+        method: "DELETE"
+    });
+
+    alert("Account gelöscht.");
+    window.location.href = "login.html";
+}
+
+async function logout() {
+    await fetch("/api/benutzer/logout", { method: "POST" });
+    window.location.href = "login.html";
+}
+
+loadProfil();

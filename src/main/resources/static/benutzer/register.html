@@ -7,21 +7,34 @@
 </head>
 <body>
 
-<h1>Registrierung</h1>
+<div class="register-card">
 
-<div class="container">
-    <label for="name">Name:</label>
-    <input type="text" id="name">
+    <h1>Konto erstellen</h1>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email">
+    <label>Vorname</label>
+    <input type="text" id="vorname" placeholder="Dein Vorname">
 
-    <label for="passwort">Passwort:</label>
-    <input type="password" id="passwort">
+    <label>Nachname</label>
+    <input type="text" id="nachname" placeholder="Dein Nachname">
 
-    <button onclick="registerUser()">Konto erstellen</button>
+    <label>Email</label>
+    <input type="email" id="email" placeholder="beispiel@mail.de">
+
+    <label>Passwort</label>
+    <input type="password" id="passwort" placeholder="Passwort">
+
+    <label>Passwort wiederholen</label>
+    <input type="password" id="passwort2" placeholder="Passwort wiederholen">
+
+    <button onclick="registerUser()">Registrieren</button>
 
     <p id="error" class="error"></p>
+
+    <p class="login-link">
+        Bereits ein Konto?  
+        <a href="login.html">Zum Login</a>
+    </p>
+
 </div>
 
 <script src="register.js"></script>
