@@ -9,4 +9,6 @@ import java.util.List;
 public interface StoredImageRepository extends JpaRepository<StoredImage, Long> {
 
     List<StoredImage> findByKleidungsstueckId(Long kleidungsstueckId);
+    List<StoredImage> findByKleidungsstueckIdIsNull();
+
 }

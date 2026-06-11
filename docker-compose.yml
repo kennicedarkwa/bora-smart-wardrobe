@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    container_name: bora-app
+    ports:
+      - "1531:1531"
+    environment:
+      UPLOAD_DIR: /app/uploads
+      PYTHON_BIN: python3
+      PYTHON_SCRIPT: /app/scripts/remove_bg.py
+    volumes:
+      - ~/bora/uploads:/app/uploads

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bild hochladen</title>
+    <link rel="stylesheet" href="/Photo/image-upload.css">
+</head>
+<body>
+<h1>Bild hochladen</h1>
+
+<div class="box">
+    <label>Kleidungsstück-ID:</label>
+    <input type="number" id="kleidungId" value="1" min="1" />
+</div>
+
+<div class="box">
+    <h3>1) Bild aufnehmen oder auswählen</h3>
+
+    <input id="fileInput" type="file" accept="image/*" multiple capture="environment" />
+    <p>Du kannst direkt mit Kamera aufnehmen oder ein Bild/Fotos auswählen.</p>
+
+    <div id="preview"></div>
+</div>
+
+<div class="box">
+    <button onclick="uploadImages()">Hochladen</button>
+    <button onclick="clearSelection()">Zurücksetzen</button>
+</div>
+
+<div class="box">
+    <h3>Ergebnis</h3>
+    <div id="result">Noch nichts hochgeladen.</div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('preview');
+    const result = document.getElementById('result');
+
+    fileInput.addEventListener('change', () => {
+        preview.innerHTML = '';
+        const files = [...fileInput.files];
+
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    function clearSelection() {
+        fileInput.value = '';
+        preview.innerHTML = '';
+        result.textContent = 'Auswahl gelöscht.';
+    }
+
+    async function uploadImages() {
+        const id = document.getElementById('kleidungId').value;
+        const files = fileInput.files;
+
+        if (!id) {
+            result.textContent = 'Bitte Kleidungsstück-ID eingeben.';
+            return;
+        }
+
+        if (!files || files.length === 0) {
+            result.textContent = 'Bitte mindestens ein Bild auswählen.';
+            return;
+        }
+
+        const formData = new FormData();
+        for (const file of files) {
+            formData.append('file', file);
+        }
+
+        try {
+            result.textContent = 'Upload läuft...';
+
+            const response = await fetch(`/image/kleidungsstuecke/${id}/image/remove-background`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP Fehler: ${response.status}`);
+            }
+
+            const data = await response.json();
+            result.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+            result.textContent = 'Fehler beim Upload: ' + error.message;
+        }
+    }
+</script>
+</body>
+</html>

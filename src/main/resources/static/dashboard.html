@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Wardrobe - Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<header class="dashboard-header">
+  <div class="welcome-text">
+    <h1>Hallo!</h1>
+    <p>Willkommen in deinem digitalen Kleiderschrank.</p>
+  </div>
+  <a href="benutzer/profil.html" class="profile-btn">Mein Profil</a>
+</header>
+
+<main class="dashboard-container">
+
+  <a href="kleidung/kleidung.html" class="card">
+    <div class="card-icon">👗</div>
+    <h3>Kleiderschrank</h3>
+    <p>Verwalte deine Kleidungsstücke und füge neue hinzu.</p>
+  </a>
+
+  <a href="outfit/outfit.html" class="card">
+    <div class="card-icon">✨</div>
+    <h3>Outfit-Planer</h3>
+    <p>Kombiniere deine Kleidung zu stylischen Outfits.</p>
+  </a>
+
+  <a href="washkorb.html" class="card">
+    <div class="card-icon">
+      🧺
+      <span id="laundry-badge" class="badge" style="display: none;">0</span>
+    </div>
+    <h3>Wäschekorb</h3>
+    <p>Sieh nach, welche Sachen gewaschen werden müssen.</p>
+  </a>
+
+  <a href="weather.html" class="card">
+    <div class="card-icon">☀️</div>
+    <h3>Wetter</h3>
+    <p>Check das aktuelle Wetter.</p>
+  </a>
+
+  <a href="empfehlung.html" class="card">
+    <div class="card-icon">💡</div>
+    <h3>Empfehlung</h3>
+    <p>Tagesaktuelle Kleidungsstücke-Vorschläge.</p>
+  </a>
+
+  <a href="anlass.html" class="card">
+    <div class="card-icon">🥂</div>
+    <h3>Anlässe</h3>
+    <p>Plane Outfits für bestimmte Events und Feiern.</p>
+  </a>
+
+</main> <div id="laundry-popup" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close-popup-btn" id="close-popup-cross">&times;</span>
+    <h2>🧺 Wäsche-Erinnerung!</h2>
+    <p>Dein Wäschekorb ist ziemlich voll, es wird Zeit ihn zu leeren!</p>
+    <button class="modal-btn" id="close-popup-btn">Alles klar</button>
+  </div>
+</div>
+
+<script src="dashboard.js"></script>
+
+</body>
+</html>

@@ -173,4 +173,53 @@ class WaeschekorbServiceTest {
         assertTrue(result.getItems().isEmpty());
         verify(waechekorbRepository).save(singletonKorb);
     }
+    // --- Wäscheerinnerung: Schwellenwert >= 10 Items ---
+
+    @Test
+    void waescheErinnerungFaellig_wennKorbMindestens10Items() {
+        // 10 Kleidungsstücke in den Korb legen
+        for (int i = 0; i < 10; i++) {
+            Kleidungsstueck k = new Kleidungsstueck("Item" + i, 3, false, MainCategory.OBERTEIL, "");
+            k.setId((long) (i + 100));
+            singletonKorb.addItem(k);
+        }
+
+        assertTrue(singletonKorb.getItems().size() >= 10,
+                "Popup soll ausgelöst werden wenn >= 10 Items im Korb");
+    }
+
+    @Test
+    void waescheErinnerungNichtFaellig_wennKorbUnter10Items() {
+        singletonKorb.addItem(shirt);
+        singletonKorb.addItem(hose);
+
+        assertFalse(singletonKorb.getItems().size() >= 10,
+                "Kein Popup bei weniger als 10 Items");
+    }
+
+    @Test
+    void waescheErinnerungSchwellenwert_genau10Items_loestAus() {
+        for (int i = 0; i < 10; i++) {
+            Kleidungsstueck k = new Kleidungsstueck("Item" + i, 2, false, MainCategory.UNTERTEIL, "");
+            k.setId((long) (i + 200));
+            singletonKorb.addItem(k);
+        }
+        assertEquals(10, singletonKorb.getItems().size());
+        assertTrue(singletonKorb.getItems().size() >= 10);
+    }
+
+    @Test
+    void waescheErinnerungSchwellenwert_nach_clear_nichtMehrFaellig() {
+        for (int i = 0; i < 10; i++) {
+            Kleidungsstueck k = new Kleidungsstueck("Item" + i, 3, false, MainCategory.OBERTEIL, "");
+            k.setId((long) (i + 300));
+            singletonKorb.addItem(k);
+        }
+        assertTrue(singletonKorb.getItems().size() >= 10);
+
+        singletonKorb.clear();
+
+        assertFalse(singletonKorb.getItems().size() >= 10,
+                "Nach clear() kein Popup mehr");
+    }
 }

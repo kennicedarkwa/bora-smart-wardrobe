@@ -43,6 +43,12 @@ public class ImageController {
     ) throws Exception {
         return ResponseEntity.ok(imageService.storeWithoutBackground(id, file));
     }
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ImageResponse> uploadOnly(
+            @RequestParam("file") MultipartFile file
+    ) throws Exception {
+        return ResponseEntity.ok(imageService.storeWithoutBackground(null, file));
+    }
 
     @GetMapping("/{imageId}")
     public ResponseEntity<Resource> getImage(@PathVariable Long imageId) throws Exception {
@@ -74,4 +80,36 @@ public class ImageController {
 
         return ResponseEntity.ok(images);
     }
+
+
+
+
+    @PostMapping("/{imageId}/assign/{kleidungsstueckId}")
+    public ResponseEntity<ImageResponse> assignImage(
+            @PathVariable Long imageId,
+            @PathVariable Long kleidungsstueckId
+    ) {
+        return ResponseEntity.ok(
+                imageService.assignImageToKleidungsstueck(imageId, kleidungsstueckId)
+        );
+    }
+
+
+    @GetMapping("/unassigned")
+    public ResponseEntity<List<ImageResponse>> getUnassignedImages() {
+        List<ImageResponse> images = imageService.getUnassignedImages()
+                .stream()
+                .map(img -> new ImageResponse(
+                        img.getId(),
+                        img.getOriginalFilename(),
+                        "/image/" + img.getId()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(images);
+    }
+
+
+
+
 }

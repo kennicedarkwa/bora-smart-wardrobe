@@ -2,6 +2,7 @@ package com.example.sea2_bora.service;
 
 import com.example.sea2_bora.implementation.Empfehlung;
 import com.example.sea2_bora.implementation.Kleidungsstueck;
+import com.example.sea2_bora.implementation.Tags;
 import com.example.sea2_bora.implementation.wetter.DailyForecast;
 import com.example.sea2_bora.repository.EmpfehlungRepository;
 import com.example.sea2_bora.repository.KleidungsstueckRepository;
@@ -21,11 +22,14 @@ public class EmpfehlungService
         this.empfehlungRepository = empfehlungRepository;
         this.kleidungsstueckRepository = kleidungsstueckRepository;
     }
-
-    public Empfehlung generiereEmpfehlung(DailyForecast dailyForecast)
+    //  GEÄNDERT von fatima alm. : Nimmt jetzt zusätzlich den gewählten Anlass als Text entgegen
+    public Empfehlung generiereEmpfehlung(DailyForecast dailyForecast, String anlassString)
     {
         int wetterTemperaturIndex = dailyForecast.getTemperature().getTemperatureIndex();
         boolean regen = dailyForecast.getPrecipitation().isLikely();
+
+// NEU von fatima alm. : Wandelt den Text (z.B. "FITNESS") in das echte Java-Enum um
+        Tags gewaehlterAnlassTag = Tags.valueOf(anlassString.toUpperCase());
 
         List<Kleidungsstueck> alleKlamotten = kleidungsstueckRepository.findAll();
 
@@ -33,6 +37,7 @@ public class EmpfehlungService
                 .filter(k -> !k.isIstImWaeschekorb())
                 .filter(k -> k.getTemperaturIndex() == wetterTemperaturIndex)
                 .filter(k -> !regen || k.isIstFuerRegenGeeignet())
+                .filter(k -> k.getTags().contains(gewaehlterAnlassTag)) //  NEU fatima alm. : Filtert nach dem gewählten Anlass
                 .toList();
 
         Empfehlung neueEmpfehlung = new Empfehlung(LocalDate.now());
@@ -46,4 +51,6 @@ public class EmpfehlungService
 
         return empfehlungRepository.save(neueEmpfehlung);
     }
+
+
 }
