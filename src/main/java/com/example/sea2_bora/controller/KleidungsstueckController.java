@@ -5,6 +5,9 @@ import com.example.sea2_bora.service.KleidungsstueckService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;  // Kennice
 import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
+import com.example.sea2_bora.DTO.KleidungsstueckDTO;
 
 @RestController
 @RequestMapping("/api/kleidung")
@@ -44,5 +47,14 @@ public class KleidungsstueckController
     public void deleteKleidung(@PathVariable Long id)
     {
         service.delete(id);
+    }
+
+    @PostMapping(value = "/anlegen", consumes = {"multipart/form-data"})
+    public ResponseEntity<Kleidungsstueck> anlegen(
+            @RequestPart("daten") KleidungsstueckDTO dto,
+            @RequestPart(value = "bild", required = false) MultipartFile bild
+    ) {
+        Kleidungsstueck gespeichert = service.anlegen(dto, bild);
+        return ResponseEntity.ok(gespeichert);
     }
 }

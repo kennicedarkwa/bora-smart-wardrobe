@@ -1,77 +1,54 @@
-// JSON (Wetter)
-const data = {
-    cities: [
-        {
-            city: "Hamburg",
-            daily_forecast: [
-                {
-                    temperature: { min_celsius: 10, max_celsius: 15 },
-                    precipitation: { type: "rain" }
-                }
-            ]
-        }
-    ]
-};
+document.addEventListener("DOMContentLoaded", loadOutfit);
 
-// sofort ausführen
-loadOutfit();
-
-async function loadOutfit() {
-
+function loadOutfit() {
     const liste = document.getElementById("outfitListe");
     const infoBox = document.getElementById("infoBox");
 
-    const forecast = data.cities[0].daily_forecast[0];
+    liste.innerHTML = "";
 
-    const temp = forecast.temperature.max_celsius;
-    const rain = forecast.precipitation.type !== "none";
+    // Daten aus localStorage holen
+    const gespeichertesOutfit = localStorage.getItem("outfit");
 
-    const backendForecast = {
-        temperature: {
-            min_celsius: temp - 5,
-            max_celsius: temp
-        },
-        precipitation: {
-            type: rain ? "rain" : "none",
-            probability_percent: rain ? 50 : 0
-        }
-    };
+    if (!gespeichertesOutfit) {
+        infoBox.style.display = "block";
+        infoBox.innerText = "Kein Outfit ausgewählt";
+        return;
+    }
 
-    try {
-        const response = await fetch("http://localhost:8080/api/empfehlung", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(backendForecast)
-        });
+    const kleidung = JSON.parse(gespeichertesOutfit);
 
-        const data = await response.json();
+    if (!kleidung || kleidung.length === 0) {
+        infoBox.style.display = "block";
+        infoBox.innerText = "Outfit ist leer";
+        return;
+    }
 
-        liste.innerHTML = "";
+    infoBox.style.display = "none";
 
-        // WENN KEINE DATEN → MELDUNG
-        if (!data.kleidungsstuecke || data.kleidungsstuecke.length === 0) {
-            infoBox.style.display = "block";
-            return;
-        }
+    // ITEMS anzeigen
+    kleidung.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "outfit-item";
 
-        // SONST: ANZEIGEN
-        data.kleidungsstuecke.forEach(item => {
-
-            const div = document.createElement("div");
-            div.className = "kleidungsstueck";
+        // Bild vorhanden
+        if (item.bildURL) {
+            div.innerHTML = `
+                <img src="${item.bildURL}" style="max-width:80px;">
+                <p>${item.name}</p>
+            `;
+        } else {
+            // Emoji fallback
+            let icon = "👕";
+            if (item.hauptkategorie?.includes("SCHUHE")) icon = "👞";
+            if (item.hauptkategorie?.includes("HOSE") || item.hauptkategorie?.includes("UNTERTEIL")) icon = "👖";
+            if (item.hauptkategorie?.includes("ACCESS")) icon = "👜";
 
             div.innerHTML = `
-                <p><strong>${item.name}</strong></p>
-                ${item.bildURL ? `<img src="${item.bildURL}">` : ""}
+                <div style="font-size:40px">${icon}</div>
+                <p>${item.name}</p>
             `;
+        }
 
-            liste.appendChild(div);
-        });
-
-    } catch (e) {
-        infoBox.style.display = "block";
-    }
+        liste.appendChild(div);
+    });
 }
-``

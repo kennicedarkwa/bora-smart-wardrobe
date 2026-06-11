@@ -1,7 +1,7 @@
 body {
-    font-family: Arial;
-    background-color: #1e1e2f;
-    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #d8c2e6; /* heller lila Hintergrund */
+    color: #1e0033;
     margin: 0;
 }
 
@@ -9,16 +9,57 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 100vh; /* voll im Screen zentriert */
 }
 
 .container {
     width: 320px;
-    background-color: #2a2a40;
+    background-color: #c9b1de; /* lila Box */
     padding: 20px;
-    border-radius: 10px;
+    border: 2px solid #5a3ea6;
+    border-radius: 0; /* kein rounding wie im Beispiel */
 }
 
+/* Titel wie im Screenshot */
 h1 {
     text-align: center;
+    font-size: 32px;
+    color: #1e0033;
+}
+
+/* optionale extra Styles für "Screenshot-Look" */
+.container::before,
+.container::after {
+    content: "";
+    display: block;
+    height: 20px;
+    background-color: #d8eaff;
+    background-image: repeating-linear-gradient(
+            45deg,
+            rgba(127, 89, 207, 0.2) 0px,
+            rgba(127, 89, 207, 0.2) 10px,
+            transparent 10px,
+            transparent 20px
+    );
+    margin: 10px 0;
+}
+
+.outfit-item {
+    text-align: center;
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #5cb3ff;
+    border: 3px solid black;
+    color: white;
+}
+
+.outfit-item p {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+#outfitListe {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
