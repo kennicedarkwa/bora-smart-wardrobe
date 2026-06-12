@@ -1,25 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Weather App</title>
+    <title>BORA Weather App</title>
     <link rel="stylesheet" href="weather.css">
 </head>
 <body>
 
-<div class="container">
+<div class="app-container">
+    <h1 class="brand-title">BORA</h1>
 
-    <div class="weather-icon">🌦️</div>
+    <div class="search-form">
+        <div>
+            <label for="city">Stadt</label>
+            <input type="text" id="city" placeholder="z.B. Hamburg" value="Hamburg">
+        </div>
+        <div>
+            <label for="date">Datum</label>
+            <input type="date" id="date" value="2026-06-12">
+        </div>
 
-    <h2>Weather Forecast</h2>
+        <button onclick="loadWeather()">Wetter abfragen</button>
+    </div>
 
-    <input type="text" id="city" placeholder="City" value="Berlin">
-    <input type="date" id="date">
-
-    <button onclick="loadWeather()">Get Weather</button>
-
-    <div id="result"></div>
-
+    <div id="result">
+        <em>Wählen Sie eine Stadt und ein Datum aus...</em>
+    </div>
 </div>
 
 <script src="weather.js"></script>

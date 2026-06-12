@@ -91,12 +91,58 @@ public class WeatherService {
         }
     }
 
+//    private DailyForecast aggregateHoursToSingleDay(String date, JsonNode weatherArray) {
+//        double minTemp = Double.MAX_VALUE;
+//        double maxTemp = -Double.MAX_VALUE;
+//        int maxPrecipProbability = 0;
+//        int maxUvIndex = 0;
+//        String dominantCondition = "dry";
+//
+//        for (JsonNode hourRecord : weatherArray) {
+//            if (hourRecord.has("temperature") && !hourRecord.get("temperature").isNull()) {
+//                double temp = hourRecord.get("temperature").asDouble();
+//                minTemp = Math.min(minTemp, temp);
+//                maxTemp = Math.max(maxTemp, temp);
+//            }
+//            if (hourRecord.has("precipitation_probability") && !hourRecord.get("precipitation_probability").isNull()) {
+//                maxPrecipProbability = Math.max(maxPrecipProbability, hourRecord.get("precipitation_probability").asInt());
+//            }
+//            if (hourRecord.has("condition") && !hourRecord.get("condition").isNull()) {
+//                String condition = hourRecord.get("condition").asText();
+//                if (condition.equals("rain") || condition.equals("thunderstorm") || condition.equals("snow")) {
+//                    dominantCondition = condition;
+//                }
+//            }
+//            if (hourRecord.has("solar") && !hourRecord.get("solar").isNull()) {
+//                int approxUv = (int) Math.min(Math.max(hourRecord.get("solar").asDouble() / 100.0, 0), 11);
+//                maxUvIndex = Math.max(maxUvIndex, approxUv);
+//            }
+//        }
+//
+//        Temperature tempEntity = new Temperature((int) Math.floor(minTemp), (int) Math.ceil(maxTemp));
+//        PrecipitationType precipType = switch (dominantCondition.toLowerCase()) {
+//            case "rain" -> PrecipitationType.RAIN;
+//            case "snow" -> PrecipitationType.SNOW;
+//            case "thunderstorm" -> PrecipitationType.THUNDERSTORM;
+//            default -> PrecipitationType.NONE;
+//        };
+//
+//        return new DailyForecast(date, tempEntity, maxUvIndex, new Precipitation(precipType, maxPrecipProbability));
+//    }
+
+
     private DailyForecast aggregateHoursToSingleDay(String date, JsonNode weatherArray) {
         double minTemp = Double.MAX_VALUE;
         double maxTemp = -Double.MAX_VALUE;
-        int maxPrecipProbability = 0;
-        int maxUvIndex = 0;
         String dominantCondition = "dry";
+
+        double peakSolarInsideDaylight = 0.0;
+        int totalPrecipProbabilitySum = 0;
+        int daylightHoursCount = 0;
+        int absoluteMaxPrecipProbability = 0;
+
+        // Hier messen wir die exakte Regenmenge des Tages
+        double totalRealPrecipitationMm = 0.0;
 
         for (JsonNode hourRecord : weatherArray) {
             if (hourRecord.has("temperature") && !hourRecord.get("temperature").isNull()) {
@@ -104,19 +150,63 @@ public class WeatherService {
                 minTemp = Math.min(minTemp, temp);
                 maxTemp = Math.max(maxTemp, temp);
             }
-            if (hourRecord.has("precipitation_probability") && !hourRecord.get("precipitation_probability").isNull()) {
-                maxPrecipProbability = Math.max(maxPrecipProbability, hourRecord.get("precipitation_probability").asInt());
-            }
+
             if (hourRecord.has("condition") && !hourRecord.get("condition").isNull()) {
                 String condition = hourRecord.get("condition").asText();
                 if (condition.equals("rain") || condition.equals("thunderstorm") || condition.equals("snow")) {
                     dominantCondition = condition;
                 }
             }
+
+            boolean isDaylight = false;
             if (hourRecord.has("solar") && !hourRecord.get("solar").isNull()) {
-                int approxUv = (int) Math.min(Math.max(hourRecord.get("solar").asDouble() / 100.0, 0), 11);
-                maxUvIndex = Math.max(maxUvIndex, approxUv);
+                double currentSolar = hourRecord.get("solar").asDouble();
+                if (currentSolar > 0.0) {
+                    isDaylight = true;
+                    if (currentSolar > peakSolarInsideDaylight) {
+                        peakSolarInsideDaylight = currentSolar;
+                    }
+                }
             }
+
+            // Wahrscheinlichkeit für die Zukunft
+            if (hourRecord.has("precipitation_probability") && !hourRecord.get("precipitation_probability").isNull()) {
+                int hourlyProbability = hourRecord.get("precipitation_probability").asInt();
+                absoluteMaxPrecipProbability = Math.max(absoluteMaxPrecipProbability, hourlyProbability);
+                if (isDaylight) {
+                    totalPrecipProbabilitySum += hourlyProbability;
+                    daylightHoursCount++;
+                }
+            }
+
+            // Reale Regenmenge für die Vergangenheit aufsummieren
+            if (hourRecord.has("precipitation") && !hourRecord.get("precipitation").isNull()) {
+                totalRealPrecipitationMm += hourRecord.get("precipitation").asDouble();
+            }
+        }
+
+        // --- REGEN-LOGIK ---
+        int finalPrecipProbability = 0;
+        double finalPrecipAmountMm = totalRealPrecipitationMm; // Wir speichern die echten mm
+
+        // Wenn wir in der Vergangenheit sind (keine Vorhersage-Wahrscheinlichkeiten vorhanden)
+        if (absoluteMaxPrecipProbability == 0 && totalRealPrecipitationMm > 0.0) {
+            finalPrecipProbability = 0; // Bleibt sauber bei 0%, da es keine Vorhersage mehr ist
+        } else {
+            // Standard-Zukunftsberechnung (Prozent)
+            if (daylightHoursCount > 0 && totalPrecipProbabilitySum > 0) {
+                finalPrecipProbability = totalPrecipProbabilitySum / daylightHoursCount;
+            } else {
+                finalPrecipProbability = absoluteMaxPrecipProbability;
+            }
+        }
+
+        // --- UV-BERECHNUNG ---
+        int finalSafeUvIndex = 0;
+        if (peakSolarInsideDaylight > 0) {
+            double convertedW_m2 = peakSolarInsideDaylight < 15.0 ? peakSolarInsideDaylight * 1000.0 : peakSolarInsideDaylight;
+            int computedUv = (int) Math.round(convertedW_m2 / 230.0);
+            finalSafeUvIndex = Math.max(0, Math.min(computedUv, 11));
         }
 
         Temperature tempEntity = new Temperature((int) Math.floor(minTemp), (int) Math.ceil(maxTemp));
@@ -127,6 +217,6 @@ public class WeatherService {
             default -> PrecipitationType.NONE;
         };
 
-        return new DailyForecast(date, tempEntity, maxUvIndex, new Precipitation(precipType, maxPrecipProbability));
+        return new DailyForecast(date, tempEntity, finalSafeUvIndex, new Precipitation(precipType, finalPrecipProbability));
     }
 }

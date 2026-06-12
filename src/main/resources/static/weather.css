@@ -1,77 +1,122 @@
-body {
+/* --- Base Reset & Theme Setup --- */
+* {
+    box-sizing: border-box;
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #2b1055, #7597de);
-    color: white;
-    min-height: 100vh;
+    padding: 0;
+    font-family: 'Courier New', Courier, monospace; /* Matches the retro monospace/serif vibe */
+}
+
+body {
+    background-color: #A594F4; /* Purple Outer Frame Accent */
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 100vh;
+    padding: 20px;
 }
 
-/* Hintergrund Muster */
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
+/* --- App Container (Mimics the inner content frame) --- */
+.app-container {
+    background-color: #BACDFF; /* Soft Light Blue Internal Pattern Background */
+    /* Subtle star/cross grid effect using pure CSS fallback */
+    background-image:
+            radial-gradient(rgba(255, 255, 255, 0.4) 15%, transparent 16%),
+            radial-gradient(rgba(255, 255, 255, 0.4) 15%, transparent 16%);
+    background-size: 30px 30px;
+    background-position: 0 0, 15px 15px;
+
+    border: 3px solid #000000;
+    border-radius: 4px;
+    padding: 40px 30px;
     width: 100%;
-    height: 100%;
-    background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
-    background-size: 20px 20px;
-    z-index: 0;
-}
-
-/* Container */
-.container {
-    position: relative;
-    z-index: 1;
-    background: rgba(40, 20, 80, 0.7);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-    width: 320px;
+    max-width: 450px;
+    box-shadow: 8px 8px 0px #000000; /* Neo-brutalism block shadow matching your buttons */
     text-align: center;
-    backdrop-filter: blur(10px);
 }
 
-/* Inputs */
-input {
-    width: 90%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 10px;
-    border: none;
+/* --- Brand Typography --- */
+h1.brand-title {
+    font-family: 'Georgia', serif;
+    font-size: 3.5rem;
+    color: #2B1B67; /* Dark deep indigo matching the BORA text logo */
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+}
+
+/* --- Form Inputs Layout --- */
+.search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+label {
+    text-align: left;
+    font-weight: bold;
+    color: #2B1B67;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+input[type="text"],
+input[type="date"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 2px solid #000000;
+    border-radius: 4px;
+    background-color: #FFFFFF;
     outline: none;
+    transition: transform 0.1s ease;
 }
 
-/* Button */
+input:focus {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0px #000000;
+}
+
+/* --- Retro Action Buttons (Matches your 'Login'/'New Account' style) --- */
 button {
-    background: #a855f7;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 12px;
+    background-color: #FFFFFF;
+    color: #000000;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 12px 24px;
+    border: 2px solid #000000;
+    border-radius: 4px;
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(168, 85, 247, 0.4);
-    transition: 0.2s;
+    transition: all 0.1s ease;
+    width: 100%;
 }
 
 button:hover {
-    transform: scale(1.05);
-    background: #9333ea;
+    background-color: #F0F0F0;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0px #000000;
 }
 
-/* Ergebnis */
+button:active {
+    transform: translate(0px, 0px);
+    box-shadow: 0px 0px 0px #000000;
+}
+
+/* --- Result Dashboard Card --- */
 #result {
-    margin-top: 15px;
-    text-align: left;
-    font-size: 14px;
-    white-space: pre-wrap;
+    margin-top: 25px;
+    padding: 20px;
+    background-color: #FFFFFF;
+    border: 2px solid #000000;
+    border-radius: 4px;
+    color: #000000;
+    line-height: 1.6;
+    font-size: 1.05rem;
+    box-shadow: 4px 4px 0px #000000;
+    animation: fadeIn 0.3s ease-out;
 }
 
-/* Wetter Emojis Styling */
-.weather-icon {
-    font-size: 40px;
-    margin-bottom: 10px;
+/* Smooth fade-in for fetched data */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
