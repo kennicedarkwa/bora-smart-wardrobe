@@ -3,189 +3,181 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 body {
-    background-color: #f5f7fa;
-    color: #333;
+    background-color: #d8c2e6;
+    color: #1e0033;
     padding: 40px 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Header Styling */
 .dashboard-header {
-    max-width: 1200px;
-    margin: 0 auto 40px auto;
+    width: 100%;
+    max-width: 1000px;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #e2e8f0;
+
+    border-bottom: 3px solid #5a3ea6;
     padding-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .welcome-text h1 {
-    font-size: 2.5rem;
-    color: #1a202c;
-    margin-bottom: 5px;
+    font-size: 36px;
+    color: #1e0033;
 }
 
 .welcome-text p {
-    color: #718096;
-    font-size: 1.1rem;
+    color: #1e0033;
 }
 
+/* Profil-Button im App-Stil */
 .profile-btn {
-    background-color: #ffffff;
-    color: #4a5568;
+    background-color: #5cb3ff;
+    color: white;
+    padding: 10px 15px;
+
+    border: 3px solid black;
     text-decoration: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: all 0.2s ease;
-    border: 1px solid #cbd5e0;
+    font-weight: bold;
+
+    transition: 0.2s;
 }
 
 .profile-btn:hover {
-    background-color: #edf2f7;
-    transform: translateY(-2px);
+    background-color: #409de6;
 }
 
-/* Kachel-Grid Layout */
+/* Grid Layout */
 .dashboard-container {
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 1000px;
+    width: 100%;
+
     display: grid;
-    /* Erstellt automatisch so viele Spalten wie Platz ist (mindestens 300px breit) */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
 }
 
-/* Kachel (Card) Styling */
+/* Karten → wie deine Kategorien-Boxen */
 .card {
-    background-color: #ffffff;
+    background-color: #5cb3ff;
+    color: white;
+
+    padding: 20px;
+
+    border: 4px solid black;
     text-decoration: none;
-    color: inherit;
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e2e8f0;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
     display: flex;
     flex-direction: column;
+
+    transition: 0.2s;
 }
 
-/* Hover-Effekt: Kachel hebt sich elegant an */
+/* Hover → einfacher Retro Effekt */
 .card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
-    border-color: #bee3f8;
+    transform: translateY(-4px);
+    background-color: #409de6;
 }
 
 .card-icon {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
+    font-size: 40px;
+    margin-bottom: 10px;
+    position: relative;
 }
 
 .card h3 {
-    font-size: 1.4rem;
-    color: #2d3748;
-    margin-bottom: 10px;
+    font-size: 20px;
+    margin-bottom: 8px;
 }
 
 .card p {
-    color: #4a5568;
-    font-size: 0.95rem;
-    line-height: 1.5;
+    font-size: 14px;
 }
 
-/* Positionierung für das Zahlen-Abzeichen */
-.card-icon {
-    position: relative;
-    display: inline-block;
-}
-
+/* Badge bleibt, aber im Stil */
 .badge {
     position: absolute;
     top: -8px;
-    right: -15px;
-    background-color: #e53e3e; /* Alarm-Rot */
-    color: white;
-    font-size: 0.85rem;
+    right: -12px;
+
+    background-color: #1e0033;
+    color: #d8eaff;
+
+    font-size: 12px;
     font-weight: bold;
-    padding: 2px 8px;
-    border-radius: 50%;
-    border: 2px solid white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+
+    padding: 3px 7px;
+    border: 2px solid black;
 }
 
-/* Das verdunkelte Hintergrund-Overlay für das Popup */
+/* Modal Hintergrund */
 .modal {
     position: fixed;
-    z-index: 1000;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Halbtransparentes Schwarz */
+
+    background-color: rgba(30, 0, 51, 0.6);
+
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Die eigentliche Popup-Box */
+/* Modal Box */
 .modal-content {
-    background-color: white;
-    padding: 30px;
-    border-radius: 16px;
+    background-color: #c9b1de;
+
+    padding: 25px;
     width: 90%;
     max-width: 400px;
+
+    border: 4px solid black;
+
     text-align: center;
-    position: relative;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Schicker "Plopp"-Effekt beim Erscheinen */
-@keyframes popIn {
-    from { transform: scale(0.8); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-
+/* Close Button */
 .close-popup-btn {
     position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 1.5rem;
+    top: 10px;
+    right: 15px;
+
+    font-size: 20px;
     cursor: pointer;
-    color: #a0aec0;
 }
 
-.close-popup-btn:hover {
-    color: #4a5568;
-}
-
+/* Modal Text */
 .modal-content h2 {
     margin-bottom: 10px;
-    color: #2d3748;
 }
 
 .modal-content p {
-    color: #4a5568;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
+/* Modal Button */
 .modal-btn {
-    background-color: #3182ce;
+    background-color: #5cb3ff;
     color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
+
+    border: 3px solid black;
+    padding: 10px 15px;
+
     font-weight: bold;
     cursor: pointer;
-    transition: background 0.2s;
 }
 
 .modal-btn:hover {
-    background-color: #2b6cb0;
+    background-color: #409de6;
 }
