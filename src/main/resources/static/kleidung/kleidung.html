@@ -36,19 +36,18 @@
             <select id="filterKategorie">
                 <option value="">Kategorie</option>
                 <option>OBERTEIL</option>
-                <option>HOSE</option>
-                <option>JACKE</option>
-                <option>REGENJACKE</option>
+                <option>UNTERTEIL</option>
                 <option>SCHUHE</option>
-                <option>ACCESSOIRE</option>
+                <option>KOPFBEDECKUNG</option>
+                <option>GANZKOERPER</option>
+                <option>ACCESSOIRES</option>
             </select>
 
             <select id="filterAnlass">
                 <option value="">Anlass</option>
-                <option>CASUAL</option>
-                <option>FANCY</option>
-                <option>SPORT</option>
-                <option>BUSINESS</option>
+                <option>ALLTAG</option>
+                <option>FITNESS</option>
+                <option>ELEGANT</option>
             </select>
 
             <select id="filterStatus">
@@ -83,29 +82,71 @@
 </div>
 
 <div id="popupNeu" class="popup hidden">
-    <div class="popup-content">
-        <h3>Neues Kleidungsstück</h3>
+    <div class="popup-content broad-popup">
+        <h3>Neues Kleidungsstück hinzufügen</h3>
 
-        <label>Name:</label>
-        <input id="neuName">
+        <div class="form-group">
+            <label for="neuName">Name des Kleidungsstücks:</label>
+            <input id="neuName" placeholder="z.B. Lieblings-T-Shirt">
+        </div>
 
-        <label>Kategorie (z.B. OBERTEIL):</label>
-        <input id="neuKategorie">
+        <div class="form-group">
+            <label>Kategorie (Pflichtfeld):</label>
+            <div class="retro-btn-group" id="groupKategorie">
+                <button type="button" data-value="OBERTEIL">👕 Oberteil</button>
+                <button type="button" data-value="UNTERTEIL">👖 Unterteil</button>
+                <button type="button" data-value="SCHUHE">👟 Schuhe</button>
+                <button type="button" data-value="KOPFBEDECKUNG">🧢 Kopfbedeckung</button>
+                <button type="button" data-value="GANZKOERPER">👗 Ganzkörper</button>
+                <button type="button" data-value="ACCESSOIRES">🎒 Accessoires</button>
+            </div>
+            <input type="hidden" id="neuKategorie">
+        </div>
 
-        <label>Anlass-Tags (z.B. CASUAL,SPORT):</label>
-        <input id="neuAnlass">
+        <div class="form-group">
+            <label>Anlass (Pflichtfeld):</label>
+            <div class="retro-btn-group" id="groupAnlass">
+                <button type="button" data-value="ALLTAG">🏠 Alltag</button>
+                <button type="button" data-value="FITNESS">💪 Fitness</button>
+                <button type="button" data-value="ELEGANT">✨ Elegant</button>
+            </div>
+            <input type="hidden" id="neuAnlass">
+        </div>
 
-        <label>Wärmeindex (1–5):</label>
-        <input id="neuWarm" type="number" min="1" max="5">
+        <div class="form-group">
+            <label>Geeignete Außentemperatur (Wärmeindex):</label>
+            <div class="retro-btn-group" id="groupWarm">
+                <button type="button" data-value="1">❄️ 1 (≤10°C)</button>
+                <button type="button" data-value="2">🧥 2 (11-15°C)</button>
+                <button type="button" data-value="3">☁️ 3 (16-22°C)</button>
+                <button type="button" data-value="4">☀️ 4 (23-30°C)</button>
+                <button type="button" data-value="5">🔥 5 (>30°C)</button>
+            </div>
+            <input type="hidden" id="neuWarm">
+        </div>
 
-        <label>Regengeeignet (true/false):</label>
-        <input id="neuRegen">
+        <div class="form-group">
+            <label>Ist dieses Teil regengeeignet?</label>
+            <div class="retro-btn-group" id="groupRegen">
+                <button type="button" data-value="true">☔ Ja</button>
+                <button type="button" data-value="false">☀️ Nein</button>
+            </div>
+            <input type="hidden" id="neuRegen">
+        </div>
 
-        <label>Bild-URL:</label>
-        <input id="neuBild">
+        <div class="form-group">
+            <label>Foto hinzufügen (Kamera oder Galerie):</label>
+            <div class="file-upload-wrapper">
+                <input type="file" id="neuBildFile" accept="image/*" style="display: none;">
+                <button type="button" id="wähleBildBtn">📸 Foto auswählen</button>
+                <span id="bildNameLabel">Kein Foto ausgewählt</span>
+            </div>
+        </div>
 
-        <button id="speichernNeu">Speichern</button>
-        <button onclick="closePopup()">Abbrechen</button>
+        <div class="popup-actions">
+            <button id="speichernNeu">Speichern</button>
+            <button onclick="closePopup()">Abbrechen</button>
+        </div>
     </div>
 </div>
 

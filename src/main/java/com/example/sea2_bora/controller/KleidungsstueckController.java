@@ -30,14 +30,13 @@ public class KleidungsstueckController
     }
 
     /**
-     * Ein neues Kleidungsstueck anlegen
+     * Ein neues Kleidungsstueck anlegen (Gibt das Objekt zurück, damit das Frontend die ID hat!)
      */
-    @PostMapping //Kennice -> @Valid
-    public String addKleidungsstueck(@Valid @RequestBody Kleidungsstueck kleidungsstueck)
+    @PostMapping //Änderung Lorenza -> Gibt JSON zurück
+    public Kleidungsstueck addKleidungsstueck(@Valid @RequestBody Kleidungsstueck kleidungsstueck)
     {
         service.createKleidungsstueck(kleidungsstueck);
-        // .getName() greift jetzt perfekt auf die korrigierte Entity zu!
-        return "Kleidungsstück " + kleidungsstueck.getName() + " wurde erfolgreich gespeichert!";
+        return kleidungsstueck; // Gibt das fertige Objekt mit ID an JS zurück!
     }
 
     /**
@@ -56,5 +55,16 @@ public class KleidungsstueckController
     ) {
         Kleidungsstueck gespeichert = service.anlegen(dto, bild);
         return ResponseEntity.ok(gespeichert);
+    }
+
+
+    /**
+     * Aktualisiert den Status eines bestehenden Kleidungsstücks (z.B. für den Wäschekorb)
+     */
+    @PutMapping("/{id}")
+    public Kleidungsstueck updateKleidungsstueck(@PathVariable Long id, @RequestBody Kleidungsstueck kleidungsstueck)
+    {
+        service.createKleidungsstueck(kleidungsstueck);
+        return kleidungsstueck;
     }
 }

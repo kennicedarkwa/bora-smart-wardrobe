@@ -25,7 +25,7 @@ public class BoraApplication {
     ) {
         return args -> {
 
-            // --- Benutzer nur anlegen, wenn DB leer ist ---
+
             if (benutzerRepository.count() == 0) {
                 Benutzer u1 = new Benutzer("Max Mustermann", "abc@u1.com", "123", "HH");
                 Benutzer u2 = new Benutzer("Erika Musterfrau", "abc@u2.com", "123", "HH");
