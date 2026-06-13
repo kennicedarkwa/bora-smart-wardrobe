@@ -56,16 +56,16 @@ public class BoraApplication {
             // Deshalb bleibt der gesamte Block auskommentiert.
 
             /*
-            if (korb.getItems().isEmpty()) {
-                java.util.List<Kleidungsstueck> alleKlamotten = kleidungsstueckRepository.findAll();
-                if (!alleKlamotten.isEmpty()) {
-                    korb.addItem(alleKlamotten.get(0));
-                    if (alleKlamotten.size() > 1) {
-                        korb.addItem(alleKlamotten.get(1));
-                    }
-                    waechekorbRepository.save(korb);
-                }
-            }
+//            if (korb.getItems().)
+//                java.util.List<Kleidungsstueck> alleKlamotten = kleidungsstueckRepository.findAll();
+//                if (!alleKlamotten.isEmpty()) {
+//                    korb.addItem(alleKlamotten.get(0));
+//                    if (alleKlamotten.size() > 1) {
+//                        korb.addItem(alleKlamotten.get(1));
+//                    }
+//                    waechekorbRepository.save(korb);
+//                }
+//            }
             */
 
             // --- Test-Socken aus dem Remote-Code ---

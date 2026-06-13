@@ -13,7 +13,7 @@ async function login() {
     params.append("email", email);
     params.append("passwort", passwort);
 
-    const response = await fetch("http://localhost:1531/api/benutzer/login", {
+    const response = await fetch("/api/benutzer/login", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: params
