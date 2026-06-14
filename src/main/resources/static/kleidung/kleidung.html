@@ -10,6 +10,7 @@
 
 <header>
     <h1>KLEIDUNG</h1>
+    <!--
     <nav>
         <a href="/dashboard.html">Dashboard</a>
         <a href="/kleidung/kleidung.html">Kleidung</a>
@@ -20,6 +21,21 @@
         <a href="/anlass.html">Anlass</a>
         <a href="/empfehlung.html">Empfehlung</a>
     </nav>
+    -->
+
+    <nav>
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/kleidung/kleidung.html">Kleidung</a>
+        <a href="/weather.html">Wetter</a>
+        <a href="/anlass.html">Anlass</a>
+        <a href="/empfehlung.html">Empfehlung</a>
+        <a href="/outfit/outfit.html">Outfit</a>
+        <a href="/washkorb.html">Wäschekorb</a>
+        <a href="/benutzer/profil.html">Profil</a>
+
+
+    </nav>
+
 </header>
 
 <div class="wrapper">
@@ -45,10 +61,10 @@
 
             <select id="filterAnlass">
                 <option value="">Anlass</option>
-                <option>CASUAL</option>
-                <option>FANCY</option>
-                <option>SPORT</option>
-                <option>BUSINESS</option>
+                <option>LÄSSIG</option>
+                <option>SCHICK</option>
+                <option>SPORTLICH</option>
+                <option>GESCHÄFTLICH</option>
             </select>
 
             <select id="filterStatus">
@@ -92,7 +108,7 @@
         <label>Kategorie (z.B. OBERTEIL):</label>
         <input id="neuKategorie">
 
-        <label>Anlass-Tags (z.B. CASUAL,SPORT):</label>
+        <label>Anlass-Tags (z.B. LÄSSIG,SPORTLICH):</label>
         <input id="neuAnlass">
 
         <label>Wärmeindex (1–5):</label>
@@ -116,3 +132,4 @@
 <script src="kleidung.js"></script>
 </body>
 </html>
+

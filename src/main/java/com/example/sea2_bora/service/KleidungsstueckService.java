@@ -3,6 +3,9 @@ package com.example.sea2_bora.service;
 import com.example.sea2_bora.implementation.Kleidungsstueck;
 import com.example.sea2_bora.repository.KleidungsstueckRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.core.JdbcTemplate; // NEU: Für den direkten SQL-Sicherheitsgurt
+
 import java.util.List;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,10 +18,13 @@ import com.example.sea2_bora.DTO.KleidungsstueckDTO;
 public class KleidungsstueckService
 {
     private final KleidungsstueckRepository repository;
+    private final JdbcTemplate jdbcTemplate;
 
-    public KleidungsstueckService(KleidungsstueckRepository repository)
+
+    public KleidungsstueckService(KleidungsstueckRepository repository, JdbcTemplate jdbcTemplate)
     {
         this.repository = repository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     /**
@@ -38,10 +44,15 @@ public class KleidungsstueckService
     }
 
     /**
-     * Löscht ein bestimmtes Kleidungsstueck anhand der Id
+     * Löscht ein Kleidungsstueck und räumt vorher radikal Ehsans Bild-Tabelle auf!
      */
+    @Transactional
     public void delete(Long id)
     {
+
+        jdbcTemplate.update("DELETE FROM stored_images WHERE kleidungsstueck_id = ?", id);
+
+
         repository.deleteById(id);
     }
 

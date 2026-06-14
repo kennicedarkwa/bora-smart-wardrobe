@@ -25,7 +25,7 @@ public class BoraApplication {
     ) {
         return args -> {
 
-            // --- Benutzer nur anlegen, wenn DB leer ist ---
+
             if (benutzerRepository.count() == 0) {
                 Benutzer u1 = new Benutzer("Max Mustermann", "abc@u1.com", "123", "HH");
                 Benutzer u2 = new Benutzer("Erika Musterfrau", "abc@u2.com", "123", "HH");
@@ -56,16 +56,16 @@ public class BoraApplication {
             // Deshalb bleibt der gesamte Block auskommentiert.
 
             /*
-            if (korb.getItems().isEmpty()) {
-                java.util.List<Kleidungsstueck> alleKlamotten = kleidungsstueckRepository.findAll();
-                if (!alleKlamotten.isEmpty()) {
-                    korb.addItem(alleKlamotten.get(0));
-                    if (alleKlamotten.size() > 1) {
-                        korb.addItem(alleKlamotten.get(1));
-                    }
-                    waechekorbRepository.save(korb);
-                }
-            }
+//            if (korb.getItems().)
+//                java.util.List<Kleidungsstueck> alleKlamotten = kleidungsstueckRepository.findAll();
+//                if (!alleKlamotten.isEmpty()) {
+//                    korb.addItem(alleKlamotten.get(0));
+//                    if (alleKlamotten.size() > 1) {
+//                        korb.addItem(alleKlamotten.get(1));
+//                    }
+//                    waechekorbRepository.save(korb);
+//                }
+//            }
             */
 
             // --- Test-Socken aus dem Remote-Code ---

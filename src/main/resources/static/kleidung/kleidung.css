@@ -53,11 +53,11 @@ nav a {
     height: 20px;
     background-color: #d8eaff;
     background-image: repeating-linear-gradient(
-        45deg,
-        rgba(127, 89, 207, 0.2) 0px,
-        rgba(127, 89, 207, 0.2) 10px,
-        transparent 10px,
-        transparent 20px
+            45deg,
+            rgba(127, 89, 207, 0.2) 0px,
+            rgba(127, 89, 207, 0.2) 10px,
+            transparent 10px,
+            transparent 20px
     );
     margin: 10px 0;
 }

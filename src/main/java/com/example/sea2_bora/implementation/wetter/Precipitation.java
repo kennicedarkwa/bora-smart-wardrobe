@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Precipitation {
         private PrecipitationType type;
         private int probability_percent;
-
+    private double amount_mm;
 
     public Precipitation() {
     }
@@ -95,5 +95,8 @@ public class Precipitation {
         return Objects.hash(type, probability_percent);
 
     }
-    }
+
+    public double getAmount_mm() { return amount_mm; } // 🌟 Getter
+    public void setAmount_mm(double amount_mm) { this.amount_mm = amount_mm; }
+}
 
