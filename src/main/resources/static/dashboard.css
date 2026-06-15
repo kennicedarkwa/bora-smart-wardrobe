@@ -181,3 +181,70 @@ body {
 .modal-btn:hover {
     background-color: #409de6;
 }
+/* =========================================
+   DARK MODE FÜR DAS DASHBOARD (Retro-Style)
+   ========================================= */
+
+body.dark-mode {
+    background-color: #1e0033; /* Dunkles Lila statt hellem Lila */
+    color: #d8c2e6;
+}
+
+body.dark-mode .welcome-text h1,
+body.dark-mode .welcome-text p {
+    color: #d8c2e6; /* Helle Schrift für den Titel */
+}
+
+body.dark-mode .dashboard-header {
+    border-bottom: 3px solid #d8c2e6;
+}
+
+/* Karten und Buttons anpassen */
+body.dark-mode .card,
+body.dark-mode .profile-btn,
+body.dark-mode .modal-btn {
+    background-color: #2a1545; /* Dunklere Hintergrundfarbe für Karten */
+    color: #d8eaff;
+    border: 4px solid #5cb3ff; /* Hellblauer Rand als cooler Kontrast im Dark Mode */
+}
+
+body.dark-mode .card:hover,
+body.dark-mode .profile-btn:hover,
+body.dark-mode .modal-btn:hover {
+    background-color: #3a205e; /* Etwas heller beim Drüberfahren (Hover) */
+}
+
+/* Modal / Popup anpassen */
+body.dark-mode .modal-content {
+    background-color: #1e0033;
+    border: 4px solid #5cb3ff;
+    color: #d8c2e6;
+}
+
+body.dark-mode .modal-content h2,
+body.dark-mode .modal-content p {
+    color: #d8c2e6;
+}
+
+/* Badge (Zahl) umkehren */
+body.dark-mode .badge {
+    background-color: #d8c2e6;
+    color: #1e0033;
+    border-color: #5cb3ff;
+}
+/* --- BUTTONS OBEN RECHTS --- */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Abstand zwischen Profil-Button und Zahnrad */
+}
+
+.settings-icon {
+    font-size: 28px;
+    text-decoration: none;
+    transition: transform 0.3s ease; /* Macht die Drehung flüssig */
+}
+
+.settings-icon:hover {
+    transform: rotate(90deg); /* Cooler Effekt: Zahnrad dreht sich beim Hover */
+}
