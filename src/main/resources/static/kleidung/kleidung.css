@@ -164,3 +164,72 @@ button {
 .hidden {
     display: none;
 }
+
+/* ===================================================================
+   🕹 RETRO-BUTTONS: VISUELLES FEEDBACK FÜR GEDRÜCKTEN ZUSTAND
+   =================================================================== */
+
+/* Wenn ein Button die Klasse .active oder .selected vom JS bekommt */
+.retro-btn-group button.active,
+.retro-btn-group button.selected {
+    background-color: #3f1dcb !important; /* Dunkleres, kräftiges Lila */
+    color: #ffffff !important;            /* Weiße Schrift für guten Kontrast */
+    border: 3px inset #1a0963 !important; /* "Inset" lässt den Button physisch eingedrückt aussehen */
+    box-shadow: none !important;          /* Entfernt den normalen Schatten */
+    transform: translateY(2px);          /* Schiebt den Button 2 Pixel nach unten */
+}
+
+/* Kleiner Hover-Effekt, damit man sieht, dass man draufklicken kann */
+.retro-btn-group button:hover:not(.active):not(.selected) {
+    background-color: #bfa3ff !important;
+    cursor: pointer;
+}
+
+/* Container für die beiden Aktionsknöpfe unten auf der Karte */
+.card-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 0 5px;
+}
+
+.card-buttons button {
+    font-size: 11px !important;
+    padding: 6px 2px !important;
+    width: 100%;
+    box-sizing: border-box;
+    text-transform: uppercase;
+}
+
+.card-buttons .delete-btn {
+    grid-column: span 2;
+    background: #ff5c5c !important;
+    color: white;
+}
+
+/* ✨ Styling für Kleidungsstücke, die im Wäschekorb liegen */
+.card.in-laundry {
+    position: relative;
+    opacity: 0.6;                      /* Macht die Karte blass */
+    border-color: #ff5c5c !important;  /* Roter Retro-Rand */
+    box-shadow: 4px 4px 0px #aa2222 !important;
+    background: #f5f0ff !important;
+}
+
+/* Das rote Retro-Schildchen oben rechts auf der Karte */
+.card.in-laundry::after {
+    content: "🧺 IM KORB";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #ff5c5c;
+    color: white;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 3px 6px;
+    border: 2px solid #000000;
+    box-shadow: 2px 2px 0px #000000;
+    z-index: 10;
+}
