@@ -7,6 +7,29 @@
 </head>
 <body>
 
+<!-- Neues, durchgehendes Header-Dashboard (Stil von color-hex) -->
+<!-- Durchgehender Color-Hex-Style Header mit allen Dashboard-Links -->
+<header class="main-header">
+    <div class="header-left">
+        <!-- Hauptfunktionen der App -->
+        <a href="kleidung/kleidung.html" class="nav-link">Kleiderschrank</a>
+        <a href="washkorb.html" class="nav-link">Wäschekorb</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+
+
+    </div>
+
+    <div class="header-right">
+        <!-- Benutzer- & Systemeinstellungen -->
+        <a href="benutzer/profil.html" class="nav-link">Mein Profil</a>
+        <button class="settings-btn" onclick="openSettings()" title="Einstellungen">⚙️</button>
+        <button class="logout-btn" onclick="logout()">Ausloggen</button>
+    </div>
+</header>
+
+<!-- Hier drunter kommt dein gewohnter .app-container -->
+
+
 <div class="app-container">
     <h1 class="brand-title">BORA</h1>
 
@@ -20,14 +43,25 @@
             <input type="date" id="date" value="2026-06-12">
         </div>
 
+        <div>
+            <label for="occasion">Anlass</label>
+            <select id="occasion">
+                <option value="ALLTAG">Casual (Alltag)</option>
+                <option value="ELEGANT">Fine wear (Elegant)</option>
+                <option value="FITNESS">Sport (Fitness)</option>
+            </select>
+        </div>
+
         <button onclick="loadWeather()">Wetter abfragen</button>
+        <button onclick="goToRecommendation()" style="background-color: #a78bfa; margin-top: 5px;">Empfehlung anzeigen !</button>
     </div>
 
     <div id="result">
-        <em>Wählen Sie eine Stadt und ein Datum aus...</em>
+        <em>Wählen Sie eine Stadt, ein Datum und einen Anlass aus...</em>
     </div>
 </div>
 
 <script src="weather.js"></script>
 </body>
 </html>
+
