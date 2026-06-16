@@ -90,4 +90,38 @@ public class BenutzerService {
     public boolean emailPruefen(String email) {
         return repository.findByEmail(email).isPresent();
     }
+
+    // DATEN AKTUALISIEREN
+    public boolean datenAktualisieren(Long id, String neuerBenutzername, String neueEmail) {
+        Benutzer benutzer = repository.findById(id).orElse(null);
+        if (benutzer == null) return false;
+
+        benutzer.setBenutzername(neuerBenutzername);
+        benutzer.setEmail(neueEmail);
+        repository.save(benutzer);
+        return true;
+    }
+
+    // PASSWORT ÄNDERN (Mit Verschlüsselung!)
+    public void passwortAktualisieren(Long id, String neuesPasswort) {
+        Benutzer benutzer = repository.findById(id).orElseThrow();
+        // Hier passiert die Magie: Das neue Passwort wird gehashed!
+        String hashed = passwordEncoder.encode(neuesPasswort);
+        benutzer.setPasswort(hashed);
+        repository.save(benutzer);
+    }
+
+    // ACCOUNT LÖSCHEN (Mit Auflösung der Tabellen-Relationen)
+    public void accountLoeschen(Long id) {
+        Benutzer benutzer = repository.findById(id).orElse(null);
+        if (benutzer != null) {
+            // WICHTIG: Relationen auflösen, um Foreign-Key Constraint Errors in der Datenbank zu vermeiden!
+            benutzer.getKleiderschrank().clear();
+            benutzer.getOutfits().clear();
+            repository.save(benutzer); // Speichern löscht die Einträge aus der Join-Tabelle
+
+            // Jetzt kann der Benutzer sicher gelöscht werden
+            repository.delete(benutzer);
+        }
+    }
 }

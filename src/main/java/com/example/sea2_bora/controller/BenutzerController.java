@@ -77,4 +77,36 @@ public class BenutzerController {
         session.invalidate();
         return ResponseEntity.ok("Logout erfolgreich");
     }
+
+    // DATEN AKTUALISIEREN
+    @PutMapping("/update")
+    public ResponseEntity<String> updateProfil(@RequestBody java.util.Map<String, String> daten, HttpSession session) {
+        Long id = (Long) session.getAttribute("benutzerId");
+        if (id == null) return ResponseEntity.status(401).body("Nicht eingeloggt");
+
+        boolean erfolg = benutzerService.datenAktualisieren(id, daten.get("benutzername"), daten.get("email"));
+        if(erfolg) return ResponseEntity.ok("Daten aktualisiert");
+        return ResponseEntity.badRequest().body("Fehler beim Aktualisieren");
+    }
+
+    // PASSWORT ÄNDERN
+    @PutMapping("/passwort")
+    public ResponseEntity<String> passwortAendern(@RequestBody java.util.Map<String, String> daten, HttpSession session) {
+        Long id = (Long) session.getAttribute("benutzerId");
+        if (id == null) return ResponseEntity.status(401).body("Nicht eingeloggt");
+
+        benutzerService.passwortAktualisieren(id, daten.get("neuesPasswort"));
+        return ResponseEntity.ok("Passwort geändert");
+    }
+
+    // ACCOUNT LÖSCHEN
+    @DeleteMapping("/loeschen")
+    public ResponseEntity<String> accountLoeschen(HttpSession session) {
+        Long id = (Long) session.getAttribute("benutzerId");
+        if (id == null) return ResponseEntity.status(401).body("Nicht eingeloggt");
+
+        benutzerService.accountLoeschen(id);
+        session.invalidate(); // Session nach dem Löschen direkt zerstören
+        return ResponseEntity.ok("Account gelöscht");
+    }
 }

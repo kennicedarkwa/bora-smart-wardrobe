@@ -250,3 +250,25 @@ button:active {
     font-weight: bold;
     font-size: 1rem;
 }
+
+/* Styling für den neuen Speichern-Knopf */
+.save-btn {
+    margin-top: 10px;
+    background-color: #A594F4; /* Passend zum Hintergrund */
+}
+
+.save-btn:hover {
+    background-color: #8f7ae6;
+}
+
+/* Anpassung der Data-Box, da es jetzt Inputs sind */
+input.profile-data-box {
+    background-color: #FFFFFF;
+    outline: none;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+input.profile-data-box:focus {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0px #000000;
+}
