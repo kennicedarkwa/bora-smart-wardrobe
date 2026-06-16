@@ -1,0 +1,143 @@
+body {
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+
+    background-color: #d8c2e6;
+
+    /* Muster behalten, aber in deinem Stil */
+    background-image: repeating-linear-gradient(
+            45deg,
+            rgba(127, 89, 207, 0.2) 0px,
+            rgba(127, 89, 207, 0.2) 10px,
+            transparent 10px,
+            transparent 20px
+    );
+
+    color: #1e0033;
+
+    min-height: 100vh;
+    /* border: 30px solid #5a3ea6; das war lila rand  */
+    box-sizing: border-box;
+}
+
+/* 📦 Container */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+
+    background-color: #c9b1de;
+    border: 2px solid #5a3ea6;
+
+    padding: 40px;
+    min-width: 420px;
+    margin: 40px auto;
+}
+
+/* 🏷️ Title */
+.occasion {
+    font-size: 38px;
+    font-weight: bold;
+    color: #1e0033;
+}
+
+/* 🔘 Buttons im App-Stil */
+button {
+    background-color: #5cb3ff;
+    border: 3px solid black;
+
+    padding: 8px 14px;
+    cursor: pointer;
+
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: inherit;
+
+    transition: 0.2s ease;
+}
+
+button:hover {
+    background-color: #409de6;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+/* 📋 Tag container */
+.tag-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+/* 🎴 Tiles → wie Kategorien/Boxen */
+.tag {
+    background-color: #5cb3ff;
+
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    border: 3px solid black;
+
+    cursor: pointer;
+    transition: 0.2s;
+
+    color: white;
+    margin: 0 300px;
+
+}
+
+/* hover effect */
+.tag:hover {
+    transform: translateY(-3px);
+    background-color: #409de6;
+}
+
+/* emoji */
+.tag span {
+    font-size: 28px;
+}
+
+/* Optional: Box‑Feeling innen */
+.tag::after {
+    content: "";
+    display: block;
+    position: absolute;
+}
+header {
+    background-color: #1e0033;
+    color: white;
+    padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+    margin-bottom: 10px;
+    font-size: 36px;
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    gap: 25px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}

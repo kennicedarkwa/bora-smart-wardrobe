@@ -3,9 +3,7 @@ body {
     font-family: 'Courier New', Courier, monospace;
     background-color: #d8c2e6; /* Äußerer Hintergrund */
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
 }
 
 .app-container {
@@ -17,6 +15,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    margin: 40px auto;
 }
 
 /* Header */
@@ -42,11 +41,11 @@ body {
     height: 30px;
     background-color: #d8eaff;
     background-image: repeating-linear-gradient(
-        45deg,
-        rgba(127, 89, 207, 0.2) 0px,
-        rgba(127, 89, 207, 0.2) 10px,
-        transparent 10px,
-        transparent 20px
+            45deg,
+            rgba(127, 89, 207, 0.2) 0px,
+            rgba(127, 89, 207, 0.2) 10px,
+            transparent 10px,
+            transparent 20px
     );
 }
 
@@ -97,4 +96,36 @@ body {
 .cloth-box img {
     max-width: 90%;
     max-height: 90%;
+}
+
+header {
+    background-color: #1e0033;
+    color: white;
+    padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+    margin-bottom: 10px;
+    font-size: 36px;
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    gap: 25px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
 }

@@ -21,10 +21,10 @@
 </nav>
 
 <script>
-async function logout() {
-    await fetch("http://localhost:1531/api/benutzer/logout", { method: "POST" });
-    window.location.href = "index.html";
-}
+    async function logout() {
+        await fetch("http://localhost:1531/api/benutzer/logout", { method: "POST" });
+        window.location.href = "index.html";
+    }
 </script>
 
 </body>
