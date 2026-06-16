@@ -3,29 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <title>Profil</title>
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="profil.css">
 </head>
 <body>
 
-<h1>Dein Profil</h1>
+<header class="main-header">
+    <div class="header-left">
+        <a href="../kleidung/kleidung.html" class="nav-link">Kleiderschrank</a>
+        <a href="../washkorb.html" class="nav-link">Wäschekorb</a>
+        <a href="../dashboard.html" class="nav-link">Dashboard</a>
+        <a href="../weather.html" class="nav-link">Wetter</a>
+    </div>
+    <div class="header-right">
+        <a href="profil.html" class="nav-link">Mein Profil</a>
+        <button class="settings-btn" onclick="openSettings()" title="Einstellungen">⚙️</button>
+        <button onclick="logout()" class="logout-btn">Ausloggen</button>
+    </div>
+</header>
 
-<div class="container">
-    <p><strong>Vorname:</strong> <span id="vorname"></span></p>
-    <p><strong>Nachname:</strong> <span id="nachname"></span></p>
-    <p><strong>Email:</strong> <span id="email"></span></p>
+<div class="app-container">
+    <h1 class="brand-title">Dein Profil</h1>
 
-    <h3>Passwort ändern</h3>
-    <input type="password" id="neuPasswort" placeholder="Neues Passwort">
-    <button onclick="passwortAendern()">Ändern</button>
+    <div class="profile-card">
+        <div class="data-row">
+            <span class="label">Vorname:</span>
+            <span id="vorname" class="profile-data-box">Max</span>
+        </div>
+        <div class="data-row">
+            <span class="label">Nachname:</span>
+            <span id="nachname" class="profile-data-box">Mustermann</span>
+        </div>
+        <div class="data-row">
+            <span class="label">Email:</span>
+            <span id="email" class="profile-data-box">max@mustermann.de</span>
+        </div>
+    </div>
 
-    <h3>Account löschen</h3>
-    <button onclick="accountLoeschen()" style="background:red;">Account löschen</button>
+    <div class="pattern-divider"></div>
 
-    <button onclick="logout()">Logout</button>
+    <div class="action-section">
+        <h3>Passwort ändern</h3>
+        <input type="password" id="neuPasswort" placeholder="Neues Passwort">
+        <button onclick="passwortAendern()">Ändern</button>
+    </div>
 
-    <p id="error" class="error"></p>
+    <div class="pattern-divider"></div>
+
+    <div class="action-section">
+        <button onclick="accountLoeschen()" class="delete-btn">Account löschen</button>
+    </div>
+
+    <p id="error" class="error-msg"></p>
 </div>
 
-<script src="profil.js"></script>
 </body>
 </html>
