@@ -32,7 +32,7 @@ document.getElementById("neuBildFile").addEventListener("change", (event) => {
 let kleidung = [];
 
 async function ladeKleidung() {
-    const response = await fetch("/api/kleidung");
+    const response = await fetch("http://localhost:1531/api/kleidung");
     kleidung = await response.json();
     renderListe(kleidung);
 }
@@ -148,7 +148,7 @@ async function speichernNeu() {
 
     try {
 
-        const response = await fetch("/api/kleidung", {
+        const response = await fetch("http://localhost:1531/api/kleidung", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(neues)
@@ -163,7 +163,7 @@ async function speichernNeu() {
                 const formData = new FormData();
                 formData.append("file", file);
 
-                const imgResponse = await fetch(`/image/kleidungsstuecke/${kleidungsstueckId}/image/remove-background`, {
+                const imgResponse = await fetch(`http://localhost:1531/image/kleidungsstuecke/${kleidungsstueckId}/image/remove-background`, {
                     method: "POST",
                     body: formData
                 });
@@ -175,7 +175,7 @@ async function speichernNeu() {
 
                     gespeichert.bildURL = "http://localhost:1531" + bildPath;
 
-                    await fetch("/api/kleidung", {
+                    await fetch("http://localhost:1531/api/kleidung", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(gespeichert)
@@ -221,7 +221,7 @@ async function alsBenutzt(id) {
     const k = kleidung.find(x => x.id === id);
     if (!k) return;
     const aktualisiert = { ...k, istImWaeschekorb: true };
-    await fetch(`api/kleidung/${id}`, {
+    await fetch(`http://localhost:1531/api/kleidung/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(aktualisiert)
@@ -233,7 +233,7 @@ async function setzeVerfuegbarkeit(id, wert) {
     const k = kleidung.find(x => x.id === id);
     if (!k) return;
     const aktualisiert = { ...k, istImWaeschekorb: !wert };
-    await fetch(`/api/kleidung/${id}`, {
+    await fetch(`http://localhost:1531/api/kleidung/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(aktualisiert)
@@ -242,7 +242,7 @@ async function setzeVerfuegbarkeit(id, wert) {
 }
 
 async function loeschen(id) {
-    await fetch(`/api/kleidung/${id}`, {
+    await fetch(`http://localhost:1531/api/kleidung/${id}`, {
         method: "DELETE"
     });
     ladeKleidung();
@@ -278,7 +278,7 @@ async function toggleWaeschekorb(id) {
 
     try {
         // Schickt das aktualisierte Objekt an deine neue Java-Schnittstelle
-        await fetch(`/api/kleidung/${id}`, {
+        await fetch(`http://localhost:1531/api/kleidung/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(k)
