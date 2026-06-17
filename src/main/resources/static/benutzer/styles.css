@@ -219,3 +219,45 @@ nav a {
 nav a:hover {
     text-decoration: underline;
 }
+
+/* -------------------------------- */
+/* NEU: Passwort Sichtbarkeit Toggle */
+.passwort-wrapper {
+    position: relative;
+    width: 100%;
+    /* Wir übernehmen die Abstände (Margin) vom Input-Feld auf den Wrapper, damit das Layout nicht bricht */
+    margin-top: 5px;
+    margin-bottom: 12px;
+}
+
+.passwort-wrapper input {
+    /* Setzt Margin am Input auf 0, da der Wrapper nun den Abstand hält */
+    margin: 0 !important;
+    padding-right: 48px; /* Platzhalter rechts für das Auge */
+    box-sizing: border-box; /* Verhindert, dass das Feld durch das Padding breiter wird */
+}
+
+.passwort-toggle-btn {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    width: auto;
+    padding: 0;
+    box-shadow: none !important;
+}
+
+.passwort-toggle-btn:hover {
+    background: none;
+    transform: translateY(-50%);
+    opacity: 0.7;
+}
+
+.passwort-toggle-btn:active {
+    transform: translateY(-50%) scale(0.9);
+    box-shadow: none !important;
+}

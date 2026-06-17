@@ -30,6 +30,20 @@ async function profilSpeichern() {
     const nachname = document.getElementById("nachname").value.trim();
     const email = document.getElementById("email").value.trim();
 
+    // 1. NEU: Validierung - Sind alle Felder ausgefüllt?
+    if (!vorname || !nachname || !email) {
+        alert("Bitte fülle alle Felder (Vorname, Nachname und E-Mail) aus!");
+        return; // Bricht den Vorgang ab, sendet nichts ans Backend
+    }
+
+    // 2. NEU: Validierung - Ist die E-Mail syntaktisch korrekt?
+    // Prüft, ob Text vor und nach dem @ steht, sowie ein Punkt existiert
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert("Bitte gib eine gültige E-Mail-Adresse ein (z.B. max@beispiel.de)!");
+        return; // Bricht den Vorgang ab
+    }
+
     // Wir bauen Vorname und Nachname zu EINEM Benutzernamen für das Backend zusammen
     const vollerBenutzername = `${vorname} ${nachname}`.trim();
 
@@ -63,7 +77,10 @@ async function passwortAendern() {
 
     if(response.ok) {
         alert("Passwort erfolgreich geändert!");
+        // Standard-Verhalten: Feld leeren für die Sicherheit
         document.getElementById("neuPasswort").value = "";
+        document.getElementById("neuPasswort").type = "password";
+        document.getElementById("togglePasswort").textContent = "👁️";
     } else {
         alert("Fehler beim Ändern des Passworts.");
     }
@@ -94,6 +111,20 @@ async function logout() {
 // Einstellungen öffnen
 function openSettings() {
     window.location.href = "../einstellungen.html";
+}
+
+// Passwort ein-/ausblenden toggeln
+function togglePasswortSichtbarkeit() {
+    const passwortInput = document.getElementById("neuPasswort");
+    const toggleBtn = document.getElementById("togglePasswort");
+
+    if (passwortInput.type === "password") {
+        passwortInput.type = "text";
+        toggleBtn.textContent = "🙈";
+    } else {
+        passwortInput.type = "password";
+        toggleBtn.textContent = "👁️";
+    }
 }
 
 // Beim Laden ausführen

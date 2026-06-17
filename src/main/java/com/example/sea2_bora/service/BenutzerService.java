@@ -60,15 +60,16 @@ public class BenutzerService {
         return repository.findById(id).orElse(null);
     }
 
-    // ⭐ NEUE PASSWORTPRÜFUNG – unterstützt Klartext + BCrypt
+    // ⭐ VERBESSERTE PASSWORTPRÜFUNG – Unterstützt alle BCrypt-Varianten ($2a, $2b, $2y)
     public boolean passwortPruefen(String eingegeben, String gespeichert) {
+        if (gespeichert == null) return false;
 
-        // Fall 1: Passwort ist verschlüsselt (BCrypt)
-        if (gespeichert.startsWith("$2a$")) {
+        // BCrypt-Hashes starten immer mit $2 und sind exakt 60 Zeichen lang
+        if (gespeichert.startsWith("$2") && gespeichert.length() == 60) {
             return passwordEncoder.matches(eingegeben, gespeichert);
         }
 
-        // Fall 2: Passwort ist Klartext (Testdaten)
+        // Fall 2: Passwort ist Klartext (alte Testdaten)
         return gespeichert.equals(eingegeben);
     }
 
@@ -91,13 +92,26 @@ public class BenutzerService {
         return repository.findByEmail(email).isPresent();
     }
 
-    // DATEN AKTUALISIEREN
+    // ⭐ VERBESSERTES DATEN-AKTUALISIEREN – Schützt vor NULL-Werten und E-Mail-Duplikaten
     public boolean datenAktualisieren(Long id, String neuerBenutzername, String neueEmail) {
         Benutzer benutzer = repository.findById(id).orElse(null);
         if (benutzer == null) return false;
 
-        benutzer.setBenutzername(neuerBenutzername);
-        benutzer.setEmail(neueEmail);
+        // Nur aktualisieren, wenn der Wert im Request auch wirklich mitgeschickt wurde!
+        if (neuerBenutzername != null && !neuerBenutzername.trim().isEmpty()) {
+            benutzer.setBenutzername(neuerBenutzername);
+        }
+
+        if (neueEmail != null && !neueEmail.trim().isEmpty()) {
+            // Sicherheitscheck: Gehört die E-Mail vielleicht schon einem ANDEREN Nutzer?
+            Optional<Benutzer> bestehenderNutzer = repository.findByEmail(neueEmail);
+            if (bestehenderNutzer.isPresent() && !bestehenderNutzer.get().getBenutzerId().equals(id)) {
+                // Abbrechen, da die E-Mail schon vergeben ist
+                return false;
+            }
+            benutzer.setEmail(neueEmail);
+        }
+
         repository.save(benutzer);
         return true;
     }

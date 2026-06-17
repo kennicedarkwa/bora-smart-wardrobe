@@ -272,3 +272,54 @@ input.profile-data-box:focus {
     transform: translate(-2px, -2px);
     box-shadow: 4px 4px 0px #000000;
 }
+
+/* --- Passwort Sichtbarkeit Toggle Erweiterung --- */
+.passwort-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Behält das Design bei, wenn der Typ per JS zu text wechselt */
+.passwort-wrapper input {
+    width: 100%;
+    padding: 12px;
+    padding-right: 48px; /* Platzhalter rechts für das Auge */
+    font-size: 1rem;
+    font-weight: bold;
+    border: 2px solid #000000;
+    border-radius: 4px;
+    background-color: #FFFFFF;
+    outline: none;
+    transition: transform 0.1s ease;
+}
+
+.passwort-wrapper input:focus {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0px #000000;
+}
+
+/* Flacher Emoji-Auge Button über dem Inputfeld positioniert */
+.passwort-toggle-btn {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    width: auto;
+    padding: 0;
+    box-shadow: none !important; /* Verhindert dicken Blockschatten IM Inputfeld */
+}
+
+.passwort-toggle-btn:hover {
+    background: none;
+    transform: translateY(-50%);
+    opacity: 0.7;
+}
+
+.passwort-toggle-btn:active {
+    transform: translateY(-50%) scale(0.9);
+    box-shadow: none !important;
+}

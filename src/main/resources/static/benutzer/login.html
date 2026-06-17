@@ -17,7 +17,10 @@
     <input type="email" id="email" placeholder="beispiel@mail.de">
 
     <label for="passwort">Passwort:</label>
-    <input type="password" id="passwort" placeholder="Dein Passwort">
+    <div class="passwort-wrapper">
+        <input type="password" id="passwort" placeholder="Dein Passwort">
+        <button type="button" id="togglePasswort" class="passwort-toggle-btn" onclick="togglePasswortSichtbarkeit()">👁️</button>
+    </div>
 
     <button onclick="login()">Einloggen</button>
 
