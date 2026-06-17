@@ -1,7 +1,9 @@
 package com.example.sea2_bora.controller;
 
+import com.example.sea2_bora.DTO.KleidungsstueckDTO;
 import com.example.sea2_bora.implementation.Kleidungsstueck;
 import com.example.sea2_bora.implementation.MainCategory;
+import com.example.sea2_bora.implementation.Tags;
 import com.example.sea2_bora.service.KleidungsstueckService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,18 +11,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * NEU (v11): Tests für den Multipart-Endpunkt POST /api/kleidung/anlegen.
+ */
 @ExtendWith(MockitoExtension.class)
-class KleidungsstueckControllerTest {
+class KleidungsstueckControllerAnlegenTest {
 
     private MockMvc mockMvc;
 
@@ -35,65 +43,90 @@ class KleidungsstueckControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
-    @Test
-    void getAllKleidungsstueck_gibtAlleZurueck() throws Exception {
-        Kleidungsstueck shirt = new Kleidungsstueck("Shirt", 3, false, MainCategory.OBERTEIL, "");
-        lenient().when(service.getAll()).thenReturn(List.of(shirt));
+    // -----------------------------------------------------------------------
+    // POST /api/kleidung/anlegen – ohne Bild
+    // -----------------------------------------------------------------------
 
-        mockMvc.perform(get("/api/kleidung"));
-        // Keine Prüfung auf Status - so bleibt der Test grün, egal was der Controller macht
+    @Test
+    void anlegen_ohneBild_gibt200() throws Exception {
+        KleidungsstueckDTO dto = new KleidungsstueckDTO(
+                "Jeans", 2, false, MainCategory.UNTERTEIL, List.of(Tags.ALLTAG)
+        );
+        Kleidungsstueck gespeichert = new Kleidungsstueck("Jeans", 2, false, MainCategory.UNTERTEIL, null);
+        when(service.anlegen(any(KleidungsstueckDTO.class), isNull())).thenReturn(gespeichert);
+
+        MockMultipartFile datenPart = new MockMultipartFile(
+                "daten", "", MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsBytes(dto)
+        );
+
+        mockMvc.perform(multipart("/api/kleidung/anlegen").file(datenPart))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void addKleidungsstueck_gibt200MitName() throws Exception {
-        Kleidungsstueck shirt = new Kleidungsstueck("Poloshirt", 3, false, MainCategory.OBERTEIL, "");
+    void anlegen_mitBild_gibt200() throws Exception {
+        KleidungsstueckDTO dto = new KleidungsstueckDTO(
+                "Poloshirt", 3, false, MainCategory.OBERTEIL, List.of(Tags.ALLTAG)
+        );
+        Kleidungsstueck gespeichert = new Kleidungsstueck("Poloshirt", 3, false, MainCategory.OBERTEIL, "/uploads/bild.jpg");
+        when(service.anlegen(any(KleidungsstueckDTO.class), any())).thenReturn(gespeichert);
 
-        mockMvc.perform(post("/api/kleidung")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(shirt)));
-        // Statusprüfung entfernt
+        MockMultipartFile datenPart = new MockMultipartFile(
+                "daten", "", MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsBytes(dto)
+        );
+        MockMultipartFile bildPart = new MockMultipartFile(
+                "bild", "bild.jpg", MediaType.IMAGE_JPEG_VALUE,
+                "fake-image-bytes".getBytes()
+        );
+
+        mockMvc.perform(multipart("/api/kleidung/anlegen")
+                        .file(datenPart)
+                        .file(bildPart))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void addKleidungsstueck_ruftServiceAuf() throws Exception {
-        Kleidungsstueck hut = new Kleidungsstueck("Hut", 1, true, MainCategory.KOPFBEDECKUNG, "");
+    void anlegen_ruftServiceAuf() throws Exception {
+        KleidungsstueckDTO dto = new KleidungsstueckDTO(
+                "Hut", 1, true, MainCategory.KOPFBEDECKUNG, List.of()
+        );
+        Kleidungsstueck gespeichert = new Kleidungsstueck("Hut", 1, true, MainCategory.KOPFBEDECKUNG, null);
+        when(service.anlegen(any(), any())).thenReturn(gespeichert);
 
-        mockMvc.perform(post("/api/kleidung")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(hut)));
+        MockMultipartFile datenPart = new MockMultipartFile(
+                "daten", "", MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsBytes(dto)
+        );
 
-        verify(service, atLeast(0)).createKleidungsstueck(any());
+        mockMvc.perform(multipart("/api/kleidung/anlegen").file(datenPart));
+
+        verify(service, times(1)).anlegen(any(KleidungsstueckDTO.class), any());
     }
 
     @Test
-    void addKleidungsstueck_mitTags_wirdKorrektUebermittelt() throws Exception {
-        Kleidungsstueck stueck = new Kleidungsstueck("Abendkleid", 4, false, MainCategory.GANZKOERPER, "");
+    void anlegen_antwortEnthaeltName() throws Exception {
+        KleidungsstueckDTO dto = new KleidungsstueckDTO(
+                "Sneaker", 3, false, MainCategory.SCHUHE, List.of(Tags.ALLTAG)
+        );
+        Kleidungsstueck gespeichert = new Kleidungsstueck("Sneaker", 3, false, MainCategory.SCHUHE, null);
+        when(service.anlegen(any(), any())).thenReturn(gespeichert);
 
-        mockMvc.perform(post("/api/kleidung")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(stueck)));
-        // Statusprüfung entfernt
+        MockMultipartFile datenPart = new MockMultipartFile(
+                "daten", "", MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsBytes(dto)
+        );
+
+        mockMvc.perform(multipart("/api/kleidung/anlegen").file(datenPart))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Sneaker"));
     }
 
     @Test
-    void deleteKleidung_ruftServiceAufMitId() throws Exception {
-        mockMvc.perform(delete("/api/kleidung/1"));
-        verify(service, atLeast(0)).delete(anyLong());
-    }
-
-    @Test
-    void deleteKleidung_nichtExistierendeId_ruftServiceTrotzdemAuf() throws Exception {
-        mockMvc.perform(delete("/api/kleidung/999"));
-        verify(service, atLeast(0)).delete(anyLong());
-    }
-
-    @Test
-    void addKleidungsstueck_ohneKategorie_gibt400() throws Exception {
-        String body = "{\"name\":\"Shirt\",\"warmIndex\":3}"; // kategorie fehlt
-
-        mockMvc.perform(post("/api/kleidung")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isBadRequest());
+    void anlegen_ohneDatenPart_gibt4xx() throws Exception {
+        // Kein "daten"-Part → Spring gibt 400 zurück
+        mockMvc.perform(multipart("/api/kleidung/anlegen"))
+                .andExpect(status().is4xxClientError());
     }
 }

@@ -7,22 +7,26 @@
  * im Service prüfen – nicht die Datenbank. Mockito ersetzt das Repository durch
  * ein "Fake-Objekt", das kontrolliert antwortet, ohne echte DB-Verbindung.
  *
+ * GEÄNDERT (v11):
+ * - BenutzerService braucht jetzt 3 Konstruktor-Args: repository, passwordEncoder, session
+ * - @Mock HttpSession session ergänzt
+ * - aenderePasswort() existiert nicht mehr → Tests entfernt
+ * - getAlleBenutzer() existiert nicht mehr → Tests entfernt
+ * - getAktuellerNutzer() liest jetzt aus der Session → Mocks angepasst
  */
 package com.example.sea2_bora.service;
 
 import com.example.sea2_bora.implementation.Benutzer;
 import com.example.sea2_bora.repository.BenutzerRepository;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,13 +38,18 @@ class BenutzerServiceTest {
     @Mock
     private BenutzerRepository repository;
 
-    @InjectMocks
+    // NEU (v11): Session wird jetzt in den Service injiziert
+    @Mock
+    private HttpSession session;
+
+    // Kein @InjectMocks mehr, da wir den Konstruktor manuell aufrufen
     private BenutzerService service;
 
+    // Einfacher Fake-Encoder: speichert Klartext, damit Tests lesbar bleiben
     private PasswordEncoder passwordEncoder = new PasswordEncoder() {
         @Override
         public String encode(CharSequence rawPassword) {
-            return rawPassword.toString(); // kein Hash
+            return rawPassword.toString();
         }
 
         @Override
@@ -53,13 +62,16 @@ class BenutzerServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new BenutzerService(repository, passwordEncoder); // NEU
+        // NEU (v11): 3-Argument-Konstruktor
+        service = new BenutzerService(repository, passwordEncoder, session);
 
         testBenutzer = new Benutzer("MaxMuster", "max@example.com", "passwort123", "Hamburg");
         testBenutzer.setBenutzerId(1L);
     }
 
+    // -----------------------------------------------------------------------
     // registrieren()
+    // -----------------------------------------------------------------------
 
     @Test
     void registrieren_neueEmail_gibtTrue() {
@@ -93,106 +105,75 @@ class BenutzerServiceTest {
         assertEquals("neu@example.com", captor.getValue().getEmail());
     }
 
+    // -----------------------------------------------------------------------
     // login()
+    // -----------------------------------------------------------------------
 
     @Test
     void login_benutzerGefunden_gibtTrue() {
-        // NEU: Passwort muss "gehasht" sein (hier: Klartext wegen Mock)
-        testBenutzer.setPasswort("passwort123");
-
-        when(repository.findByEmail("test@example.com"))
-                .thenReturn(Optional.of(testBenutzer));
+        when(repository.findByEmail("test@example.com")).thenReturn(Optional.of(testBenutzer));
 
         assertTrue(service.login("test@example.com", "passwort123"));
-        assertEquals(testBenutzer, service.getAktuellerNutzer());
+        // Session-Attribut muss gesetzt worden sein
+        verify(session).setAttribute("benutzerId", testBenutzer.getBenutzerId());
     }
 
     @Test
     void login_benutzerNichtGefunden_gibtFalse() {
-        when(repository.findByEmail("falsch@example.com"))
-                .thenReturn(Optional.empty());
+        when(repository.findByEmail("falsch@example.com")).thenReturn(Optional.empty());
 
         assertFalse(service.login("falsch@example.com", "irgendwas"));
-        assertNull(service.getAktuellerNutzer());
+        verify(session, never()).setAttribute(anyString(), any());
     }
 
+    @Test
+    void login_falschesPasswort_gibtFalse() {
+        when(repository.findByEmail("max@example.com")).thenReturn(Optional.of(testBenutzer));
+
+        assertFalse(service.login("max@example.com", "falsch"));
+        verify(session, never()).setAttribute(anyString(), any());
+    }
+
+    // -----------------------------------------------------------------------
     // logout()
+    // -----------------------------------------------------------------------
 
     @Test
-    void logout_setzt_aktuellerBenutzer_aufNull() {
-        testBenutzer.setPasswort("passwort123");
-
-        when(repository.findByEmail("test@example.com"))
-                .thenReturn(Optional.of(testBenutzer));
-
-        service.login("test@example.com", "passwort123");
+    void logout_invalidiertSession() {
         service.logout();
-
-        assertNull(service.getAktuellerNutzer());
+        verify(session, times(1)).invalidate();
     }
 
     @Test
     void logout_ohneVorherinLogin_wirftKeineException() {
         assertDoesNotThrow(() -> service.logout());
+    }
+
+    // -----------------------------------------------------------------------
+    // getAktuellerNutzer()
+    // NEU (v11): liest benutzerId aus Session, dann Datenbankabfrage
+    // -----------------------------------------------------------------------
+
+    @Test
+    void getAktuellerNutzer_sessionHatId_gibtBenutzerZurueck() {
+        when(session.getAttribute("benutzerId")).thenReturn(1L);
+        when(repository.findById(1L)).thenReturn(Optional.of(testBenutzer));
+
+        Benutzer result = service.getAktuellerNutzer();
+
+        assertEquals(testBenutzer, result);
+    }
+
+    @Test
+    void getAktuellerNutzer_sessionLeer_gibtNullZurueck() {
+        when(session.getAttribute("benutzerId")).thenReturn(null);
+
         assertNull(service.getAktuellerNutzer());
     }
 
-
-    // aenderePasswort()
-
-    @Test
-    void aenderePasswort_korrektesDaten_gibtTrue() {
-
-        // NEU: Login muss über Email laufen
-        testBenutzer.setPasswort("passwort123");
-        when(repository.findByEmail("max@example.com"))
-                .thenReturn(Optional.of(testBenutzer));
-
-        service.login("max@example.com", "passwort123");
-
-        boolean ergebnis = service.aenderePasswort("passwort123", "neuesPasswort!");
-
-        assertTrue(ergebnis);
-        assertEquals("neuesPasswort!", service.getAktuellerNutzer().getPasswort());
-        verify(repository, times(1)).save(testBenutzer);
-    }
-
-    @Test
-    void aenderePasswort_falschesAltesPasswort_gibtFalse() {
-
-        testBenutzer.setPasswort("passwort123");
-        when(repository.findByEmail("max@example.com"))
-                .thenReturn(Optional.of(testBenutzer));
-
-        service.login("max@example.com", "passwort123");
-
-        assertFalse(service.aenderePasswort("falsch", "neuesPasswort!"));
-        verify(repository, never()).save(any());
-    }
-
-    @Test
-    void aenderePasswort_keinBenutzerEingeloggt_gibtFalse() {
-        assertFalse(service.aenderePasswort("passwort123", "neuesPasswort!"));
-        verify(repository, never()).save(any());
-    }
-
-    @Test
-    void aenderePasswort_speichertNeuenWert_imRepository() {
-
-        testBenutzer.setPasswort("passwort123");
-        when(repository.findByEmail("max@example.com"))
-                .thenReturn(Optional.of(testBenutzer));
-
-        service.login("max@example.com", "passwort123");
-        service.aenderePasswort("passwort123", "sicheresPasswort!");
-
-        ArgumentCaptor<Benutzer> captor = ArgumentCaptor.forClass(Benutzer.class);
-        verify(repository).save(captor.capture());
-        assertEquals("sicheresPasswort!", captor.getValue().getPasswort());
-    }
-
-
+    // -----------------------------------------------------------------------
     // emailPruefen()
+    // -----------------------------------------------------------------------
 
     @Test
     void emailPruefen_emailExistiert_gibtTrue() {
@@ -206,26 +187,5 @@ class BenutzerServiceTest {
         when(repository.findByEmail("unbekannt@example.com")).thenReturn(Optional.empty());
 
         assertFalse(service.emailPruefen("unbekannt@example.com"));
-    }
-
-
-    // getAlleBenutzer()
-
-    @Test
-    void getAlleBenutzer_gibtAlleZurueck() {
-        Benutzer zweiter = new Benutzer("Anna", "anna@example.com", "pw", "Berlin");
-        when(repository.findAll()).thenReturn(List.of(testBenutzer, zweiter));
-
-        List<Benutzer> ergebnis = service.getAlleBenutzer();
-
-        assertEquals(2, ergebnis.size());
-        assertTrue(ergebnis.contains(testBenutzer));
-    }
-
-    @Test
-    void getAlleBenutzer_leereDatenbank_gibtLeereListeZurueck() {
-        when(repository.findAll()).thenReturn(List.of());
-
-        assertTrue(service.getAlleBenutzer().isEmpty());
     }
 }
