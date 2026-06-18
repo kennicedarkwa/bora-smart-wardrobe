@@ -24,7 +24,8 @@ RUN apt-get update && \
 
 COPY requirements.txt .
 
-RUN pip3 install --break-system-packages -r requirements.txt
+RUN python3 -m pip install --break-system-packages -r requirements.txt
+
 COPY --from=build /app/build/libs/*.jar app.jar
 COPY --from=build /app/scripts /app/scripts
 

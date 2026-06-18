@@ -7,6 +7,7 @@ import com.example.sea2_bora.implementation.Photo_Processing.entity.StoredImage;
 import com.example.sea2_bora.implementation.Photo_Processing.repository.StoredImageRepository;
 import com.example.sea2_bora.implementation.Kleidungsstueck;
 import com.example.sea2_bora.repository.KleidungsstueckRepository;
+import lombok.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +18,6 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
 @Service
 public class ImageService {
 
@@ -25,6 +25,8 @@ public class ImageService {
     private final KleidungsstueckRepository kleidungsstueckRepository;
     private final BackgroundRemovalService backgroundRemovalService;
     private final StorageProperties properties;
+
+    private String uploadDir;
 
     public ImageService(
             StoredImageRepository storedImageRepository,
