@@ -84,11 +84,10 @@ function openSettings() {
     // window.location.href = "settings.html";
 }
 
-function logout() {
+async function logout() {
     const bestaetigung = confirm("Möchtest du dich wirklich ausloggen?");
     if (bestaetigung) {
-        alert("Erfolgreich abgemeldet!");
-        // Hier kannst du den User z.B. zurück zur Login-Seite schicken:
-        // window.location.href = "login.html";
+        await fetch("/api/benutzer/logout", { method: "POST" });
+        window.location.href = "benutzer/login.html";
     }
 }

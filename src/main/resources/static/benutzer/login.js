@@ -27,4 +27,16 @@ async function login() {
     }
 }
 
+// Passwort ein-/ausblenden toggeln
+function togglePasswortSichtbarkeit() {
+    const passwortInput = document.getElementById("passwort");
+    const toggleBtn = document.getElementById("togglePasswort");
 
+    if (passwortInput.type === "password") {
+        passwortInput.type = "text";
+        toggleBtn.textContent = "🙈";
+    } else {
+        passwortInput.type = "password";
+        toggleBtn.textContent = "👁️";
+    }
+}

@@ -10,6 +10,9 @@
 <div class="register-card">
 
     <h1>Konto erstellen</h1>
+    <p style="margin-bottom: 20px;">
+        <a href="../homepage/homepage.html">← Zurück zur Startseite</a>
+    </p>
 
     <label>Vorname</label>
     <input type="text" id="vorname" placeholder="Dein Vorname">
@@ -21,10 +24,16 @@
     <input type="email" id="email" placeholder="beispiel@mail.de">
 
     <label>Passwort</label>
-    <input type="password" id="passwort" placeholder="Passwort">
+    <div class="passwort-wrapper">
+        <input type="password" id="passwort" placeholder="Passwort">
+        <button type="button" id="togglePasswort1" class="passwort-toggle-btn" onclick="togglePasswortSichtbarkeit('passwort', 'togglePasswort1')">👁️</button>
+    </div>
 
     <label>Passwort wiederholen</label>
-    <input type="password" id="passwort2" placeholder="Passwort wiederholen">
+    <div class="passwort-wrapper">
+        <input type="password" id="passwort2" placeholder="Passwort wiederholen">
+        <button type="button" id="togglePasswort2" class="passwort-toggle-btn" onclick="togglePasswortSichtbarkeit('passwort2', 'togglePasswort2')">👁️</button>
+    </div>
 
     <button onclick="registerUser()">Registrieren</button>
 

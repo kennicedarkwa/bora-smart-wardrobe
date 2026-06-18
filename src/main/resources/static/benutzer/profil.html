@@ -26,24 +26,28 @@
 
     <div class="profile-card">
         <div class="data-row">
-            <span class="label">Vorname:</span>
-            <span id="vorname" class="profile-data-box">Max</span>
+            <label for="vorname" class="label">Vorname:</label>
+            <input type="text" id="vorname" class="profile-data-box">
         </div>
         <div class="data-row">
-            <span class="label">Nachname:</span>
-            <span id="nachname" class="profile-data-box">Mustermann</span>
+            <label for="nachname" class="label">Nachname:</label>
+            <input type="text" id="nachname" class="profile-data-box">
         </div>
         <div class="data-row">
-            <span class="label">Email:</span>
-            <span id="email" class="profile-data-box">max@mustermann.de</span>
+            <label for="email" class="label">Email:</label>
+            <input type="email" id="email" class="profile-data-box">
         </div>
+        <button onclick="profilSpeichern()" class="save-btn">Daten speichern</button>
     </div>
 
     <div class="pattern-divider"></div>
 
     <div class="action-section">
         <h3>Passwort ändern</h3>
-        <input type="password" id="neuPasswort" placeholder="Neues Passwort">
+        <div class="passwort-wrapper">
+            <input type="password" id="neuPasswort" placeholder="Neues Passwort">
+            <button type="button" id="togglePasswort" class="passwort-toggle-btn" onclick="togglePasswortSichtbarkeit()">👁️</button>
+        </div>
         <button onclick="passwortAendern()">Ändern</button>
     </div>
 
@@ -56,5 +60,6 @@
     <p id="error" class="error-msg"></p>
 </div>
 
+<script src="profil.js"></script>
 </body>
 </html>

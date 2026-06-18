@@ -1,10 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    // NEU: Dark Mode für das Dashboard aktivieren, falls er in den Einstellungen an ist
+    if (localStorage.getItem("bora_darkmode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+
     const badge = document.getElementById("laundry-badge");
     const popup = document.getElementById("laundry-popup");
     const closeCross = document.getElementById("close-popup-cross");
     const closeBtn = document.getElementById("close-popup-btn");
 
+    // Hier holen wir das Limit aus deinen Einstellungen (Standardwert ist 5)
+    const maxWaescheLimit = localStorage.getItem("bora_waeschelimit") || 5;
 
     fetch('/api/waechekorb')
         .then(response => response.json())
@@ -19,8 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const schonGesehen = sessionStorage.getItem("laundryWarningSeen");
 
-                // Nur zeigen, wenn >= 10 UND noch nicht in dieser Session weggedrückt
-                if (anzahl >= 10 && !schonGesehen) {
+                // Nutzt jetzt dein variables Limit statt der festen 10
+                if (anzahl >= maxWaescheLimit && !schonGesehen) {
                     popup.style.display = "flex";
                 }
             }
@@ -31,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function hidePopup() {
         popup.style.display = "none";
-        
+
         sessionStorage.setItem("laundryWarningSeen", "true");
     }
 

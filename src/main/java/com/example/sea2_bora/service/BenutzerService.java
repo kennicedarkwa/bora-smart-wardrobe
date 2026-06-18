@@ -60,15 +60,16 @@ public class BenutzerService {
         return repository.findById(id).orElse(null);
     }
 
-    // ⭐ NEUE PASSWORTPRÜFUNG – unterstützt Klartext + BCrypt
+    // ⭐ VERBESSERTE PASSWORTPRÜFUNG – Unterstützt alle BCrypt-Varianten ($2a, $2b, $2y)
     public boolean passwortPruefen(String eingegeben, String gespeichert) {
+        if (gespeichert == null) return false;
 
-        // Fall 1: Passwort ist verschlüsselt (BCrypt)
-        if (gespeichert.startsWith("$2a$")) {
+        // BCrypt-Hashes starten immer mit $2 und sind exakt 60 Zeichen lang
+        if (gespeichert.startsWith("$2") && gespeichert.length() == 60) {
             return passwordEncoder.matches(eingegeben, gespeichert);
         }
 
-        // Fall 2: Passwort ist Klartext (Testdaten)
+        // Fall 2: Passwort ist Klartext (alte Testdaten)
         return gespeichert.equals(eingegeben);
     }
 
@@ -89,5 +90,52 @@ public class BenutzerService {
     // EMAIL PRÜFEN
     public boolean emailPruefen(String email) {
         return repository.findByEmail(email).isPresent();
+    }
+
+    // ⭐ VERBESSERTES DATEN-AKTUALISIEREN – Schützt vor NULL-Werten und E-Mail-Duplikaten
+    public boolean datenAktualisieren(Long id, String neuerBenutzername, String neueEmail) {
+        Benutzer benutzer = repository.findById(id).orElse(null);
+        if (benutzer == null) return false;
+
+        // Nur aktualisieren, wenn der Wert im Request auch wirklich mitgeschickt wurde!
+        if (neuerBenutzername != null && !neuerBenutzername.trim().isEmpty()) {
+            benutzer.setBenutzername(neuerBenutzername);
+        }
+
+        if (neueEmail != null && !neueEmail.trim().isEmpty()) {
+            // Sicherheitscheck: Gehört die E-Mail vielleicht schon einem ANDEREN Nutzer?
+            Optional<Benutzer> bestehenderNutzer = repository.findByEmail(neueEmail);
+            if (bestehenderNutzer.isPresent() && !bestehenderNutzer.get().getBenutzerId().equals(id)) {
+                // Abbrechen, da die E-Mail schon vergeben ist
+                return false;
+            }
+            benutzer.setEmail(neueEmail);
+        }
+
+        repository.save(benutzer);
+        return true;
+    }
+
+    // PASSWORT ÄNDERN (Mit Verschlüsselung!)
+    public void passwortAktualisieren(Long id, String neuesPasswort) {
+        Benutzer benutzer = repository.findById(id).orElseThrow();
+        // Hier passiert die Magie: Das neue Passwort wird gehashed!
+        String hashed = passwordEncoder.encode(neuesPasswort);
+        benutzer.setPasswort(hashed);
+        repository.save(benutzer);
+    }
+
+    // ACCOUNT LÖSCHEN (Mit Auflösung der Tabellen-Relationen)
+    public void accountLoeschen(Long id) {
+        Benutzer benutzer = repository.findById(id).orElse(null);
+        if (benutzer != null) {
+            // WICHTIG: Relationen auflösen, um Foreign-Key Constraint Errors in der Datenbank zu vermeiden!
+            benutzer.getKleiderschrank().clear();
+            benutzer.getOutfits().clear();
+            repository.save(benutzer); // Speichern löscht die Einträge aus der Join-Tabelle
+
+            // Jetzt kann der Benutzer sicher gelöscht werden
+            repository.delete(benutzer);
+        }
     }
 }
