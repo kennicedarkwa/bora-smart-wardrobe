@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/image")
 public class ImageController {
@@ -26,13 +27,7 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-//    @PostMapping(value = "/remove-background", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<ImageResponse> uploadAndRemoveBackground(
-//            @RequestParam("file") MultipartFile file
-//    ) throws Exception {
-//        return ResponseEntity.ok(imageService.storeWithoutBackground(file));
-//    }
-
+    // --- NEU / ANGEPASST: Hier wurde die Methode explizit auf POST geprüft ---
     @PostMapping(
             value = "/kleidungsstuecke/{id}/image/remove-background",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
@@ -40,15 +35,45 @@ public class ImageController {
     public ResponseEntity<ImageResponse> uploadImage(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file
-    ) throws Exception {
-        return ResponseEntity.ok(imageService.storeWithoutBackground(id, file));
+    ) {
+        try {
+            // EHSAN: Hier wird der Service aufgerufen
+            return ResponseEntity.ok(imageService.storeWithoutBackground(id, file));
+        } catch (Exception e) {
+            e.printStackTrace(); // WICHTIG zum Debuggen in der Konsole
+            return ResponseEntity.internalServerError().build();
+        }
     }
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ImageResponse> uploadOnly(
-            @RequestParam("file") MultipartFile file
-    ) throws Exception {
-        return ResponseEntity.ok(imageService.storeWithoutBackground(null, file));
-    }
+
+
+
+ //   public ImageController(ImageService imageService) {
+    //    this.imageService = imageService;
+   // }
+
+//    @PostMapping(value = "/remove-background", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<ImageResponse> uploadAndRemoveBackground(
+//            @RequestParam("file") MultipartFile file
+//    ) throws Exception {
+//        return ResponseEntity.ok(imageService.storeWithoutBackground(file));
+//    }
+
+    //@PostMapping(
+    //        value = "/kleidungsstuecke/{id}/image/remove-background",
+    //        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    //)
+    //public ResponseEntity<ImageResponse> uploadImage(
+    //        @PathVariable Long id,
+    //        @RequestParam("file") MultipartFile file
+    //) throws Exception {
+    //    return ResponseEntity.ok(imageService.storeWithoutBackground(id, file));
+    //}
+    //@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    //public ResponseEntity<ImageResponse> uploadOnly(
+    //        @RequestParam("file") MultipartFile file
+    //) throws Exception {
+    //    return ResponseEntity.ok(imageService.storeWithoutBackground(null, file));
+    //}
 
     @GetMapping("/{imageId}")
     public ResponseEntity<Resource> getImage(@PathVariable Long imageId) throws Exception {
