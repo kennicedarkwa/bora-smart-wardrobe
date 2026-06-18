@@ -14,9 +14,8 @@ async function loadBasket() {
         let combinedItems = [];
         const itemIds = new Set();
 
-
         try {
-            const response = await fetch("http://localhost:1531/api/waechekorb");
+            const response = await fetch("/api/waechekorb");
             if (response.ok) {
                 const basket = await response.json();
                 const items = basket.items || basket.kleidungsstuecke || [];
@@ -31,9 +30,8 @@ async function loadBasket() {
             console.log("Ehsans Korb-API noch leer.");
         }
 
-
         try {
-            const clothesResponse = await fetch("http://localhost:1531/api/kleidung");
+            const clothesResponse = await fetch("/api/kleidung");
             if (clothesResponse.ok) {
                 const allClothes = await clothesResponse.json();
                 const statusItems = allClothes.filter(c => c.istImWaeschekorb === true || c.istImWaeschekorb === "true");
@@ -78,7 +76,6 @@ async function loadBasket() {
     }
 }
 
-
 clearBtn.addEventListener("click", async () => {
     const checkedBoxes = document.querySelectorAll("input[type='checkbox']:checked");
     const ids = Array.from(checkedBoxes).map(cb => Number(cb.value));
@@ -89,20 +86,20 @@ clearBtn.addEventListener("click", async () => {
     }
 
     try {
-        await fetch("http://localhost:1531/api/waechekorb/items", {
+        await fetch("/api/waechekorb/items", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ids: ids })
         }).catch(() => {});
 
-        const clothesResponse = await fetch("http://localhost:1531/api/kleidung");
+        const clothesResponse = await fetch("/api/kleidung");
         if (clothesResponse.ok) {
             const allClothes = await clothesResponse.json();
             for (const id of ids) {
                 const originalItem = allClothes.find(c => c.id === id);
                 if (originalItem) {
                     originalItem.istImWaeschekorb = false;
-                    await fetch(`http://localhost:1531/api/kleidung/${id}`, {
+                    await fetch(`/api/kleidung/${id}`, {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(originalItem)
@@ -116,39 +113,30 @@ clearBtn.addEventListener("click", async () => {
     }
 });
 
-
 clearAllBtn.addEventListener("click", async () => {
-
     if (!confirm("Möchtest du wirklich alle Kleidungsstücke auf einmal aus dem Wäschekorb entfernen?")) {
         return;
     }
 
     try {
-
-        await fetch("http://localhost:1531/api/waechekorb/clear", {
+        await fetch("/api/waechekorb/clear", {
             method: "DELETE"
         }).catch(() => {});
 
-
-        const clothesResponse = await fetch("http://localhost:1531/api/kleidung");
+        const clothesResponse = await fetch("/api/kleidung");
         if (clothesResponse.ok) {
             const allClothes = await clothesResponse.json();
-
-
             const basketItems = allClothes.filter(c => c.istImWaeschekorb === true || c.istImWaeschekorb === "true");
-
 
             for (const item of basketItems) {
                 item.istImWaeschekorb = false;
-                await fetch(`http://localhost:1531/api/kleidung/${item.id}`, {
+                await fetch(`/api/kleidung/${item.id}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(item)
                 });
             }
         }
-
-
         loadBasket();
     } catch (error) {
         console.error("Fehler beim kompletten Leeren des Wäschekorbs:", error);
