@@ -3,71 +3,22 @@ body {
     background-color: #d8c2e6; /* heller lila Hintergrund */
     color: #1e0033;
     margin: 0;
-}
-
-.wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* voll im Screen zentriert */
-}
-
-.container {
-    width: 320px;
-    background-color: #c9b1de; /* lila Box */
-    padding: 20px;
-    border: 2px solid #5a3ea6;
-    border-radius: 0; /* kein rounding wie im Beispiel */
-}
-
-/* Titel wie im Screenshot */
-.container h1 {
-    text-align: center;
-    font-size: 32px;
-    color: #1e0033;
-}
-
-/* optionale extra Styles für "Screenshot-Look" */
-.container::before,
-.container::after {
-    content: "";
-    display: block;
-    height: 20px;
-    background-color: #d8eaff;
-    background-image: repeating-linear-gradient(
-            45deg,
-            rgba(127, 89, 207, 0.2) 0px,
-            rgba(127, 89, 207, 0.2) 10px,
-            transparent 10px,
-            transparent 20px
-    );
-    margin: 10px 0;
-}
-
-.outfit-item {
-    text-align: center;
-    margin: 15px 0;
-    padding: 15px;
-    background-color: #5cb3ff;
-    border: 3px solid black;
-    color: white;
-}
-
-.outfit-item p {
-    margin-top: 10px;
-    font-size: 16px;
-}
-
-#outfitListe {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    /* Drückt den Inhalt nach unten, damit er nicht unter dem fixierten Header verschwindet */
+    padding-top: 140px;
 }
 
 header {
     background-color: #1e0033;
     color: white;
     padding: 20px;
+
+    /* Klebt die Navigation oben fest */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    border-bottom: 4px solid #5a3ea6;
 
     display: flex;
     flex-direction: column;
@@ -96,3 +47,37 @@ nav a:hover {
     text-decoration: underline;
 }
 
+#outfitListe {
+    display: flex;
+    flex-direction: column; /* Stellt die Outfit-Karten sauber untereinander */
+    align-items: center;    /* Zentriert alle Stücke auf dem Bildschirm */
+    gap: 25px;
+    width: 100%;
+}
+
+.outfit-item {
+    text-align: center;
+    padding: 20px;
+    background-color: #c9b1de; /* Die Lilane Box aus deinem Container */
+    border: 4px solid black;   /* Dicker, brutaler Retro-Rahmen */
+    color: #1e0033;
+    width: 320px;              /* Feste Breite, damit es einheitlich aussieht */
+    box-shadow: 8px 8px 0px #000; /* Der kantige Schatten-Effekt */
+}
+
+.outfit-item img {
+    max-width: 120px;
+    max-height: 120px;
+    object-fit: contain;
+    border: 2px solid #5a3ea6;
+    background: white;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.outfit-item p {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
