@@ -42,3 +42,7 @@ out/
 .venv/
 __pycache__/
 *.pyc
+
+### Lokale Datenbank ###
+data/badminton-db.mv.db
+data/badminton-db.trace.db

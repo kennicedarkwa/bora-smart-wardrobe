@@ -6,27 +6,25 @@
     <link rel="stylesheet" href="kleidung.css">
     <link rel="stylesheet" href="/darkmode.css">
 </head>
-
 <body>
 
 <header>
-    <h1>KLEIDUNG</h1>
-    <nav>
-        <a href="/dashboard.html">Dashboard</a>
-        <a href="/kleidung/kleidung.html">Kleidung</a>
-        <a href="/weather.html">Wetter</a>
-        <a href="/anlass.html">Anlass</a>
-        <a href="/empfehlung.html">Empfehlung</a>
-        <a href="/outfit/outfit.html">Outfit</a>
-        <a href="/washkorb.html">Wäschekorb</a>
-        <a href="/benutzer/profil.html">Profil</a>
-    </nav>
+    <div class="nav-left">
+        <a href="/weather.html">KLEIDERSCHRANK</a>
+        <a href="/washkorb.html">WÄSCHEKORB</a>
+        <a href="/dashboard.html">DASHBOARD</a>
+    </div>
+    <div class="nav-right">
+        <a href="/benutzer/profil.html">MEIN PROFIL</a>
+        <a href="/logout" class="logout-link">⚙️ AUSLOGGEN</a>
+    </div>
 </header>
 
 <div class="wrapper">
-    <div class="container">
+    <!-- Zurück zu einem einzigen Container mit dem Blue Polka Dot Design -->
+    <div class="container main-container">
 
-        <h2>Deine Kleidungsstücke</h2>
+        <h2>deine kleidungsstücke</h2>
 
         <div class="actions">
             <button id="neuBtn">Neu hinzufügen</button>
@@ -65,10 +63,10 @@
                 <option>5</option>
             </select>
 
-
             <input id="filterName" placeholder="Name suchen…">
         </div>
 
+        <!-- Hier landen die generierten Karten direkt im Container -->
         <div id="kleidungListe" class="grid">
             <p class="placeholder">Noch keine Kleidungsstücke geladen…</p>
         </div>
@@ -152,4 +150,3 @@
 <script src="kleidung.js"></script>
 </body>
 </html>
-
