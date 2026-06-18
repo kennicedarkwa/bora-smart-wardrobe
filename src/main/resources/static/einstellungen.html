@@ -8,64 +8,60 @@
 </head>
 <body>
 
-<header class="main-header">
-    <h1 class="header-title">EINSTELLUNGEN</h1>
-    <nav class="navbar">
-        <a href="/dashboard.html" class="back-arrow">⬅️ Zurück zum Dashboard</a>
-        <a href="../dashboard.html">Dashboard</a>
-        <a href="../kleidung/kleidung.html">Kleidung</a>
-        <a href="../weather.html">Wetter</a>
-        <a href="../anlass.html">Anlass</a>
-        <a href="../empfehlung.html">Empfehlung</a>
-        <a href="../outfit/outfit.html">Outfit</a>
-        <a href="../washkorb.html">Wäschekorb</a>
-        <a href="../benutzer/profil.html">Profil</a>
-    </nav>
+<header>
+    <div class="nav-left">
+        <a href="../dashboard.html">DASHBOARD</a>
+        <a href="../kleidung/kleidung.html">KLEIDERSCHRANK</a>
+        <a href="../washkorb.html">WÄSCHEKORB</a>
+    </div>
+    <div class="nav-right">
+        <a href="../benutzer/profil.html">MEIN PROFIL</a>
+        <a href="einstellungen.html">⚙️</a>
+        <a href="../index.html">AUSLOGGEN</a>
+    </div>
 </header>
 
 <div class="wrapper">
-    <div class="settings-container">
-        <h1>App-Einstellungen</h1>
-        <p class="subtitle">Personalisiere deinen digitalen Kleiderschrank</p>
+    <div class="container" style="max-width: 800px;">
+        <h2 style="background-color: #fff; display: inline-block; padding: 5px 15px; border: 3px solid #000; box-shadow: 6px 6px 0px #000;">einstellungen</h2>
+        <p class="subtitle" style="background-color: #fff; padding: 5px 10px; border: 2px solid #000; margin-bottom: 30px; font-weight: bold; width: fit-content;">Personalisiere deinen digitalen Kleiderschrank</p>
 
         <form id="settingsForm">
-            <div class="setting-group">
-                <label for="standardStandort">Standard-Standort für Wetterdaten</label>
-                <input type="text" id="standardStandort" placeholder="z.B. Hamburg">
+
+            <div class="setting-card">
+                <div class="form-group">
+                    <label for="standardStandort">Standard-Standort für Wetterdaten</label>
+                    <input type="text" id="standardStandort" placeholder="z.B. Hamburg">
+                </div>
             </div>
 
-            <div class="setting-row">
+            <div class="setting-card setting-row">
                 <div class="setting-info">
                     <h3>Dark Mode</h3>
                     <p>Wechselt zu einem dunklen Design (schont die Augen).</p>
                 </div>
-                <label class="switch">
-                    <input type="checkbox" id="darkModeToggle">
-                    <span class="slider"></span>
-                </label>
+                <input type="checkbox" id="darkModeToggle" class="retro-checkbox">
             </div>
 
-            <div class="setting-row">
+            <div class="setting-card setting-row">
                 <div class="setting-info">
                     <h3>Wascherinnerung</h3>
                     <p>Zeigt ein Popup auf dem Dashboard, wenn du waschen solltest.</p>
                 </div>
-                <label class="switch">
-                    <input type="checkbox" id="waescheErinnerungAktiv">
-                    <span class="slider"></span>
-                </label>
+                <input type="checkbox" id="waescheErinnerungAktiv" class="retro-checkbox">
             </div>
 
-            <div class="setting-group" id="waescheLimitGroup" style="margin-top: 15px;">
-                <label for="waescheLimit">Wäsche-Limit (Anzahl der Teile)</label>
-                <input type="number" id="waescheLimit" min="1" max="50" placeholder="z.B. 10">
+            <div class="setting-card">
+                <div class="form-group" id="waescheLimitGroup">
+                    <label for="waescheLimit">Wäsche-Limit (Anzahl der Teile)</label>
+                    <input type="number" id="waescheLimit" min="1" max="50" placeholder="z.B. 10">
+                </div>
             </div>
 
             <div class="button-group">
-                <button type="button" id="btnReset" class="btn-secondary">Standardwerte</button>
-                <button type="submit" id="btnSave" class="btn-primary">Einstellungen speichern</button>
+                <button type="button" id="btnReset" class="btn-secondary">STANDARDWERTE</button>
+                <button type="submit" id="btnSave" class="btn-primary">SPEICHERN</button>
             </div>
-
 
         </form>
 
