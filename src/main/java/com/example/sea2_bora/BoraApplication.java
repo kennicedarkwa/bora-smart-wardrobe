@@ -34,14 +34,14 @@ public class BoraApplication {
             }
 
             // --- Kleidungsstücke nur anlegen, wenn DB leer ist ---
-            if (kleidungsstueckRepository.count() == 0) {
-                Kleidungsstueck k1 = new Kleidungsstueck("Regenjacke", 1, true, MainCategory.OBERTEIL, "/images/regenjacke.jpg");
-                Kleidungsstueck k2 = new Kleidungsstueck("T-Shirt", 3, false, MainCategory.OBERTEIL, "/images/tshirt.jpg");
-                Kleidungsstueck k3 = new Kleidungsstueck("Jeans", 2, false, MainCategory.UNTERTEIL, "/images/jeans.jpg");
-                kleidungsstueckRepository.save(k1);
-                kleidungsstueckRepository.save(k2);
-                kleidungsstueckRepository.save(k3);
-            }
+//            if (kleidungsstueckRepository.count() == 0) {
+//                Kleidungsstueck k1 = new Kleidungsstueck("Regenjacke", 1, true, MainCategory.OBERTEIL, "/images/regenjacke.jpg");
+//                Kleidungsstueck k2 = new Kleidungsstueck("T-Shirt", 3, false, MainCategory.OBERTEIL, "/images/tshirt.jpg");
+//                Kleidungsstueck k3 = new Kleidungsstueck("Jeans", 2, false, MainCategory.UNTERTEIL, "/images/jeans.jpg");
+//                kleidungsstueckRepository.save(k1);
+//                kleidungsstueckRepository.save(k2);
+//                kleidungsstueckRepository.save(k3);
+//            }
 
             // --- Wäschekorb laden oder erstellen ---
             com.example.sea2_bora.implementation.Waechekorb korb =
