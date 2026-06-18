@@ -1,3 +1,10 @@
+// --- NEU: Dark Mode Check  ---
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("bora_darkmode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+});
+
 // --- Event-Listener ---
 document.getElementById("neuBtn").addEventListener("click", openPopupNeu);
 document.getElementById("speichernNeu").addEventListener("click", speichernNeu);

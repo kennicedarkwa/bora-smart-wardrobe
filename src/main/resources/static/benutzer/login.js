@@ -1,3 +1,10 @@
+// --- NEU: Dark Mode Check ganz am Anfang ---
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("bora_darkmode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+});
+
 console.log("login.js wurde geladen");
 
 async function login() {

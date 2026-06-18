@@ -1,3 +1,10 @@
+// --- NEU: Dark Mode Check  ---
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("bora_darkmode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+});
+
 // Lädt die Daten beim Öffnen der Seite
 async function loadProfil() {
     const response = await fetch("/api/benutzer/aktueller");

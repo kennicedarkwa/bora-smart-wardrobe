@@ -1,0 +1,124 @@
+/* ========================================================
+   MASTER DARK MODE (Neo-Brutalismus / Retro-Style)
+   ======================================================== */
+
+/* 1. Hintergrund & Textfarbe der ganzen Seite */
+
+body.dark-mode {
+    background-color: #1e0033 !important; /* Tiefes Lila */
+    color: #d8eaff !important;
+    background-image: none !important; /* <--- Das hier schaltet die Streifen ab! */
+}
+
+
+/* 2. Alle Container, Karten, Hero-Boxen & Popups */
+body.dark-mode .app-container,
+body.dark-mode .container,
+body.dark-mode .profile-card,
+body.dark-mode .register-card,
+body.dark-mode .card,
+body.dark-mode .feature-card,
+body.dark-mode .hero,
+body.dark-mode .cloth-box,
+body.dark-mode .kategorie-reihe,
+body.dark-mode #kategorienContainer,
+body.dark-mode #clothesList li,
+body.dark-mode .tag,
+body.dark-mode .popup-content,
+body.dark-mode .broad-popup {
+    background-color: #2a1545 !important; /* Dunklere Karten */
+    background-image: none !important; /* Entfernt die hellen Punkte */
+    border-color: #5cb3ff !important; /* Leuchtend blauer Rand */
+    color: #d8eaff !important;
+    box-shadow: 6px 6px 0px #000000 !important; /* Harter schwarzer Schatten bleibt */
+}
+
+/* 3. Globale Header & Navigation */
+body.dark-mode .main-header,
+body.dark-mode header,
+body.dark-mode .header {
+    background-color: #130024 !important; /* Noch dunkleres Lila für Header */
+    border-bottom-color: #5cb3ff !important;
+}
+
+body.dark-mode .nav-link,
+body.dark-mode nav a,
+body.dark-mode .logout-btn {
+    color: #d8eaff !important;
+}
+
+body.dark-mode .nav-link:hover,
+body.dark-mode nav a:hover,
+body.dark-mode .logout-btn:hover {
+    color: #5cb3ff !important; /* Leuchtet blau beim Drüberfahren */
+}
+
+/* 4. Typografie (Überschriften & Labels) */
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3,
+body.dark-mode .brand-title, body.dark-mode .label,
+body.dark-mode label, body.dark-mode .kategorie-titel,
+body.dark-mode .cloth-name, body.dark-mode .welcome-text h1,
+body.dark-mode .welcome-text p, body.dark-mode .title,
+body.dark-mode .outfit-item p {
+    color: #d8eaff !important;
+}
+
+/* 5. Eingabefelder (Inputs) & Dropdowns (Selects) & Profil-Daten */
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode .profile-data-box {
+    background-color: #1e0033 !important;
+    color: #ffffff !important;
+    border-color: #5cb3ff !important;
+}
+
+body.dark-mode input:focus,
+body.dark-mode select:focus,
+body.dark-mode .profile-data-box:focus {
+    box-shadow: 4px 4px 0px #5cb3ff !important; /* Schatten wird beim Anklicken blau */
+}
+
+/* 6. Buttons */
+body.dark-mode button,
+body.dark-mode .btn,
+body.dark-mode .modal-btn,
+body.dark-mode #removeSelectedBtn {
+    background-color: #3a205e !important;
+    color: #ffffff !important;
+    border-color: #5cb3ff !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+}
+
+body.dark-mode button:hover,
+body.dark-mode .btn:hover {
+    background-color: #5cb3ff !important;
+    color: #1e0033 !important;
+    box-shadow: 6px 6px 0px #000000 !important;
+}
+
+/* Rote Danger-Buttons (Löschen) */
+body.dark-mode .delete-btn,
+body.dark-mode #clearAllBtn {
+    background-color: #8b0000 !important;
+    border-color: #ff6666 !important;
+    color: white !important;
+}
+
+body.dark-mode .delete-btn:hover,
+body.dark-mode #clearAllBtn:hover {
+    background-color: #ff4c4c !important;
+    color: #1e0033 !important;
+}
+
+/* 7. Trennlinien & Muster-Bereiche */
+body.dark-mode .pattern-divider {
+    background-color: #5cb3ff !important;
+    background-image: none !important;
+}
+
+/* 8. Wäschekorb spezifisch (Ausgegraute Boxen) */
+body.dark-mode .card.in-laundry {
+    background-color: #3a203a !important;
+    border-color: #ff5c5c !important;
+    opacity: 0.8 !important;
+}

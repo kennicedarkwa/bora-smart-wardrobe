@@ -1,3 +1,10 @@
+// --- NEU: Dark Mode Check  ---
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("bora_darkmode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+});
+
 // --- FUNKTION 1: Lädt das Wetter auf der aktuellen Seite im Kasten ---
 async function loadWeather() {
     const city = document.getElementById("city").value;

@@ -212,15 +212,7 @@ button {
     background-color: #b91c1c;
 }
 
-.status-message {
-    margin-top: 20px;
-    padding: 12px;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: 600;
-}
-.status-success { background-color: #def7ec; color: #03543f; }
-.status-error { background-color: #fde8e8; color: #9b1c1c; }
+
 
 /* --- DARK MODE STYLES --- */
 body.dark-mode {
@@ -280,11 +272,36 @@ body.dark-mode .btn-secondary {
     color: #4f46e5;
 }
 
-/* Anpassung für den Dark Mode */
-body.dark-mode .back-arrow {
-    color: #d8c2e6;
+/* =========================================
+   SCHWEBENDE ERFOLGSMELDUNG (TOAST-POPUP)
+   ========================================= */
+
+.status-message {
+    /* Löst die Box vom Ende der Seite und lässt sie schweben */
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+
+    /* Das coole Retro-Design */
+    background-color: #4ade80 !important; /* Auffälliges Hellgrün */
+    color: #1e0033 !important;
+    padding: 15px 25px !important;
+    border: 3px solid #000000 !important;
+    box-shadow: 4px 4px 0px #000000 !important;
+
+    font-family: 'Courier New', Courier, monospace !important;
+    font-weight: bold !important;
+    font-size: 16px !important;
+    text-align: center;
+    z-index: 9999 !important; /* Stellt sicher, dass es ÜBER allem anderen liegt */
+    border-radius: 0 !important;
+    margin: 0 !important;
 }
 
-body.dark-mode .back-arrow:hover {
-    color: #5cb3ff;
+/* Anpassung für den Dark Mode */
+body.dark-mode .status-message {
+    background-color: #2a1545 !important; /* Dunkler Hintergrund */
+    color: #4ade80 !important; /* Grüne Schrift */
+    border-color: #4ade80 !important; /* Grüner Rand */
+    box-shadow: 6px 6px 0px #000000 !important;
 }

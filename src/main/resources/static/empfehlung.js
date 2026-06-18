@@ -1,3 +1,10 @@
+// --- NEU: Dark Mode Check  ---
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("bora_darkmode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+});
+
 // 1. ANLASS HOLEN: Wir lesen den Anlass aus dem Speicher (von der vorherigen Seite)
 const gewaehlterAnlass = localStorage.getItem("bora_anlass") || "CASUAL";
 

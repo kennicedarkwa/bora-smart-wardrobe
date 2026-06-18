@@ -1,3 +1,10 @@
+// --- NEU: Dark Mode Check ganz am Anfang ---
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("bora_darkmode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+});
+
 async function registerUser() {
     const vorname = document.getElementById("vorname").value.trim();
     const nachname = document.getElementById("nachname").value.trim();

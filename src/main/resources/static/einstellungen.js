@@ -28,18 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // --- NEU: Konto löschen ---
-    document.getElementById("btnDeleteData").addEventListener("click", () => {
-        const sicher = confirm("🚨 Bist du sicher? Alle deine Outfits, Einstellungen und gespeicherten Daten werden unwiderruflich gelöscht!");
 
-        if (sicher) {
-            // Löscht alle lokalen Daten
-            localStorage.clear();
-            alert("Dein Konto wurde erfolgreich gelöscht. Du wirst ausgeloggt.");
-            // Leitet zurück zur Startseite (Pfad ggf. anpassen!)
-            window.location.href = "/homepage/index.html";
-        }
-    });
+
 });
 
 async function ladeEinstellungen() {

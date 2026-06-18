@@ -1,3 +1,10 @@
+// --- NEU: Dark Mode Check  ---
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("bora_darkmode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+});
+
 const clothesList = document.getElementById("clothesList");
 const clearBtn = document.getElementById("removeSelectedBtn");
 const clearAllBtn = document.getElementById("clearAllBtn"); // Neuer Button-Spion
