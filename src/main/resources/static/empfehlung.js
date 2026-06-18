@@ -82,8 +82,19 @@ async function ladeUndFiltereKleidung() {
             return;
         }
 
-        // Zeilen zeichnen
-        for (const [kategorieName, items] of Object.entries(optionen)) {
+        // --- NEU: Feste Reihenfolge für die Kategorien auf der Seite ---
+        const wunschReihenfolge = ["KOPFBEDECKUNG", "OBERTEIL", "GANZKOERPER", "UNTERTEIL", "SCHUHE", "ACCESSOIRES"];
+
+        // Kategorien sortieren
+        const sortierteKategorien = Object.keys(optionen).sort((a, b) => {
+            const posA = wunschReihenfolge.indexOf(a.toUpperCase());
+            const posB = wunschReihenfolge.indexOf(b.toUpperCase());
+            return (posA === -1 ? 99 : posA) - (posB === -1 ? 99 : posB);
+        });
+
+        // Zeilen in der exakt richtigen Reihenfolge zeichnen
+        for (const kategorieName of sortierteKategorien) {
+            const items = optionen[kategorieName];
             if (items && items.length > 0) {
                 zeichneKategorieReihe(kategorieName, items, container);
             }
@@ -167,4 +178,31 @@ function zeichneKategorieReihe(kategorieName, items, parentContainer) {
 
     reiheDiv.appendChild(itemsContainer);
     parentContainer.appendChild(reiheDiv);
+}
+
+// ==========================================================
+// OUTFIT SPEICHERN (ALS ARRAY FÜR OUTFIT.JS)
+// ==========================================================
+
+// Stelle sicher, dass der Button im HTML der empfehlung.html die id="btnTragen" hat!
+const tragenButton = document.getElementById("btnTragen");
+
+if (tragenButton) {
+    tragenButton.addEventListener("click", () => {
+
+        if (Object.keys(ausgewaehltesOutfit).length === 0) {
+            alert("Bitte wähle zuerst mindestens ein Kleidungsstück aus!");
+            return;
+        }
+
+        // Wir wandeln das Objekt in ein echtes Array um,
+        // da deine outfit.js ein Array erwartet!
+        const outfitArray = Object.values(ausgewaehltesOutfit);
+
+        // Wir speichern es unter dem Namen "outfit" ab
+        localStorage.setItem("outfit", JSON.stringify(outfitArray));
+
+        // Weiterleitung zur Outfit-Seite
+        window.location.href = "../outfit/outfit.html";
+    });
 }
