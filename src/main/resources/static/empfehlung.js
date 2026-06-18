@@ -5,88 +5,96 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// 1. ANLASS HOLEN: Wir lesen den Anlass aus dem Speicher (von der vorherigen Seite)
-const gewaehlterAnlass = localStorage.getItem("bora_anlass") || "CASUAL";
+// 1. PARAMETER AUS DER URL AUSLESEN
+const urlParams = new URLSearchParams(window.location.search);
+const gewaehlterAnlass = urlParams.get("occasion") || "CASUAL";
+const gewaehlteStadt = urlParams.get("city") || "Hamburg";
+const gewaehltesDatum = urlParams.get("date") || "2026-05-05";
 
-// Hier merken wir uns die IDs für den "wear" Button
-let aktuelleEmpfehlungsIds = [];
+let ausgewaehltesOutfit = {};
 
-document.addEventListener("DOMContentLoaded", async () => {
-    document.getElementById("anlassTitel").textContent = gewaehlterAnlass.toLowerCase();
-    await ladeUndFiltereKleidung();
+document.addEventListener("DOMContentLoaded", () => {
+    const titelElement = document.getElementById("anlassTitel");
+    if (titelElement) {
+        titelElement.textContent = gewaehlterAnlass.toLowerCase();
+    }
+    ladeUndFiltereKleidung();
 });
 
 async function ladeUndFiltereKleidung() {
     const container = document.getElementById("kategorienContainer");
 
     try {
-        // 2. WETTER HOLEN: Verknüpfung mit dem WeatherController
-        const stadt = "Hamburg";
-        const datum = "2026-05-05"; // Dein aktuelles Datum aus der JSON
-
-        const weatherResponse = await fetch(`/api/weather/${stadt}/${datum}`);
+        const weatherResponse = await fetch(`/api/weather/${encodeURIComponent(gewaehlteStadt)}/${encodeURIComponent(gewaehltesDatum)}`);
         if (!weatherResponse.ok) throw new Error("Wetter-API nicht erreichbar");
         const aktuellesWetter = await weatherResponse.json();
 
-        // 3. BACKEND ANFRAGEN: Das JSON muss EXAKT wie eure Java-Klasse "DailyForecast" aussehen
+        const minTemp = Math.round(aktuellesWetter.temperature?.min_celsius ?? 15);
+        const maxTemp = Math.round(aktuellesWetter.temperature?.max_celsius ?? 22);
+
         const backendForecast = {
-            date: datum,
+            date: gewaehltesDatum,
+            uv_index: Math.round(aktuellesWetter.uv_index ?? 0),
             temperature: {
-                min_celsius: aktuellesWetter.temperature.min_celsius,
-                max_celsius: aktuellesWetter.temperature.max_celsius
+                min_celsius: minTemp, // 👈 Das braucht Java für die Berechnung!
+                max_celsius: maxTemp  // 👈 Das braucht Java für die Berechnung!
             },
             precipitation: {
-                type: aktuellesWetter.precipitation.type,
-                probability_percent: aktuellesWetter.precipitation.probability_percent
+                type: aktuellesWetter.precipitation?.type || "NONE",
+                probability_percent: Math.round(aktuellesWetter.precipitation?.probability_percent || 0)
             }
         };
 
-        // ✅ HIER IST DIE ÄNDERUNG: Wir hängen den Anlass an die URL an!
-        const url = `/api/empfehlung?anlass=${gewaehlterAnlass}`;
+        // Falls dein Backend "isLikely()" prüft, fügen wir es zur Sicherheit im JS-Forecast hinzu
+        backendForecast.precipitation.likely = backendForecast.precipitation.probability_percent > 50;
 
-        // Ruft deinen EmpfehlungController in Java auf
+        const url = `/api/empfehlung?anlass=${encodeURIComponent(gewaehlterAnlass)}`;
+
         const response = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(backendForecast)
         });
 
+        if (!response.ok) throw new Error("Backend-Empfehlung fehlgeschlagen");
         const empfehlungData = await response.json();
+
         container.innerHTML = "";
 
-        // Prüfen, ob das Backend Klamotten gefunden hat
-        if (!empfehlungData.kleidungsstuecke || empfehlungData.kleidungsstuecke.length === 0) {
-            container.innerHTML = `<p style='text-align: center; font-weight:bold;'>Keine passenden Stücke für <b>${gewaehlterAnlass}</b> im Schrank.</p>`;
+        // Greift direkt auf die neu bereitgestellte Java-Transient-Map zu
+        let optionen = empfehlungData.optionenNachKategorie;
+
+        // Robuster Fallback, falls die Map leer ist, aber flache Stücke existieren
+        if ((!optionen || Object.keys(optionen).length === 0) && empfehlungData.kleidungsstuecke) {
+            optionen = {};
+            empfehlungData.kleidungsstuecke.forEach(item => {
+                // Nutzt dein exaktes Java-Feld "hauptkategorie"
+                const kat = item.hauptkategorie || "SONSTIGES";
+                if (!optionen[kat]) {
+                    optionen[kat] = [];
+                }
+                optionen[kat].push(item);
+            });
+        }
+
+        if (!optionen || Object.keys(optionen).length === 0) {
+            container.innerHTML = `<p style='text-align: center; font-weight:bold; margin-top: 20px;'>Keine passenden Stücke für <b>${gewaehlterAnlass}</b> mit Temperatur-Index im Schrank.</p>`;
             return;
         }
 
-        // IDs für den "wear" Button merken
-        aktuelleEmpfehlungsIds = empfehlungData.kleidungsstuecke.map(item => item.id);
-
-        // 4. ANZEIGEN: Nach "hauptkategorie" gruppieren (Oberteil, Hose, etc.)
-        const gruppierteKleidung = {};
-
-        empfehlungData.kleidungsstuecke.forEach(item => {
-            const kategorie = item.hauptkategorie ? item.hauptkategorie : "SONSTIGES";
-
-            if (!gruppierteKleidung[kategorie]) {
-                gruppierteKleidung[kategorie] = [];
+        // Zeilen zeichnen
+        for (const [kategorieName, items] of Object.entries(optionen)) {
+            if (items && items.length > 0) {
+                zeichneKategorieReihe(kategorieName, items, container);
             }
-            gruppierteKleidung[kategorie].push(item);
-        });
-
-        // HTML-Boxen zeichnen
-        for (const [kategorieName, items] of Object.entries(gruppierteKleidung)) {
-            zeichneKategorieReihe(kategorieName, items, container);
         }
 
     } catch (error) {
-        console.error("Fehler bei der Empfehlung:", error);
-        container.innerHTML = "<p style='text-align: center; color: red;'>Fehler: Backend antwortet nicht.</p>";
+        console.error("Fehler in der JS-Verarbeitung:", error);
+        container.innerHTML = "<p style='text-align: center; color: red; margin-top: 20px;'>Fehler beim Laden oder Verarbeiten der Empfehlungen.</p>";
     }
 }
 
-// Hilfsfunktion: Zeichnet die hellblauen Reihen
 function zeichneKategorieReihe(kategorieName, items, parentContainer) {
     const reiheDiv = document.createElement("div");
     reiheDiv.className = "kategorie-reihe";
@@ -100,30 +108,63 @@ function zeichneKategorieReihe(kategorieName, items, parentContainer) {
     itemsContainer.className = "items-container";
 
     items.forEach(item => {
-        const box = document.createElement("div");
+        const box = document.createElement("button");
+        box.type = "button";
         box.className = "cloth-box";
 
-        if(item.bildURL) {
-            box.innerHTML = `<img src="${item.bildURL}" alt="${item.name}">`;
+        // Falls dieses Item bereits im Speicher ist, direkt als selektiert markieren
+        if (ausgewaehltesOutfit[kategorieName] && ausgewaehltesOutfit[kategorieName].id === item.id) {
+            box.classList.add("selected");
+        }
+
+        // 1. BILD-CONTAINER (Holt Pfade wie /uploads/... direkt aus deinem KleidungsstueckService)
+        const imgContainer = document.createElement("div");
+        imgContainer.className = "bild-container";
+
+        // Fängt beide Schreibweisen (Java DTO-Feld 'bildURL' und H2-Spalte 'bildurl') ab
+        const bildPfad = item.bildURL || item.bildurl;
+
+        if (bildPfad && bildPfad.trim() !== "") {
+            imgContainer.innerHTML = `<img src="${bildPfad}" alt="${item.name}" class="kleidung-bild">`;
         } else {
             let icon = "👕";
-            if(kategorieName.toLowerCase().includes("unterteil") || kategorieName.toLowerCase().includes("hose")) icon = "👖";
-            if(kategorieName.toLowerCase().includes("schuhe")) icon = "👞";
-            if(kategorieName.toLowerCase().includes("accessoire")) icon = "👜";
-            box.textContent = icon;
+            const katLower = kategorieName.toLowerCase();
+            if (katLower.includes("unterteil") || katLower.includes("hose")) icon = "👖";
+            if (katLower.includes("schuhe")) icon = "👞";
+            if (katLower.includes("accessoire")) icon = "👜";
+            imgContainer.textContent = icon;
+            imgContainer.style.fontSize = "32px";
         }
+        box.appendChild(imgContainer);
+
+        // 2. NAME
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "kleidung-name";
+        nameSpan.textContent = item.name || "Unbekanntes Teil";
+        box.appendChild(nameSpan);
+
+        // 3. KLICK-LOGIK MIT TOGGLE (UNSELECT)
+        box.addEventListener("click", () => {
+            const istBereitsSelektiert = box.classList.contains("selected");
+
+            // Erstmal alle in dieser Reihe visuell zurücksetzen
+            itemsContainer.querySelectorAll(".cloth-box").forEach(b => b.classList.remove("selected"));
+
+            if (istBereitsSelektiert) {
+                // Wenn es schon ausgewählt war -> ABWÄHLEN (Aus dem Speicher löschen)
+                delete ausgewaehltesOutfit[kategorieName];
+            } else {
+                // Wenn es neu angeklickt wurde -> AUSWÄHLEN
+                box.classList.add("selected");
+                ausgewaehltesOutfit[kategorieName] = item;
+            }
+
+            console.log("Aktuelles Outfit:", ausgewaehltesOutfit);
+        });
+
         itemsContainer.appendChild(box);
     });
 
     reiheDiv.appendChild(itemsContainer);
     parentContainer.appendChild(reiheDiv);
-}
-
-// WIRD GETRAGEN VERKNÜPFUNG (wear ! Button)
-function wearOutfit() {
-    if (aktuelleEmpfehlungsIds.length === 0) {
-        alert("Kein Outfit zum Anziehen da!");
-        return;
-    }
-    alert("Outfit getragen! Du siehst super aus heute!");
 }

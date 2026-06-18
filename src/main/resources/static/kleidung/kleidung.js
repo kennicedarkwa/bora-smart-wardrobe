@@ -1,4 +1,4 @@
-// --- NEU: Dark Mode Check  ---
+// --- Dark Mode Check ---
 document.addEventListener("DOMContentLoaded", () => {
     if (localStorage.getItem("bora_darkmode") === "true") {
         document.body.classList.add("dark-mode");
@@ -46,20 +46,23 @@ async function ladeKleidung() {
 function renderListe(liste) {
     const container = document.getElementById("kleidungListe");
     container.innerHTML = "";
+
     if (!liste || liste.length === 0) {
         container.innerHTML = '<p class="placeholder">Keine Kleidungsstücke gefunden…</p>';
         return;
     }
+
     liste.forEach(k => {
         if (!k.id) return;
         const statusText = k.istImWaeschekorb ? "im Wäschekorb" : "verfügbar";
-        const waescheBtnText = k.istImWaeschekorb ? "✨ Aus dem Korb" : "🧺 In den Wäschekorb";
+        const waescheBtnText = k.istImWaeschekorb ? "🧺 Aus dem Korb" : "🧺 In den Wäschekorb";
+        const bildPfad = k.bildURL || k.bildurl || "";
 
         container.innerHTML += `
-            <div class="card ${k.istImWaeschekorb ? 'in-laundry' : ''}">
-                <img src="${k.bildURL || ""}" alt="${k.name}" style="max-height: 120px; object-fit: cover;">
-                <h3>${k.name}</h3>
-                <p>Status: ${statusText}</p>
+            <div class="cloth-card ${k.istImWaeschekorb ? 'in-laundry' : ''}">
+                ${bildPfad ? `<img src="${bildPfad}" alt="${k.name}">` : ''}
+                <div class="item-name">${k.name}</div>
+                <div class="item-status">Status: ${statusText}</div>
                 <div class="card-buttons">
                     <button onclick="details(${k.id})">Details</button>
                     <button onclick="toggleWaeschekorb(${k.id})">${waescheBtnText}</button>
@@ -95,22 +98,20 @@ function details(id) {
     const k = kleidung.find(x => x.id === id);
     if (!k) return;
 
-    // Status und Texte berechnen
     const statusText = k.istImWaeschekorb ? "🧺 Im Wäschekorb" : "✅ Verfügbar";
     const regenText = k.istFuerRegenGeeignet ? "☔ Ja" : "☀️ Nein";
     const anlassText = (k.tags && k.tags.length > 0) ? k.tags.join(', ') : "Kein Anlass";
 
-
-    const bildHtml = k.bildURL
-        ? `<img src="${k.bildURL}" alt="${k.name}" style="width:100%; max-height: 250px; object-fit: contain; margin-bottom: 15px; border-radius: 8px; border: 2px solid black;">`
+    const bildPfad = k.bildURL || k.bildurl;
+    const bildHtml = bildPfad
+        ? `<img src="${bildPfad}" alt="${k.name}" style="width:100%; max-height: 250px; object-fit: contain; margin-bottom: 15px; border: 3px solid black; box-shadow: 4px 4px 0px #000;">`
         : `<p style="font-style: italic; margin-bottom: 15px;">Kein Bild vorhanden</p>`;
-
 
     document.getElementById("detailsContent").innerHTML = `
         <h3>${k.name}</h3>
         ${bildHtml}
         
-        <div style="text-align: left; margin-bottom: 20px; line-height: 1.6;">
+        <div style="text-align: left; margin-bottom: 20px; line-height: 1.6; font-weight: bold;">
             <p><strong>Kategorie:</strong> ${k.hauptkategorie || "-"}</p>
             <p><strong>Anlass:</strong> ${anlassText}</p>
             <p><strong>Wärmeindex:</strong> ${k.temperaturIndex || "-"}</p>
@@ -134,7 +135,6 @@ function closePopup() {
     document.getElementById("popupNeu").classList.add("hidden");
     document.getElementById("popupDetails").classList.add("hidden");
 
-    // Reset der Felder
     document.getElementById("neuName").value = "";
     document.getElementById("neuBildFile").value = "";
     document.getElementById("bildNameLabel").innerText = "Kein Foto ausgewählt";
@@ -160,7 +160,6 @@ async function speichernNeu(event) {
     const file = fileInput ? fileInput.files[0] : null;
 
     try {
-
         const response = await fetch("/api/kleidung", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -169,7 +168,6 @@ async function speichernNeu(event) {
 
         if (!response.ok) throw new Error("Fehler beim Anlegen des Textes");
         const gespeichert = await response.json();
-
 
         if (file && gespeichert.id) {
             const imgFormData = new FormData();
@@ -182,20 +180,18 @@ async function speichernNeu(event) {
 
             if (imgResponse.ok) {
                 const imgData = await imgResponse.json();
-                gespeichert.bildURL = `/image/${imgData.id}`; // URL-Format anpassen
+                gespeichert.bildURL = `/image/${imgData.id}`;
 
                 await fetch(`/api/kleidung/${gespeichert.id}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(gespeichert)
                 });
-            } else {
-                console.error("Hintergrund-Entfernung fehlgeschlagen");
             }
         }
 
         closePopup();
-        ladeKleidung(); // Liste neu laden
+        ladeKleidung();
     } catch (error) {
         console.error("Gescheitert:", error);
     }

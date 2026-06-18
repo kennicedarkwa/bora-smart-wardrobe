@@ -91,44 +91,7 @@ public class WeatherService {
         }
     }
 
-//    private DailyForecast aggregateHoursToSingleDay(String date, JsonNode weatherArray) {
-//        double minTemp = Double.MAX_VALUE;
-//        double maxTemp = -Double.MAX_VALUE;
-//        int maxPrecipProbability = 0;
-//        int maxUvIndex = 0;
-//        String dominantCondition = "dry";
-//
-//        for (JsonNode hourRecord : weatherArray) {
-//            if (hourRecord.has("temperature") && !hourRecord.get("temperature").isNull()) {
-//                double temp = hourRecord.get("temperature").asDouble();
-//                minTemp = Math.min(minTemp, temp);
-//                maxTemp = Math.max(maxTemp, temp);
-//            }
-//            if (hourRecord.has("precipitation_probability") && !hourRecord.get("precipitation_probability").isNull()) {
-//                maxPrecipProbability = Math.max(maxPrecipProbability, hourRecord.get("precipitation_probability").asInt());
-//            }
-//            if (hourRecord.has("condition") && !hourRecord.get("condition").isNull()) {
-//                String condition = hourRecord.get("condition").asText();
-//                if (condition.equals("rain") || condition.equals("thunderstorm") || condition.equals("snow")) {
-//                    dominantCondition = condition;
-//                }
-//            }
-//            if (hourRecord.has("solar") && !hourRecord.get("solar").isNull()) {
-//                int approxUv = (int) Math.min(Math.max(hourRecord.get("solar").asDouble() / 100.0, 0), 11);
-//                maxUvIndex = Math.max(maxUvIndex, approxUv);
-//            }
-//        }
-//
-//        Temperature tempEntity = new Temperature((int) Math.floor(minTemp), (int) Math.ceil(maxTemp));
-//        PrecipitationType precipType = switch (dominantCondition.toLowerCase()) {
-//            case "rain" -> PrecipitationType.RAIN;
-//            case "snow" -> PrecipitationType.SNOW;
-//            case "thunderstorm" -> PrecipitationType.THUNDERSTORM;
-//            default -> PrecipitationType.NONE;
-//        };
-//
-//        return new DailyForecast(date, tempEntity, maxUvIndex, new Precipitation(precipType, maxPrecipProbability));
-//    }
+
 
 
     private DailyForecast aggregateHoursToSingleDay(String date, JsonNode weatherArray) {

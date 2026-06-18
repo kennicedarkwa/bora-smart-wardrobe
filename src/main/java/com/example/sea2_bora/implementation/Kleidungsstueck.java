@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.Getter;
 
 @Entity
 @Data
@@ -27,6 +28,7 @@ public class Kleidungsstueck
 
     @NotNull //Kennice
     @Enumerated(EnumType.STRING)
+    @Getter
     private MainCategory hauptkategorie;
 
     @ElementCollection
@@ -62,6 +64,8 @@ public class Kleidungsstueck
             this.tags.add(tag);
         }
     }
+
+
 
     /**
      * Entfernt einen Tag von einem Kleidungsstück
