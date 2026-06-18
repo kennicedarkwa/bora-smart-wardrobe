@@ -1,4 +1,4 @@
-// --- NEU: Dark Mode Check  ---
+// --- Dark Mode Check ---
 document.addEventListener("DOMContentLoaded", () => {
     if (localStorage.getItem("bora_darkmode") === "true") {
         document.body.classList.add("dark-mode");
@@ -7,7 +7,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const clothesList = document.getElementById("clothesList");
 const clearBtn = document.getElementById("removeSelectedBtn");
-const clearAllBtn = document.getElementById("clearAllBtn"); // Neuer Button-Spion
+const clearAllBtn = document.getElementById("clearAllBtn");
+
+// HILFSFUNKTION: Steuert den Zustand der Buttons basierend auf dem Listeninhalt
+function updateButtonStates(isEmpty) {
+    if (isEmpty) {
+        clearBtn.disabled = true;
+        clearAllBtn.disabled = true;
+    } else {
+        clearBtn.disabled = false;
+        clearAllBtn.disabled = false;
+    }
+}
 
 async function loadBasket() {
     try {
@@ -48,10 +59,15 @@ async function loadBasket() {
 
         clothesList.innerHTML = "";
 
+        // WENN LEER: Buttons deaktivieren und Text anzeigen
         if (combinedItems.length === 0) {
-            clothesList.innerHTML = "<p style='text-align: center; font-weight: bold; width: 100%;'>Der Wäschekorb ist leer.</p>";
+            clothesList.innerHTML = "<p style='text-align: center; font-weight: bold; width: 100%; grid-column: 1 / -1; margin-top: 20px;'>Der Wäschekorb ist leer.</p>";
+            updateButtonStates(true); // Schaltet Buttons aus (greift auf CSS :disabled zu)
             return;
         }
+
+        // WENN ELEMENTE DA SIND: Buttons aktivieren
+        updateButtonStates(false);
 
         combinedItems.forEach(item => {
             const li = document.createElement("li");
@@ -63,10 +79,10 @@ async function loadBasket() {
             if (item.hauptkategorie === "KOPFBEDECKUNG") emoji = "🧢";
 
             li.innerHTML = `
-                <div class="cloth-left">
-                    <input type="checkbox" value="${item.id}">
-                    <span class="cloth-emoji">${emoji}</span>
-                    <span class="cloth-name">${item.name}</span>
+                <div class="cloth-left" style="display: flex; align-items: center; gap: 15px;">
+                    <input type="checkbox" value="${item.id}" style="transform: scale(1.3); cursor: pointer;">
+                    <span class="cloth-emoji" style="font-size: 24px;">${emoji}</span>
+                    <span class="cloth-name" style="font-size: 16px;">${item.name}</span>
                 </div>
             `;
             clothesList.appendChild(li);
@@ -77,6 +93,9 @@ async function loadBasket() {
 }
 
 clearBtn.addEventListener("click", async () => {
+    // Sicherheitsnetz, falls der Button trotz 'disabled' getriggert wird
+    if (clearBtn.disabled) return;
+
     const checkedBoxes = document.querySelectorAll("input[type='checkbox']:checked");
     const ids = Array.from(checkedBoxes).map(cb => Number(cb.value));
 
@@ -114,6 +133,9 @@ clearBtn.addEventListener("click", async () => {
 });
 
 clearAllBtn.addEventListener("click", async () => {
+    // Sicherheitsnetz
+    if (clearAllBtn.disabled) return;
+
     if (!confirm("Möchtest du wirklich alle Kleidungsstücke auf einmal aus dem Wäschekorb entfernen?")) {
         return;
     }

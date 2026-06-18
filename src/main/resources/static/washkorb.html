@@ -8,18 +8,22 @@
 </head>
 <body>
 
-<header>
-    <h1>WASCHKORB</h1>
-    <nav>
-        <a href="/dashboard.html">Dashboard</a>
-        <a href="/kleidung/kleidung.html">Kleidung</a>
-        <a href="/weather.html">Wetter</a>
-        <a href="/anlass.html">Anlass</a>
-        <a href="/empfehlung.html">Empfehlung</a>
-        <a href="/outfit/outfit.html">Outfit</a>
-        <a href="/washkorb.html">Wäschekorb</a>
-        <a href="/benutzer/profil.html">Profil</a>
-    </nav>
+<header class="main-header">
+    <div class="header-left">
+        <!-- Hauptfunktionen der App -->
+        <a href="kleidung/kleidung.html" class="nav-link">KLEIDERSCHRANK</a>
+        <a href="washkorb.html" class="nav-link">WÄSCHEKORB</a>
+        <a href="dashboard.html" class="nav-link">DASHBOARD</a>
+
+
+    </div>
+
+    <div class="header-right">
+        <!-- Benutzer- & Systemeinstellungen -->
+        <a href="benutzer/profil.html" class="nav-link">Mein Profil</a>
+        <a href="einstellungen.html" class="settings-icon" title="Einstellungen">⚙️</a>
+        <button class="logout-btn" onclick="logout()">Ausloggen</button>
+    </div>
 </header>
 
 <div class="page">

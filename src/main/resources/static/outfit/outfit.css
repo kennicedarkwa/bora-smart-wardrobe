@@ -1,83 +1,168 @@
+/* ==========================================================================
+   GLOBAL STYLES & BACKGROUND (Signature Lavendel)
+   ========================================================================== */
 body {
-    font-family: 'Courier New', Courier, monospace;
-    background-color: #d8c2e6; /* heller lila Hintergrund */
-    color: #1e0033;
     margin: 0;
-    /* Drückt den Inhalt nach unten, damit er nicht unter dem fixierten Header verschwindet */
-    padding-top: 140px;
-}
-
-header {
-    background-color: #1e0033;
-    color: white;
-    padding: 20px;
-
-    /* Klebt die Navigation oben fest */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    border-bottom: 4px solid #5a3ea6;
-
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #9d8df1;
+    min-height: 100vh;
+    color: #000000;
     display: flex;
     flex-direction: column;
+}
+
+/* ==========================================================================
+   MAIN-HEADER (Zweigeteiltes Brutalismus-Layout)
+   ========================================================================== */
+.main-header {
+    background-color: #b4c6fc;
+    border-bottom: 3px solid #000000;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
 }
 
-header h1 {
-    margin: 0;
-    margin-bottom: 10px;
-    font-size: 36px;
-}
-
-/* Navigation */
-nav {
+.header-left, .header-right {
     display: flex;
-    gap: 25px;
+    gap: 30px;
+    align-items: center;
 }
 
-nav a {
-    color: white;
+.main-header .nav-link {
+    color: #000000;
     text-decoration: none;
     font-weight: bold;
+    font-size: 16px;
+    letter-spacing: 0.5px;
 }
 
-nav a:hover {
+.main-header .nav-link:hover {
     text-decoration: underline;
 }
 
-#outfitListe {
-    display: flex;
-    flex-direction: column; /* Stellt die Outfit-Karten sauber untereinander */
-    align-items: center;    /* Zentriert alle Stücke auf dem Bildschirm */
-    gap: 25px;
-    width: 100%;
-}
-
-.outfit-item {
-    text-align: center;
-    padding: 20px;
-    background-color: #c9b1de; /* Die Lilane Box aus deinem Container */
-    border: 4px solid black;   /* Dicker, brutaler Retro-Rahmen */
-    color: #1e0033;
-    width: 320px;              /* Feste Breite, damit es einheitlich aussieht */
-    box-shadow: 8px 8px 0px #000; /* Der kantige Schatten-Effekt */
-}
-
-.outfit-item img {
-    max-width: 120px;
-    max-height: 120px;
-    object-fit: contain;
-    border: 2px solid #5a3ea6;
-    background: white;
-    padding: 5px;
-    margin-bottom: 10px;
-}
-
-.outfit-item p {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 18px;
+/* Header Buttons */
+.settings-btn, .logout-btn {
+    font-family: 'Courier New', monospace;
     font-weight: bold;
-    margin: 0;
+    font-size: 14px;
+    padding: 6px 12px;
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+    box-shadow: 3px 3px 0px #000000;
+    cursor: pointer;
+    transition: transform 0.05s ease, box-shadow 0.05s ease;
+}
+
+.logout-btn {
+    background-color: #e1406b; /* Knalliges Rot zum Ausloggen */
+    color: #ffffff;
+}
+
+.settings-btn:active, .logout-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0px 0px 0px #000000;
+}
+
+/* ==========================================================================
+   MAIN CONTAINER (Polka-Dot App Box)
+   ========================================================================== */
+.wrapper {
+    padding: 4vh 4vw;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    max-width: 100%;
+    background-color: #a3bfff; /* Blue Polka-Dot Background */
+    background-image: radial-gradient(rgba(255, 255, 255, 0.6) 20%, transparent 20%);
+    background-size: 18px 18px;
+    border: 4px solid #000000;
+    box-shadow: 12px 12px 0px #000000;
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 25px;
+    text-transform: lowercase;
+}
+
+/* ==========================================================================
+   OUTFIT LIST / GRID
+   ========================================================================== */
+#outfitListe {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 30px;
+}
+
+/* Brutalismus Kleidungsstück-Karten */
+.kleidungsstueck {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    box-sizing: border-box;
+    background-color: #ffffff !important; /* Erzwingt Weiß für starken Kontrast */
+    color: #000000 !important;
+    border: 3px solid #000000 !important;
+    box-shadow: 6px 6px 0px #000000;
+    padding: 20px;
+    margin-top: 0; /* Überschreibt das Inline-Style-Margin */
+    border-radius: 0px !important; /* Harte Ecken für den Retro-Look */
+}
+
+/* Falls Bilder im Outfit generiert werden */
+.kleidungsstueck img {
+    max-width: 100%;
+    max-height: 150px;
+    object-fit: contain;
+    margin-bottom: 15px;
+    align-self: center;
+    border-bottom: 2px dashed #000000;
+    padding-bottom: 10px;
+}
+
+/* Buttons, falls Aktionen auf den Outfit-Karten landen */
+.kleidungsstueck button {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    width: 100%;
+    padding: 8px 12px;
+    background-color: #9d8df1;
+    border: 2px solid #000000;
+    box-shadow: 3px 3px 0px #000000;
+    cursor: pointer;
+    margin-top: auto;
+}
+
+.kleidungsstueck button:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0px 0px 0px #000000;
+}
+
+/* ==========================================================================
+   INFO- & FEHLERBOXEN
+   ========================================================================== */
+.infoBox {
+    margin-top: 25px;
+    padding: 15px;
+    background-color: #ffcc00 !important; /* Warn-Gelb */
+    color: #000000 !important;
+    border: 3px solid #000000;
+    box-shadow: 6px 6px 0px #000000;
+    border-radius: 0px !important; /* Harte Kanten */
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
 }

@@ -1,250 +1,242 @@
-/* Grundkonfiguration */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Courier New', Courier, monospace;
-}
-
+/* ==========================================================================
+   GLOBAL STYLES & BACKGROUND (Signature Lavendel)
+   ========================================================================= */
 body {
-    background-color: #d8c2e6;
-    color: #1e0033;
-    padding: 40px 20px;
-
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #9d8df1; /* Das kräftige Lavendel aus deinem Background-Rahmen */
+    min-height: 100vh;
+    color: #000000;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    box-sizing: border-box;
 }
 
-/* Header Styling */
+/* ==========================================================================
+   DASHBOARD HEADER (Zweigeteilt nach Mockup)
+   ========================================================================== */
 .dashboard-header {
-    width: 100%;
-    max-width: 1000px;
-
+    background-color: #b4c6fc; /* Hellbau/Lila für den Header-Balken */
+    border-bottom: 3px solid #000000;
+    padding: 20px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-sizing: border-box;
+}
 
-    border-bottom: 3px solid #5a3ea6;
-    padding-bottom: 20px;
-    margin-bottom: 30px;
+/* Linke Box: Begrüßungstext */
+.welcome-text {
+    background-color: #cbe3fc; /* Das helle Babyblau aus deiner Zeichnung */
+    border: none;
+    padding: 15px 25px;
+    max-width: 500px;
+    border-radius: 8px;
 }
 
 .welcome-text h1 {
-    font-size: 36px;
-    color: #1e0033;
+    font-size: 28px;
+    margin: 0 0 5px 0;
+    text-transform: lowercase;
+    font-weight: bold;
 }
 
 .welcome-text p {
-    color: #1e0033;
-}
-
-/* Profil-Button im App-Stil */
-.profile-btn {
-    background-color: #5cb3ff;
-    color: white;
-    padding: 10px 15px;
-
-    border: 3px solid black;
-    text-decoration: none;
+    margin: 0;
+    font-size: 16px;
     font-weight: bold;
-
-    transition: 0.2s;
+    line-height: 1.3;
 }
 
-.profile-btn:hover {
-    background-color: #409de6;
+/* Rechte Box: Einstellungen & Ausloggen */
+.header-actions {
+    display: flex;
+    gap: 25px;
+    align-items: center;
 }
 
-/* Grid Layout */
+.settings-icon {
+    font-size: 32px;
+    text-decoration: none;
+    color: #000000;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.settings-icon:hover {
+    transform: rotate(45deg);
+}
+
+/* Ausloggen Button exakt wie im Mockup */
+.profile-btn, .logout-btn {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 16px;
+    text-decoration: none;
+    padding: 8px 20px;
+    background-color: #b4c6fc;
+    color: #000000;
+    border: 2px solid #000000;
+    box-shadow: 4px 4px 0px #000000;
+    cursor: pointer;
+    transition: transform 0.05s ease, box-shadow 0.05s ease;
+}
+
+.profile-btn:active, .logout-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px #000000;
+}
+
+/* ==========================================================================
+   MAIN DASHBOARD CONTAINER & POLKA-DOT BACKGROUND
+   ========================================================================== */
 .dashboard-container {
-    max-width: 1000px;
-    width: 100%;
+    margin: 30px 40px 40px 40px;
+    padding: 40px;
+    flex-grow: 1;
+    box-sizing: border-box;
+
+    background-color: #a3bfff;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.7) 25%, transparent 25%);
+    background-size: 24px 24px;
+
+    border: 4px solid #000000;
 
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 35px;
+    align-content: flex-start;
 }
 
-/* Karten → wie deine Kategorien-Boxen */
+/* ==========================================================================
+   APP CARDS (Neon Purple Hover, Bolder Text & Distinct Title Containers)
+   ========================================================================== */
 .card {
-    background-color: #5cb3ff;
-    color: white;
-
-    padding: 20px;
-
-    border: 4px solid black;
-    text-decoration: none;
-
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: #000000;
 
-    transition: 0.2s;
+    background-color: #ffffff;
+    border: 2px solid #000000;
+    border-radius: 12px;
+
+    padding: 30px;
+    min-height: 250px;
+
+    /* Standby Brutalismus Schatten */
+    box-shadow: 5px 5px 0px #000000;
+
+    /* Flüssige Übergänge für Hintergrundfarbe, Schatten und Textstärken */
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
-/* Hover → einfacher Retro Effekt */
+/* INTERACTIVE NEON HOVER EFFECT */
 .card:hover {
-    transform: translateY(-4px);
-    background-color: #409de6;
+    transform: translate(-6px, -6px);
+    box-shadow: 11px 11px 0px #000000;
+
+
+    background-color: #9d8df1;
+    border-color: #000000;
 }
 
-.card-icon {
-    font-size: 40px;
-    margin-bottom: 10px;
-    position: relative;
-}
-
+/* Der separate Container für den Titel (Sorgt für starken Kontrast) */
 .card h3 {
-    font-size: 20px;
-    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: 900; /* Extra fett */
+    background-color: #b4c6fc; /* Schickes Pastell-Blau/Lila im Ruhezustand */
+    color: #000000;
+    padding: 6px 14px;
+    margin: 0 0 20px 0;
+    border: none;
+    border-radius: 6px; /* Abgerundete Ecken passend zur Karte */
+    width: auto;
+    display: inline-block;
+
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* Kontrast-Invertierung des Titel-Containers, wenn die Karte gehovered wird */
+.card:hover h3 {
+    background-color: #ffffff; /* Weißer Kasten knallt perfekt auf dem Neon-Hintergrund */
+    color: #000000;
+}
+
+/* Beschreibungstext (Bolder Text & Farbwechsel bei Hover) */
 .card p {
-    font-size: 14px;
+    font-size: 15px;
+    margin: 0;
+    line-height: 1.5;
+    font-style: italic;
+    font-weight: 600; /* Standardmäßig bereits etwas kräftiger */
+    align-self: center;
+    text-align: center;
+    width: 100%;
+    color: #111111;
+
+    transition: font-weight 0.2s ease, color 0.2s ease;
 }
 
-/* Badge bleibt, aber im Stil */
+/* Text wird extrem fett (bolder) und wechselt auf Weiß für perfekte Lesbarkeit auf Neon */
+.card:hover p {
+    font-weight: 900;
+    color: #ffffff;
+}
+
+/* Icon */
+.card-icon {
+    font-size: 32px;
+    margin-bottom: 15px;
+    align-self: center;
+    transition: transform 0.2s ease;
+}
+
+.card:hover .card-icon {
+    transform: scale(1.15); /* Icon wächst dezent mit beim Hovern */
+}
+
+/* ==========================================================================
+   BADGE & MODAL ADJUSTMENTS
+   ========================================================================== */
 .badge {
-    position: absolute;
-    top: -8px;
-    right: -12px;
-
-    background-color: #1e0033;
-    color: #d8eaff;
-
-    font-size: 12px;
+    background-color: #e1406b;
+    color: #ffffff;
+    font-family: 'Courier New', monospace;
     font-weight: bold;
-
-    padding: 3px 7px;
-    border: 2px solid black;
+    font-size: 12px;
+    padding: 1px 6px;
+    border: 2px solid #000000;
+    margin-left: 5px;
+    vertical-align: middle;
 }
 
-/* Modal Hintergrund */
 .modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-
-    background-color: rgba(30, 0, 51, 0.6);
-
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 2000;
 }
 
-/* Modal Box */
 .modal-content {
-    background-color: #c9b1de;
-
-    padding: 25px;
+    background-color: #ffffff;
+    border: 4px solid #000000;
+    padding: 30px;
     width: 90%;
     max-width: 400px;
-
-    border: 4px solid black;
-
     text-align: center;
-}
-
-/* Close Button */
-.close-popup-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-
-    font-size: 20px;
-    cursor: pointer;
-}
-
-/* Modal Text */
-.modal-content h2 {
-    margin-bottom: 10px;
-}
-
-.modal-content p {
-    margin-bottom: 20px;
-}
-
-/* Modal Button */
-.modal-btn {
-    background-color: #5cb3ff;
-    color: white;
-
-    border: 3px solid black;
-    padding: 10px 15px;
-
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.modal-btn:hover {
-    background-color: #409de6;
-}
-/* =========================================
-   DARK MODE FÜR DAS DASHBOARD (Retro-Style)
-   ========================================= */
-
-body.dark-mode {
-    background-color: #1e0033; /* Dunkles Lila statt hellem Lila */
-    color: #d8c2e6;
-}
-
-body.dark-mode .welcome-text h1,
-body.dark-mode .welcome-text p {
-    color: #d8c2e6; /* Helle Schrift für den Titel */
-}
-
-body.dark-mode .dashboard-header {
-    border-bottom: 3px solid #d8c2e6;
-}
-
-/* Karten und Buttons anpassen */
-body.dark-mode .card,
-body.dark-mode .profile-btn,
-body.dark-mode .modal-btn {
-    background-color: #2a1545; /* Dunklere Hintergrundfarbe für Karten */
-    color: #d8eaff;
-    border: 4px solid #5cb3ff; /* Hellblauer Rand als cooler Kontrast im Dark Mode */
-}
-
-body.dark-mode .card:hover,
-body.dark-mode .profile-btn:hover,
-body.dark-mode .modal-btn:hover {
-    background-color: #3a205e; /* Etwas heller beim Drüberfahren (Hover) */
-}
-
-/* Modal / Popup anpassen */
-body.dark-mode .modal-content {
-    background-color: #1e0033;
-    border: 4px solid #5cb3ff;
-    color: #d8c2e6;
-}
-
-body.dark-mode .modal-content h2,
-body.dark-mode .modal-content p {
-    color: #d8c2e6;
-}
-
-/* Badge (Zahl) umkehren */
-body.dark-mode .badge {
-    background-color: #d8c2e6;
-    color: #1e0033;
-    border-color: #5cb3ff;
-}
-/* --- BUTTONS OBEN RECHTS --- */
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* Abstand zwischen Profil-Button und Zahnrad */
-}
-
-.settings-icon {
-    font-size: 28px;
-    text-decoration: none;
-    transition: transform 0.3s ease; /* Macht die Drehung flüssig */
-}
-
-.settings-icon:hover {
-    transform: rotate(90deg); /* Cooler Effekt: Zahnrad dreht sich beim Hover */
+    border-radius: 16px;
+    box-shadow: 8px 8px 0px #000000;
 }

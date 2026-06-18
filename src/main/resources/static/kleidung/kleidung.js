@@ -55,7 +55,7 @@ function renderListe(liste) {
     liste.forEach(k => {
         if (!k.id) return;
         const statusText = k.istImWaeschekorb ? "im Wäschekorb" : "verfügbar";
-        const waescheBtnText = k.istImWaeschekorb ? "🧺 Aus dem Korb" : "🧺 In den Wäschekorb";
+        const waescheBtnText = k.istImWaeschekorb ? "Aus dem Korb" : "In den Wäschekorb";
         const bildPfad = k.bildURL || k.bildurl || "";
 
         container.innerHTML += `
