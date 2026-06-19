@@ -229,6 +229,14 @@ function aktivierePopupButtons(groupId, hiddenInputId) {
     });
 }
 
+async function logout() {
+    const bestaetigung = confirm("Möchtest du dich wirklich ausloggen?");
+    if (bestaetigung) {
+        await fetch("/api/benutzer/logout", { method: "POST" });
+        window.location.href = "/benutzer/login.html";
+    }
+}
+
 aktivierePopupButtons("groupKategorie", "neuKategorie");
 aktivierePopupButtons("groupAnlass", "neuAnlass");
 aktivierePopupButtons("groupWarm", "neuWarm");
