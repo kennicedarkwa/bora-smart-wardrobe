@@ -40,7 +40,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test' // wegen test
     testImplementation 'org.springframework.security:spring-security-test' //  eine zusätzliche Test-Bibliothek von Spring Security
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client' // MariaDB JDBC-Treiber für die Laufzeit, um die Verbindung zur MariaDB-Datenbank herzustellen
-
+    implementation 'org.springframework.security:spring-security-crypto'
 }
 
 tasks.named("processResources") {

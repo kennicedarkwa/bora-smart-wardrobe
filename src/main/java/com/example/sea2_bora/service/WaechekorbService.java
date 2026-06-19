@@ -1,13 +1,18 @@
 package com.example.sea2_bora.service;
 
+import com.example.sea2_bora.implementation.Benutzer;
 import com.example.sea2_bora.implementation.Kleidungsstueck;
 import com.example.sea2_bora.implementation.Waechekorb;
+import com.example.sea2_bora.repository.BenutzerRepository;
 import com.example.sea2_bora.repository.KleidungsstueckRepository;
 import com.example.sea2_bora.repository.WaechekorbRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Service
 public class WaechekorbService {
@@ -17,6 +22,9 @@ public class WaechekorbService {
 
     @Autowired
     private KleidungsstueckRepository kleidungsstueckRepository;
+
+    @Autowired
+    private BenutzerRepository benutzerRepository;
 
     public Waechekorb create(String name) {
         Waechekorb k = new Waechekorb(name);
@@ -34,6 +42,66 @@ public class WaechekorbService {
 
 
 
+
+    @Transactional(readOnly = true)
+    public Waechekorb getWaechekorbForUser(Long benutzerId) {
+        Benutzer benutzer = getBenutzerOderFehler(benutzerId);
+        Waechekorb korb = new Waechekorb("Wäschekorb von " + benutzer.getBenutzername());
+        korb.setId(benutzer.getBenutzerId());
+        korb.setItems(benutzer.getKleiderschrank()
+                .stream()
+                .filter(Kleidungsstueck::isIstImWaeschekorb)
+                .toList());
+        return korb;
+    }
+
+    @Transactional
+    public Waechekorb addItemForUser(Long benutzerId, Long itemId) {
+        Kleidungsstueck item = findOwnedKleidungsstueck(benutzerId, itemId);
+        item.setIstImWaeschekorb(true);
+        kleidungsstueckRepository.save(item);
+        return getWaechekorbForUser(benutzerId);
+    }
+
+    @Transactional
+    public Waechekorb addItemsForUser(Long benutzerId, List<Long> itemIds) {
+        for (Long id : itemIds) {
+            Kleidungsstueck item = findOwnedKleidungsstueck(benutzerId, id);
+            item.setIstImWaeschekorb(true);
+            kleidungsstueckRepository.save(item);
+        }
+        return getWaechekorbForUser(benutzerId);
+    }
+
+    @Transactional
+    public Waechekorb removeItemForUser(Long benutzerId, Long itemId) {
+        Kleidungsstueck item = findOwnedKleidungsstueck(benutzerId, itemId);
+        item.setIstImWaeschekorb(false);
+        kleidungsstueckRepository.save(item);
+        return getWaechekorbForUser(benutzerId);
+    }
+
+    @Transactional
+    public Waechekorb removeItemsForUser(Long benutzerId, List<Long> itemIds) {
+        for (Long id : itemIds) {
+            Kleidungsstueck item = findOwnedKleidungsstueck(benutzerId, id);
+            item.setIstImWaeschekorb(false);
+            kleidungsstueckRepository.save(item);
+        }
+        return getWaechekorbForUser(benutzerId);
+    }
+
+    @Transactional
+    public Waechekorb clearForUser(Long benutzerId) {
+        Benutzer benutzer = getBenutzerOderFehler(benutzerId);
+        for (Kleidungsstueck item : new ArrayList<>(benutzer.getKleiderschrank())) {
+            if (item.isIstImWaeschekorb()) {
+                item.setIstImWaeschekorb(false);
+                kleidungsstueckRepository.save(item);
+            }
+        }
+        return getWaechekorbForUser(benutzerId);
+    }
 
     /**     * Das Löschen des einzigen Korbes wird verhindert.     * Wirft eine Exception, um Missbrauch zu vermeiden.     */
     public void delete() {
@@ -154,5 +222,22 @@ public class WaechekorbService {
 //        }
 //        return waechekorbRepository.save(basket);
 //    }
+
+    private Benutzer getBenutzerOderFehler(Long benutzerId) {
+        if (benutzerId == null) {
+            throw new IllegalArgumentException("Nicht eingeloggt");
+        }
+        return benutzerRepository.findById(benutzerId)
+                .orElseThrow(() -> new NoSuchElementException("Benutzer nicht gefunden: " + benutzerId));
+    }
+
+    private Kleidungsstueck findOwnedKleidungsstueck(Long benutzerId, Long itemId) {
+        return getBenutzerOderFehler(benutzerId)
+                .getKleiderschrank()
+                .stream()
+                .filter(item -> item.getId() != null && item.getId().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Kleidungsstück gehört nicht zu diesem Benutzer: " + itemId));
+    }
 
 }

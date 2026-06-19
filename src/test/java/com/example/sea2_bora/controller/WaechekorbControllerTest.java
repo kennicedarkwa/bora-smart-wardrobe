@@ -43,27 +43,27 @@ class WaechekorbControllerTest {
     // --- GET /api/waechekorb ---
     @Test
     void getSingletonWaechekorb_gibtImmerDenEinenKorbZurueck() throws Exception {
-        when(service.getSingletonWaechekorb()).thenReturn(singletonBasket);
+        when(service.getWaechekorbForUser(1L)).thenReturn(singletonBasket);
 
-        mockMvc.perform(get("/api/waechekorb"))
+        mockMvc.perform(get("/api/waechekorb").sessionAttr("benutzerId", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Singleton Wäschekorb"));
 
-        verify(service).getSingletonWaechekorb();
+        verify(service).getWaechekorbForUser(1L);
     }
 
     // --- POST /api/waechekorb ---
     @Test
     void create_sollteImmerDenSingletonKorbZurueckgeben() throws Exception {
-        when(service.getSingletonWaechekorb()).thenReturn(singletonBasket);
+        when(service.getWaechekorbForUser(1L)).thenReturn(singletonBasket);
 
-        mockMvc.perform(post("/api/waechekorb"))
+        mockMvc.perform(post("/api/waechekorb").sessionAttr("benutzerId", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L));
 
         // Stellt sicher, dass keine neue Erstellungsmethode aufgerufen wird
         verify(service, never()).create(any());
-        verify(service).getSingletonWaechekorb();
+        verify(service).getWaechekorbForUser(1L);
     }
 
     @Test
@@ -90,46 +90,47 @@ class WaechekorbControllerTest {
     void addItems_fuegtItemsZumSingletonKorbHinzu() throws Exception {
         IdsRequest ids = new IdsRequest();
         ids.setIds(List.of(10L, 20L));
-        when(service.addItems(ids.getIds())).thenReturn(singletonBasket);
+        when(service.addItemsForUser(1L, ids.getIds())).thenReturn(singletonBasket);
 
         mockMvc.perform(post("/api/waechekorb/items")
+                        .sessionAttr("benutzerId", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ids)))
                 .andExpect(status().isOk());
 
-        verify(service).addItems(ids.getIds());
+        verify(service).addItemsForUser(1L, ids.getIds());
     }
 
     // --- POST /api/waechekorb/items/{itemId} ---
     @Test
     void addItem_fuegtEinItemZumSingletonKorbHinzu() throws Exception {
-        when(service.addItem(10L)).thenReturn(singletonBasket);
+        when(service.addItemForUser(1L, 10L)).thenReturn(singletonBasket);
 
-        mockMvc.perform(post("/api/waechekorb/items/10"))
+        mockMvc.perform(post("/api/waechekorb/items/10").sessionAttr("benutzerId", 1L))
                 .andExpect(status().isOk());
 
-        verify(service).addItem(10L);
+        verify(service).addItemForUser(1L, 10L);
     }
 
     // --- DELETE /api/waechekorb/items/{itemId} ---
     @Test
     void removeItem_entferntEinItemAusSingletonKorb() throws Exception {
-        when(service.removeItem(10L)).thenReturn(singletonBasket);
+        when(service.removeItemForUser(1L, 10L)).thenReturn(singletonBasket);
 
-        mockMvc.perform(delete("/api/waechekorb/items/10"))
+        mockMvc.perform(delete("/api/waechekorb/items/10").sessionAttr("benutzerId", 1L))
                 .andExpect(status().isOk());
 
-        verify(service).removeItem(10L);
+        verify(service).removeItemForUser(1L, 10L);
     }
 
     // --- DELETE /api/waechekorb/clear ---
     @Test
     void clear_leertDenSingletonKorb() throws Exception {
-        when(service.clear()).thenReturn(singletonBasket);
+        when(service.clearForUser(1L)).thenReturn(singletonBasket);
 
-        mockMvc.perform(delete("/api/waechekorb/clear"))
+        mockMvc.perform(delete("/api/waechekorb/clear").sessionAttr("benutzerId", 1L))
                 .andExpect(status().isOk());
 
-        verify(service).clear();
+        verify(service).clearForUser(1L);
     }
 }

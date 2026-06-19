@@ -3,10 +3,12 @@ package com.example.sea2_bora.controller;
 import com.example.sea2_bora.implementation.Waechekorb;
 import com.example.sea2_bora.controller.IdsRequest;
 import com.example.sea2_bora.service.WaechekorbService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+
+import java.util.NoSuchElementException;
 
 @RestController
 @CrossOrigin
@@ -16,16 +18,24 @@ public class WaechekorbController {
     @Autowired
     private WaechekorbService service;
 
-    // POST /api/waechekorb -> Holt oder erstellt den Singleton-Korb
+    // POST /api/waechekorb -> Holt den Wäschekorb des eingeloggten Benutzers
     @PostMapping
-    public ResponseEntity<Waechekorb> getOrCreate() {
-        return ResponseEntity.ok(service.getSingletonWaechekorb());
+    public ResponseEntity<Waechekorb> getOrCreate(HttpSession session) {
+        Long benutzerId = getBenutzerId(session);
+        if (benutzerId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(service.getWaechekorbForUser(benutzerId));
     }
 
-    // GET /api/waechekorb -> Holt den Singleton-Korb
+    // GET /api/waechekorb -> Holt den Wäschekorb des eingeloggten Benutzers
     @GetMapping
-    public ResponseEntity<Waechekorb> get() {
-        return ResponseEntity.ok(service.getSingletonWaechekorb());
+    public ResponseEntity<Waechekorb> get(HttpSession session) {
+        Long benutzerId = getBenutzerId(session);
+        if (benutzerId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(service.getWaechekorbForUser(benutzerId));
     }
 
     // DELETE /api/waechekorb -> Ist jetzt deaktiviert
@@ -40,33 +50,73 @@ public class WaechekorbController {
         }
     }
 
-    // POST /api/waechekorb/items/{itemId} -> Fügt Item zum Singleton hinzu
+    // POST /api/waechekorb/items/{itemId} -> Fügt eigenes Item zum Wäschekorb hinzu
     @PostMapping("/items/{itemId}")
-    public ResponseEntity<Waechekorb> addItem(@PathVariable Long itemId) {
-        return ResponseEntity.ok(service.addItem(itemId));
+    public ResponseEntity<Waechekorb> addItem(@PathVariable Long itemId, HttpSession session) {
+        Long benutzerId = getBenutzerId(session);
+        if (benutzerId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        try {
+            return ResponseEntity.ok(service.addItemForUser(benutzerId, itemId));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    // POST /api/waechekorb/items -> Fügt mehrere Items zum Singleton hinzu
+    // POST /api/waechekorb/items -> Fügt mehrere eigene Items zum Wäschekorb hinzu
     @PostMapping("/items")
-    public ResponseEntity<Waechekorb> addItems(@RequestBody IdsRequest ids) {
-        return ResponseEntity.ok(service.addItems(ids.getIds()));
+    public ResponseEntity<Waechekorb> addItems(@RequestBody IdsRequest ids, HttpSession session) {
+        Long benutzerId = getBenutzerId(session);
+        if (benutzerId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        try {
+            return ResponseEntity.ok(service.addItemsForUser(benutzerId, ids.getIds()));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    // DELETE /api/waechekorb/items/{itemId} -> Entfernt Item aus Singleton
+    // DELETE /api/waechekorb/items/{itemId} -> Entfernt eigenes Item aus dem Wäschekorb
     @DeleteMapping("/items/{itemId}")
-    public ResponseEntity<Waechekorb> removeItem(@PathVariable Long itemId) {
-        return ResponseEntity.ok(service.removeItem(itemId));
+    public ResponseEntity<Waechekorb> removeItem(@PathVariable Long itemId, HttpSession session) {
+        Long benutzerId = getBenutzerId(session);
+        if (benutzerId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        try {
+            return ResponseEntity.ok(service.removeItemForUser(benutzerId, itemId));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    // DELETE /api/waechekorb/items -> Entfernt mehrere Items aus Singleton
+    // DELETE /api/waechekorb/items -> Entfernt mehrere eigene Items aus dem Wäschekorb
     @DeleteMapping("/items")
-    public ResponseEntity<Waechekorb> removeItems(@RequestBody IdsRequest ids) {
-        return ResponseEntity.ok(service.removeItems(ids.getIds()));
+    public ResponseEntity<Waechekorb> removeItems(@RequestBody IdsRequest ids, HttpSession session) {
+        Long benutzerId = getBenutzerId(session);
+        if (benutzerId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        try {
+            return ResponseEntity.ok(service.removeItemsForUser(benutzerId, ids.getIds()));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    // DELETE /api/waechekorb/clear -> Leert den Singleton-Korb
+    // DELETE /api/waechekorb/clear -> Leert den Wäschekorb des eingeloggten Benutzers
     @DeleteMapping("/clear")
-    public ResponseEntity<Waechekorb> clear() {
-        return ResponseEntity.ok(service.clear());
+    public ResponseEntity<Waechekorb> clear(HttpSession session) {
+        Long benutzerId = getBenutzerId(session);
+        if (benutzerId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(service.clearForUser(benutzerId));
+    }
+
+    private Long getBenutzerId(HttpSession session) {
+        return (Long) session.getAttribute("benutzerId");
     }
 }

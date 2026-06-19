@@ -3,7 +3,11 @@ package com.example.sea2_bora.controller;
 import com.example.sea2_bora.implementation.Empfehlung;
 import com.example.sea2_bora.implementation.wetter.DailyForecast;
 import com.example.sea2_bora.service.EmpfehlungService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/empfehlung")
@@ -18,11 +22,21 @@ public class EmpfehlungController
     }
 
     @PostMapping
-    public Empfehlung getEmpfehlung(
+    public ResponseEntity<Empfehlung> getEmpfehlung(
             @RequestBody DailyForecast dailyForecast,
-            @RequestParam String anlass) // NEU: Nimmt den Anlass aus dem Link entgegen(fatima alm.)
+            @RequestParam(defaultValue = "ALLTAG") String anlass,
+            HttpSession session) // NEU: Nimmt den Anlass aus dem Link entgegen(fatima alm.)
 
     {
-        return empfehlungService.generiereEmpfehlung(dailyForecast,anlass);
+        Long benutzerId = (Long) session.getAttribute("benutzerId");
+        if (benutzerId == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        try {
+            return ResponseEntity.ok(empfehlungService.generiereEmpfehlung(dailyForecast, anlass, benutzerId));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
