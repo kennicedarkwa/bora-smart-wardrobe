@@ -146,6 +146,14 @@ clearBtn.addEventListener("click", async () => {
     }
 });
 
+async function logout() {
+    const bestaetigung = confirm("Möchtest du dich wirklich ausloggen?");
+    if (bestaetigung) {
+        await fetch("/api/benutzer/logout", { method: "POST" });
+        window.location.href = "/benutzer/login.html";
+    }
+}
+
 clearAllBtn.addEventListener("click", async () => {
     // Sicherheitsnetz
     if (clearAllBtn.disabled) return;
