@@ -191,3 +191,11 @@ body {
     transform: none !important;
     box-shadow: 4px 4px 0px #000000 !important;
 }
+.cloth-img {
+    width: 45px;
+    height: 45px;
+    object-fit: cover; /* Verhindert, dass das Bild verzerrt wird */
+    border-radius: 6px;
+    border: 1px solid #ccc; /* Optional: Ein kleiner Rahmen */
+    background-color: #f9f9f9; /* Falls das Bild transparent ist */
+}
