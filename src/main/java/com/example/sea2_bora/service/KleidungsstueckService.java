@@ -187,5 +187,6 @@ public class KleidungsstueckService
         }
         jdbcTemplate.update("DELETE FROM stored_images WHERE kleidungsstueck_id = ?", kleidungsstueckId);
         jdbcTemplate.update("DELETE FROM waechekorb_kleidungsstueck WHERE kleidungsstueck_id = ?", kleidungsstueckId);
+        jdbcTemplate.update("DELETE FROM empfehlung_kleidungsstuecke WHERE kleidungsstueck_id = ?", kleidungsstueckId);
     }
 }
