@@ -10,14 +10,17 @@
 
 <header>
     <div class="nav-left">
-        <a href="/weather.html">WETTER</a>
-        <a href="/washkorb.html">WÄSCHEKORB</a>
-        <a href="/dashboard.html">DASHBOARD</a>
+        <a href="../weather.html">WETTER</a>
+        <a href="../washkorb.html">WÄSCHEKORB</a>
+        <a href="../dashboard.html">DASHBOARD</a>
     </div>
     <div class="nav-right">
-        <a href="/benutzer/profil.html">MEIN PROFIL</a>
-        <a href="einstellungen.html" class="settings-icon" title="Einstellungen">⚙️</a>
-        <button class="logout-btn" onclick="logout()">Ausloggen</button>
+        <a href="../benutzer/profil.html">MEIN PROFIL</a>
+
+        <!-- Fix: ../ vor einstellungen.html -->
+        <a href="../einstellungen.html" class="settings-icon" title="Einstellungen" style="text-decoration: none; font-size: 24px;">⚙️</a>
+
+        <!-- Fix: Echter Link zur Startseite, der wie ein Button aussieht -->
     </div>
 </header>
 

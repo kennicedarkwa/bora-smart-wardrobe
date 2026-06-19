@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
         sessionStorage.setItem("laundryWarningSeen", "true");
     }
 
-
     closeCross.addEventListener("click", hidePopup);
     closeBtn.addEventListener("click", hidePopup);
 });
