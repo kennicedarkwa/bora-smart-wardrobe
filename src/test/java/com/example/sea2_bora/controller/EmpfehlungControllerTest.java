@@ -49,9 +49,10 @@ class EmpfehlungControllerTest {
                 new Precipitation(PrecipitationType.CLEAR, 5)
         );
         Empfehlung empfehlung = new Empfehlung(LocalDate.now());
-        when(empfehlungService.generiereEmpfehlung(any(DailyForecast.class))).thenReturn(empfehlung);
+        when(empfehlungService.generiereEmpfehlung(any(DailyForecast.class), eq("ALLTAG"), eq(1L))).thenReturn(empfehlung);
 
         mockMvc.perform(post("/api/empfehlung")
+                        .sessionAttr("benutzerId", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(forecast)))
                 .andExpect(status().isOk());
@@ -66,13 +67,14 @@ class EmpfehlungControllerTest {
                 new Precipitation(PrecipitationType.RAIN, 80)
         );
         Empfehlung empfehlung = new Empfehlung(LocalDate.now());
-        when(empfehlungService.generiereEmpfehlung(any(DailyForecast.class))).thenReturn(empfehlung);
+        when(empfehlungService.generiereEmpfehlung(any(DailyForecast.class), eq("ALLTAG"), eq(1L))).thenReturn(empfehlung);
 
         mockMvc.perform(post("/api/empfehlung")
+                .sessionAttr("benutzerId", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(forecast)));
 
-        verify(empfehlungService, times(1)).generiereEmpfehlung(any(DailyForecast.class));
+        verify(empfehlungService, times(1)).generiereEmpfehlung(any(DailyForecast.class), eq("ALLTAG"), eq(1L));
     }
 
     @Test
@@ -84,9 +86,10 @@ class EmpfehlungControllerTest {
                 new Precipitation(PrecipitationType.RAIN, 90)
         );
         Empfehlung empfehlung = new Empfehlung(LocalDate.now());
-        when(empfehlungService.generiereEmpfehlung(any(DailyForecast.class))).thenReturn(empfehlung);
+        when(empfehlungService.generiereEmpfehlung(any(DailyForecast.class), eq("ALLTAG"), eq(1L))).thenReturn(empfehlung);
 
         mockMvc.perform(post("/api/empfehlung")
+                        .sessionAttr("benutzerId", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(forecastRegen)))
                 .andExpect(status().isOk());
@@ -109,9 +112,10 @@ class EmpfehlungControllerTest {
         );
         Empfehlung empfehlung = new Empfehlung(LocalDate.now());
         empfehlung.setBegruendung("Heute 20°C – passende Kleidung für heute.");
-        when(empfehlungService.generiereEmpfehlung(any(DailyForecast.class))).thenReturn(empfehlung);
+        when(empfehlungService.generiereEmpfehlung(any(DailyForecast.class), eq("ALLTAG"), eq(1L))).thenReturn(empfehlung);
 
         mockMvc.perform(post("/api/empfehlung")
+                        .sessionAttr("benutzerId", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(forecast)))
                 .andExpect(status().isOk())
