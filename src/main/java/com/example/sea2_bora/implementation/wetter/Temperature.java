@@ -84,7 +84,7 @@ public class Temperature {
 
         if (avg <= 0) {
 
-            return 0;
+            return 1;
 
         } else if (avg <= 10) {
 
