@@ -73,30 +73,35 @@ async function loadBasket() {
             const li = document.createElement("li");
             li.className = "cloth-item";
 
-            // NEU: Standard-Bildpfad setzen, falls die Kategorie nicht matcht
-            let imageSrc = "bilder/klamotten/default.png";
+            // NEU: Prüfe ZUERST, ob ein echtes Bild aus der DB existiert!
+            let imageSrc = item.bildUrl || item.bildURL || item.bildurl;
 
-            // Pfade zu deinen Bildern im Repository anpassen!
-            if (item.hauptkategorie === "OBERTEIL") {
-                imageSrc = "bilder/klamotten/oberteil.png";
-            } else if (item.hauptkategorie === "UNTERTEIL") {
-                imageSrc = "bilder/klamotten/unterteil.png";
-            } else if (item.hauptkategorie === "SCHUHE") {
-                imageSrc = "bilder/klamotten/schuhe.png";
-            } else if (item.hauptkategorie === "KOPFBEDECKUNG") {
-                imageSrc = "bilder/klamotten/kopfbedeckung.png";
+            // Wenn kein echtes Bild da ist, greifen wir auf Standard-Icons zurück
+            if (!imageSrc || imageSrc.trim() === "") {
+                if (item.hauptkategorie === "OBERTEIL") {
+                    imageSrc = "bilder/klamotten/oberteil.png";
+                } else if (item.hauptkategorie === "UNTERTEIL") {
+                    imageSrc = "bilder/klamotten/unterteil.png";
+                } else if (item.hauptkategorie === "SCHUHE") {
+                    imageSrc = "bilder/klamotten/schuhe.png";
+                } else if (item.hauptkategorie === "KOPFBEDECKUNG") {
+                    imageSrc = "bilder/klamotten/kopfbedeckung.png";
+                } else {
+                    imageSrc = "bilder/klamotten/default.png";
+                }
             }
 
-            // Falls du spezifische Bilder pro Kleidungsstück hast, könntest du sogar das nutzen:
-            // if (item.bildUrl) imageSrc = item.bildUrl;
-
             li.innerHTML = `
-                <div class="cloth-left" style="display: flex; align-items: center; gap: 15px; width: 100%;">
-                    <input type="checkbox" value="${item.id}" style="transform: scale(1.3); cursor: pointer;">
+                <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; height: 100%; width: 100%;">
                     
-                    <img src="${imageSrc}" alt="${item.name}" class="cloth-img" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                    <div style="width: 100%; text-align: left;">
+                        <input type="checkbox" value="${item.id}" style="transform: scale(1.5); cursor: pointer; margin: 0;">
+                    </div>
                     
-                    <span class="cloth-name" style="font-size: 16px;">${item.name}</span>
+                    <img src="${imageSrc}" alt="${item.name}" style="width: 130px; height: 130px; object-fit: contain; margin: 10px 0;">
+                    
+                    <span style="font-size: 18px; font-weight: bold; text-align: center; width: 100%; word-break: break-word;">${item.name}</span>
+                    
                 </div>
             `;
             clothesList.appendChild(li);
