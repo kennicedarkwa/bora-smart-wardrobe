@@ -37,6 +37,8 @@
     </div>
 
     <div class="header-right">
+        <a href="/favoriten.html" class="nav-link">FAVORITE-OUTFITS</a>
+
         <a href="/benutzer/profil.html" class="nav-link">Mein Profil</a>
         <button class="settings-btn" onclick="openSettings()" title="Einstellungen">⚙️</button>
         <button class="logout-btn" onclick="logout()">Ausloggen</button>
@@ -52,6 +54,13 @@
 
         <div id="infoBox" class="infoBox" style="display:none;">
             ⚠️ Ups: Daten nicht verbunden
+        </div>
+
+        <div id="favoritenBereich" style="margin-top: 40px; border-top: 3px dashed #000000; padding-top: 25px;">
+            <label for="favoritName" style="font-family: 'Courier New', monospace; font-weight: bold; display: block; margin-bottom: 10px;">Outfit-Name für deine Favoriten:</label>
+            <input type="text" id="favoritName" placeholder="z. B. Sommer Look 2026" style="font-family: 'Courier New', monospace; font-weight: bold; padding: 10px; width: 100%; max-width: 300px; border: 2px solid #000000; box-shadow: 3px 3px 0px #000000; margin-bottom: 15px; box-sizing: border-box;">
+            <br>
+            <button onclick="speichereAlsFavorit()" style="font-family: 'Courier New', monospace; font-weight: bold; padding: 10px 20px; background-color: #b4c6fc; border: 2px solid #000000; box-shadow: 4px 4px 0px #000000; cursor: pointer;">★ Als Favorit speichern</button>
         </div>
 
     </div>

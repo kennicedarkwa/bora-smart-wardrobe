@@ -85,8 +85,8 @@ public class KleidungsstueckService
 
         vorhanden.setName(neueDaten.getName());
         vorhanden.setTemperaturIndex(neueDaten.getTemperaturIndex());
-        vorhanden.setIstFuerRegenGeeignet(neueDaten.isIstFuerRegenGeeignet());
-        vorhanden.setIstImWaeschekorb(neueDaten.isIstImWaeschekorb());
+        vorhanden.setIstFuerRegenGeeignet(neueDaten.getIstFuerRegenGeeignet());
+        vorhanden.setIstImWaeschekorb(neueDaten.getIstImWaeschekorb());
         vorhanden.setHauptkategorie(neueDaten.getHauptkategorie());
         if (neueDaten.getTags() != null) {
             vorhanden.setTags(new ArrayList<>(neueDaten.getTags()));

@@ -50,7 +50,7 @@ public class WaechekorbService {
         korb.setId(benutzer.getBenutzerId());
         korb.setItems(benutzer.getKleiderschrank()
                 .stream()
-                .filter(Kleidungsstueck::isIstImWaeschekorb)
+                .filter(Kleidungsstueck::getIstImWaeschekorb)
                 .toList());
         return korb;
     }
@@ -95,7 +95,7 @@ public class WaechekorbService {
     public Waechekorb clearForUser(Long benutzerId) {
         Benutzer benutzer = getBenutzerOderFehler(benutzerId);
         for (Kleidungsstueck item : new ArrayList<>(benutzer.getKleiderschrank())) {
-            if (item.isIstImWaeschekorb()) {
+            if (item.getIstImWaeschekorb()) {
                 item.setIstImWaeschekorb(false);
                 kleidungsstueckRepository.save(item);
             }

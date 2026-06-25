@@ -21,10 +21,14 @@ public class Kleidungsstueck
 
     @Min(1) //Kennice
     @Max(5)//Kennice
-    private int temperaturIndex;
+    // ÄNDERUNG: int zu Integer
+    private Integer temperaturIndex;
 
-    private boolean istFuerRegenGeeignet;
-    private boolean istImWaeschekorb = false;
+    // ÄNDERUNG: boolean zu Boolean
+    private Boolean istFuerRegenGeeignet;
+
+    // ÄNDERUNG: boolean zu Boolean
+    private Boolean istImWaeschekorb = false;
 
     @NotNull //Kennice
     @Enumerated(EnumType.STRING)
@@ -44,8 +48,9 @@ public class Kleidungsstueck
 
     /**
      * Initialisiert ein neues Kleidungsstück
+     * ÄNDERUNG: Auch hier Integer und Boolean im Konstruktor verwenden!
      */
-    public Kleidungsstueck(String name, int temperaturIndex, boolean istFuerRegenGeeignet, MainCategory hauptkategorie, String bildURL)
+    public Kleidungsstueck(String name, Integer temperaturIndex, Boolean istFuerRegenGeeignet, MainCategory hauptkategorie, String bildURL)
     {
         this.name = name;
         this.temperaturIndex = temperaturIndex;
@@ -53,6 +58,7 @@ public class Kleidungsstueck
         this.hauptkategorie = hauptkategorie;
         this.bildURL = bildURL;
     }
+
 
     /**
      * Fügt dem Kleidungsstück einen Tag hinzu
