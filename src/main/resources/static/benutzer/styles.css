@@ -3,23 +3,14 @@ body {
     margin: 0;
     font-family: 'Courier New', Courier, monospace;
 
-    background-color: #d8c2e6;
-
-    background-image: repeating-linear-gradient(
-            45deg,
-            rgba(127, 89, 207, 0.2) 0px,
-            rgba(127, 89, 207, 0.2) 10px,
-            transparent 10px,
-            transparent 20px
-    );
+    background-color: #9d8df1;
+    color: #000000;
 
     padding: 40px;
 
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    border: 30px solid #5a3ea6;
 }
 
 /* Überschriften */
@@ -27,7 +18,9 @@ h1 {
     text-align: center;
     margin-bottom: 20px;
     font-size: 36px;
-    color: #1e0033;
+    color: #000000;
+    font-weight: bold;
+    text-transform: lowercase;
 }
 
 /* Standard Container (Login etc.) */
@@ -35,11 +28,17 @@ h1 {
     max-width: 350px;
     width: 100%;
 
-    background-color: #c9b1de;
+    background-color: #a3bfff;
+    background-image: radial-gradient(
+            rgba(255, 255, 255, 0.6) 20%,
+            transparent 20%
+    );
+    background-size: 18px 18px;
 
     padding: 25px;
 
-    border: 3px solid black;
+    border: 4px solid #000000;
+    box-shadow: 12px 12px 0px #000000;
 }
 
 /* Labels */
@@ -47,7 +46,7 @@ label {
     display: block;
     margin-bottom: 6px;
     font-weight: bold;
-    color: #1e0033;
+    color: #000000;
 }
 
 /* Inputs */
@@ -56,10 +55,16 @@ input {
     padding: 10px;
     margin-bottom: 12px;
 
-    border: 3px solid black;
-    background-color: #f5f5f5;
+    border: 3px solid #000000;
+    background-color: #ffffff;
 
     font-family: inherit;
+    box-sizing: border-box;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 4px 4px 0px #000000;
 }
 
 /* Buttons */
@@ -67,28 +72,31 @@ button {
     width: 100%;
     padding: 12px;
 
-    background-color: #5cb3ff;
-    color: white;
+    background-color: #9d8df1;
+    color: #000000;
 
-    border: 3px solid black;
+    border: 3px solid #000000;
+    box-shadow: 4px 4px 0px #000000;
 
     font-weight: bold;
     cursor: pointer;
 
-    transition: 0.2s;
+    transition: transform 0.05s ease,
+    box-shadow 0.05s ease;
 }
 
 button:hover {
-    background-color: #409de6;
+    background-color: #8b7ce8;
 }
 
 button:active {
-    transform: scale(0.97);
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px #000000;
 }
 
 /* Fehlermeldung */
 .error {
-    color: #1e0033;
+    color: #e1406b;
     font-weight: bold;
     text-align: center;
 }
@@ -99,11 +107,13 @@ button:active {
     max-width: 420px;
     margin: 60px auto;
 
-    background-color: #c9b1de;
+    background-color: #ffffff;
 
     padding: 30px;
 
-    border: 3px solid black;
+    border: 3px solid #000000;
+    box-shadow: 6px 6px 0px #000000;
+
     text-align: center;
 }
 
@@ -128,7 +138,7 @@ button:active {
 }
 
 .login-link a {
-    color: #1e0033;
+    color: #000000;
     font-weight: bold;
     text-decoration: underline;
 }
@@ -139,11 +149,13 @@ button:active {
     max-width: 420px;
     margin: 60px auto;
 
-    background-color: #c9b1de;
+    background-color: #ffffff;
 
     padding: 30px;
 
-    border: 3px solid black;
+    border: 3px solid #000000;
+    box-shadow: 6px 6px 0px #000000;
+
     text-align: center;
 }
 
@@ -162,7 +174,9 @@ button:active {
     padding: 12px;
     margin-top: 10px;
 
-    border: 3px solid black;
+    border: 3px solid #000000;
+    box-shadow: 4px 4px 0px #000000;
+
     font-weight: bold;
 
     cursor: pointer;
@@ -170,32 +184,41 @@ button:active {
 
 /* Farbsystem passend zur App */
 .btn.blue {
-    background-color: #5cb3ff;
-    color: white;
+    background-color: #9d8df1;
+    color: #000000;
 }
 
 .btn.blue:hover {
-    background-color: #409de6;
+    background-color: #8b7ce8;
 }
 
 .btn.red {
-    background-color: #1e0033;
-    color: #d8eaff;
+    background-color: #e1406b;
+    color: #ffffff;
+}
+
+.btn.red:hover {
+    background-color: #c92d58;
 }
 
 .btn.gray {
-    background-color: #f5f5f5;
-    color: #1e0033;
+    background-color: #ffffff;
+    color: #000000;
 }
 
+/* Header */
 header {
-    background-color: #1e0033;
-    color: white;
+    background-color: #b4c6fc;
+    color: #000000;
     padding: 20px;
 
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    width: 100%;
+
+    border-bottom: 3px solid #000000;
 }
 
 header h1 {
@@ -211,7 +234,7 @@ nav {
 }
 
 nav a {
-    color: white;
+    color: #000000;
     text-decoration: none;
     font-weight: bold;
 }
@@ -225,16 +248,14 @@ nav a:hover {
 .passwort-wrapper {
     position: relative;
     width: 100%;
-    /* Wir übernehmen die Abstände (Margin) vom Input-Feld auf den Wrapper, damit das Layout nicht bricht */
     margin-top: 5px;
     margin-bottom: 12px;
 }
 
 .passwort-wrapper input {
-    /* Setzt Margin am Input auf 0, da der Wrapper nun den Abstand hält */
     margin: 0 !important;
-    padding-right: 48px; /* Platzhalter rechts für das Auge */
-    box-sizing: border-box; /* Verhindert, dass das Feld durch das Padding breiter wird */
+    padding-right: 48px;
+    box-sizing: border-box;
 }
 
 .passwort-toggle-btn {

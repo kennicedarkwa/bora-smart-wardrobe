@@ -71,9 +71,9 @@ public class EmpfehlungService
 
 
         List<Kleidungsstueck> passendeKlamotten = klamotten.stream()
-                .filter(k -> !k.isIstImWaeschekorb()) // Nicht im Wäschekorb
+                .filter(k -> !k.getIstImWaeschekorb()) // Nicht im Wäschekorb
                 .filter(k -> k.getTemperaturIndex() == wetterTemperaturIndex) // MUSS zum Temperatur-Index passen!
-                .filter(k -> !regen || k.isIstFuerRegenGeeignet()) // Regen-Filter
+                .filter(k -> !regen || k.getIstFuerRegenGeeignet()) // Regen-Filter
                 .filter(k -> k.getTags() == null
                         || k.getTags().isEmpty()
                         || k.getTags().contains(gewaehlterAnlassTag)) // ✅ NEU: Wenn keine Tags da sind, TROTZDEM anzeigen!
