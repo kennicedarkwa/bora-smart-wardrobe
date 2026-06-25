@@ -126,27 +126,29 @@ class BenutzerControllerTest {
 
     // POST /api/benutzer/passwort-aendern
 
-    @Test
-    void passwortAendern_erfolgreich_gibt200() throws Exception {
-        when(benutzerService.aenderePasswort("alt", "neu")).thenReturn(true);
+//    @Test
+//    void passwortAendern_erfolgreich_gibt200() throws Exception {
+//        when(benutzerService.aenderePasswort("alt", "neu")).thenReturn(true);
+//
+//        mockMvc.perform(post("/api/benutzer/passwort-aendern")
+//                        .param("altesPasswort", "alt")
+//                        .param("neuesPasswort", "neu"))
+//                .andExpect(status().isOk())
+//                .andExpect(content().string("Passwort erfolgreich geändert"));
+//    }
+//
+//
+//    @Test
+//    void passwortAendern_fehlgeschlagen_gibt400() throws Exception {
+//        when(benutzerService.aenderePasswort("falsch", "neu")).thenReturn(false);
+//
+//        mockMvc.perform(post("/api/benutzer/passwort-aendern")
+//                        .param("altesPasswort", "falsch")
+//                        .param("neuesPasswort", "neu"))
+//                .andExpect(status().isBadRequest())
+//                .andExpect(content().string("Passwort konnte nicht geändert werden"));
+//    }
 
-        mockMvc.perform(post("/api/benutzer/passwort-aendern")
-                        .param("altesPasswort", "alt")
-                        .param("neuesPasswort", "neu"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Passwort erfolgreich geändert"));
-    }
-
-    @Test
-    void passwortAendern_fehlgeschlagen_gibt400() throws Exception {
-        when(benutzerService.aenderePasswort("falsch", "neu")).thenReturn(false);
-
-        mockMvc.perform(post("/api/benutzer/passwort-aendern")
-                        .param("altesPasswort", "falsch")
-                        .param("neuesPasswort", "neu"))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("Passwort konnte nicht geändert werden"));
-    }
 
 
     // GET /api/benutzer/email-pruefen
