@@ -10,38 +10,45 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeCross = document.getElementById("close-popup-cross");
     const closeBtn = document.getElementById("close-popup-btn");
 
-    // Hier holen wir das Limit aus deinen Einstellungen (Standardwert ist 5)
-    const maxWaescheLimit = localStorage.getItem("bora_waeschelimit") || 5;
+    // Limit aus Einstellungen (Standard = 5)
+    const maxWaescheLimit =
+        Number(localStorage.getItem("bora_waeschelimit")) || 5;
 
     fetch('/api/waechekorb')
         .then(response => response.json())
         .then(data => {
-            if (data && data.items) {
-                const anzahl = data.items.length;
 
-                if (anzahl > 0) {
-                    badge.innerText = anzahl;
-                    badge.style.display = "inline-block";
-                }
+            console.log("API-Daten:", data);
 
-                const schonGesehen = sessionStorage.getItem("laundryWarningSeen");
+            // robuste Datenstruktur
+            const items = data.items || data.kleidungsstuecke || [];
+            const anzahl = items.length;
 
-                // Nutzt jetzt dein variables Limit statt der festen 10
-                if (anzahl >= maxWaescheLimit && !schonGesehen) {
-                    popup.style.display = "flex";
-                }
+            console.log("Anzahl:", anzahl);
+            console.log("Limit:", maxWaescheLimit);
+
+            // Badge anzeigen
+            if (badge && anzahl > 0) {
+                badge.innerText = anzahl;
+                badge.style.display = "inline-block";
+            }
+
+            // POPUP LOGIK
+            if (anzahl >= maxWaescheLimit) {
+                popup.style.display = "flex";
             }
         })
         .catch(error => {
             console.error("Fehler beim Abrufen des Wäschekorbs:", error);
         });
 
+    // Popup schließen
     function hidePopup() {
         popup.style.display = "none";
-
-        sessionStorage.setItem("laundryWarningSeen", "true");
     }
 
     closeCross.addEventListener("click", hidePopup);
     closeBtn.addEventListener("click", hidePopup);
+
 });
+
