@@ -4,6 +4,8 @@ services:
     container_name: bora-app
     ports:
       - "1531:1531"
+    networks:
+        - bora-network
     environment:
       UPLOAD_DIR: /app/uploads
       PYTHON_BIN: python3
