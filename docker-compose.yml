@@ -5,10 +5,15 @@ services:
     ports:
       - "1531:1531"
     networks:
-        - bora_net
+      - bora_net
     environment:
       UPLOAD_DIR: /app/uploads
       PYTHON_BIN: python3
       PYTHON_SCRIPT: /app/scripts/remove_bg.py
     volumes:
-      - ~/bora/uploads:/app/uploads
+      - /home/tornakjian/bora/uploads:/app/uploads
+    restart: unless-stopped
+
+networks:
+  bora_net:
+    external: true
