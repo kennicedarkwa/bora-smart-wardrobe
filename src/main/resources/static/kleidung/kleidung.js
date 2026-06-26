@@ -15,6 +15,7 @@ document.getElementById("filterWarm").addEventListener("change", filter);
 document.getElementById("filterName").addEventListener("input", filter);
 
 document.getElementById("wähleBildBtn").addEventListener("click", () => document.getElementById("neuBildFile").click());
+document.getElementById("bildEntfernenBtn").addEventListener("click", () => clearSelectedImage());
 
 document.getElementById("neuBildFile").addEventListener("change", (event) => {
     const file = event.target.files[0];
@@ -23,13 +24,55 @@ document.getElementById("neuBildFile").addEventListener("change", (event) => {
     if (file) {
         label.innerText = file.name;
         btn.classList.add("selected");
+        zeigeBildVorschau(file);
     } else {
-        label.innerText = "Kein Foto ausgewählt";
-        btn.classList.remove("selected");
+        clearSelectedImage();
     }
 });
 
 let kleidung = [];
+const uploadStates = new Map();
+const uploadRequests = new Map();
+let neuBildPreviewUrl = null;
+
+function zeigeBildVorschau(file) {
+    if (neuBildPreviewUrl) {
+        URL.revokeObjectURL(neuBildPreviewUrl);
+    }
+
+    neuBildPreviewUrl = URL.createObjectURL(file);
+    document.getElementById("bildPreview").src = neuBildPreviewUrl;
+    document.getElementById("bildPreviewBox").classList.remove("hidden");
+}
+
+function clearSelectedImage(options = {}) {
+    const shouldRevoke = options.revokePreview !== false;
+
+    if (shouldRevoke && neuBildPreviewUrl) {
+        URL.revokeObjectURL(neuBildPreviewUrl);
+    }
+
+    neuBildPreviewUrl = null;
+    document.getElementById("neuBildFile").value = "";
+    document.getElementById("bildNameLabel").innerText = "Kein Foto ausgewählt";
+    document.getElementById("wähleBildBtn").classList.remove("selected");
+    document.getElementById("bildPreview").removeAttribute("src");
+    document.getElementById("bildPreviewBox").classList.add("hidden");
+}
+
+function aktualisiereAnsicht() {
+    filter();
+}
+
+function aktualisiereDetailsWennOffen(id) {
+    const detailsPopup = document.getElementById("popupDetails");
+    if (!detailsPopup || detailsPopup.classList.contains("hidden")) return;
+
+    const currentId = Number(detailsPopup.dataset.currentId);
+    if (currentId === Number(id)) {
+        details(id);
+    }
+}
 
 // --- Daten laden ---
 async function ladeKleidung() {
@@ -54,13 +97,27 @@ function renderListe(liste) {
 
     liste.forEach(k => {
         if (!k.id) return;
+        const uploadState = uploadStates.get(k.id);
         const statusText = k.istImWaeschekorb ? "im Wäschekorb" : "verfügbar";
         const waescheBtnText = k.istImWaeschekorb ? "Aus dem Korb" : "In den Wäschekorb";
-        const bildPfad = k.bildURL || k.bildurl || "";
-
+        const bildPfad = uploadState?.previewUrl || k.bildURL || k.bildurl || "";
+        const progressHtml = uploadState ? `
+            <div class="upload-progress">
+                <div class="upload-progress-bar">
+                    <div class="upload-progress-fill ${uploadState.error ? 'error' : ''}" style="width: ${uploadState.progress}%"></div>
+                </div>
+                <div class="upload-progress-text">${uploadState.message} ${uploadState.progress}%</div>
+            </div>
+        ` : "";
+        const imageHtml = bildPfad ? `
+            <div class="image-stage">
+                <img src="${bildPfad}" alt="${k.name}">
+                ${progressHtml}
+            </div>
+        ` : "";
         container.innerHTML += `
             <div class="cloth-card ${k.istImWaeschekorb ? 'in-laundry' : ''}">
-                ${bildPfad ? `<img src="${bildPfad}" alt="${k.name}">` : ''}
+                ${imageHtml}
                 <div class="item-name">${k.name}</div>
                 <div class="item-status">Status: ${statusText}</div>
                 <div class="card-buttons">
@@ -102,14 +159,36 @@ function details(id) {
     const regenText = k.istFuerRegenGeeignet ? "☔ Ja" : "☀️ Nein";
     const anlassText = (k.tags && k.tags.length > 0) ? k.tags.join(', ') : "Kein Anlass";
 
-    const bildPfad = k.bildURL || k.bildurl;
+    const uploadState = uploadStates.get(k.id);
+    const bildPfad = uploadState?.previewUrl || k.bildURL || k.bildurl;
+    const detailsProgressHtml = uploadState ? `
+        <div class="upload-progress details-progress">
+            <div class="upload-progress-bar">
+                <div class="upload-progress-fill ${uploadState.error ? 'error' : ''}" style="width: ${uploadState.progress}%"></div>
+            </div>
+            <div class="upload-progress-text">${uploadState.message} ${uploadState.progress}%</div>
+        </div>
+    ` : "";
     const bildHtml = bildPfad
-        ? `<img src="${bildPfad}" alt="${k.name}" style="width:100%; max-height: 250px; object-fit: contain; margin-bottom: 15px; border: 3px solid black; box-shadow: 4px 4px 0px #000;">`
+        ? `
+            <div class="details-image-stage">
+                <img src="${bildPfad}" alt="${k.name}">
+                ${detailsProgressHtml}
+            </div>
+        `
         : `<p style="font-style: italic; margin-bottom: 15px;">Kein Bild vorhanden</p>`;
+    const bildLoeschenButton = bildPfad
+        ? `<button type="button" class="details-delete-image-btn" onclick="bildInDetailsLoeschen(${k.id})">Bild löschen</button>`
+        : "";
 
     document.getElementById("detailsContent").innerHTML = `
         <h3>${k.name}</h3>
         ${bildHtml}
+        <div class="details-image-actions">
+            <input type="file" id="detailsBildFile-${k.id}" accept="image/*" style="display: none;" onchange="bildInDetailsAendern(event, ${k.id})">
+            <button type="button" onclick="document.getElementById('detailsBildFile-${k.id}').click()">Bild ändern</button>
+            ${bildLoeschenButton}
+        </div>
         
         <div style="text-align: left; margin-bottom: 20px; line-height: 1.6; font-weight: bold;">
             <p><strong>Kategorie:</strong> ${k.hauptkategorie || "-"}</p>
@@ -124,7 +203,9 @@ function details(id) {
         </div>
     `;
 
-    document.getElementById("popupDetails").classList.remove("hidden");
+    const popupDetails = document.getElementById("popupDetails");
+    popupDetails.dataset.currentId = k.id;
+    popupDetails.classList.remove("hidden");
 }
 
 function openPopupNeu() {
@@ -136,9 +217,7 @@ function closePopup() {
     document.getElementById("popupDetails").classList.add("hidden");
 
     document.getElementById("neuName").value = "";
-    document.getElementById("neuBildFile").value = "";
-    document.getElementById("bildNameLabel").innerText = "Kein Foto ausgewählt";
-    document.getElementById("wähleBildBtn").classList.remove("selected");
+    clearSelectedImage();
     document.querySelectorAll(".active").forEach(btn => btn.classList.remove("active"));
     document.querySelectorAll("input[type='hidden']").forEach(input => input.value = "");
 }
@@ -158,6 +237,7 @@ async function speichernNeu(event) {
 
     const fileInput = document.getElementById("neuBildFile");
     const file = fileInput ? fileInput.files[0] : null;
+    const previewUrl = file ? neuBildPreviewUrl : null;
 
     try {
         const response = await fetch("/api/kleidung", {
@@ -169,32 +249,211 @@ async function speichernNeu(event) {
         if (!response.ok) throw new Error("Fehler beim Anlegen des Textes");
         const gespeichert = await response.json();
 
-        if (file && gespeichert.id) {
-            const imgFormData = new FormData();
-            imgFormData.append("file", file);
+        kleidung = [gespeichert, ...kleidung.filter(item => item.id !== gespeichert.id)];
 
-            const imgResponse = await fetch(`/image/kleidungsstuecke/${gespeichert.id}/image/remove-background`, {
-                method: "POST",
-                body: imgFormData
+        if (file && gespeichert.id && previewUrl) {
+            neuBildPreviewUrl = null;
+            uploadStates.set(gespeichert.id, {
+                previewUrl,
+                progress: 1,
+                message: "Bild wird vorbereitet"
             });
-
-            if (imgResponse.ok) {
-                const imgData = await imgResponse.json();
-                gespeichert.bildURL = `/image/${imgData.id}`;
-
-                await fetch(`/api/kleidung/${gespeichert.id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(gespeichert)
-                });
-            }
         }
 
         closePopup();
-        ladeKleidung();
+        aktualisiereAnsicht();
+
+        if (file && gespeichert.id && previewUrl) {
+            uploadImageMitFortschritt(gespeichert, file, previewUrl);
+        }
     } catch (error) {
         console.error("Gescheitert:", error);
     }
+}
+
+function setUploadState(id, patch) {
+    const current = uploadStates.get(id);
+    if (!current) return;
+
+    uploadStates.set(id, { ...current, ...patch });
+    aktualisiereAnsicht();
+    aktualisiereDetailsWennOffen(id);
+}
+
+function cleanupUploadState(id) {
+    const state = uploadStates.get(id);
+    if (state?.previewUrl) {
+        URL.revokeObjectURL(state.previewUrl);
+    }
+    uploadStates.delete(id);
+    uploadRequests.delete(id);
+    aktualisiereAnsicht();
+    aktualisiereDetailsWennOffen(id);
+}
+
+function brecheBildUploadAb(id) {
+    const activeRequest = uploadRequests.get(id);
+    if (activeRequest) {
+        activeRequest.abort();
+    }
+
+    const state = uploadStates.get(id);
+    if (state?.previewUrl) {
+        URL.revokeObjectURL(state.previewUrl);
+    }
+
+    uploadStates.delete(id);
+    uploadRequests.delete(id);
+}
+
+function uploadImageMitFortschritt(gespeichert, file, previewUrl) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const xhr = new XMLHttpRequest();
+    let processingTimer = null;
+
+    uploadRequests.set(gespeichert.id, xhr);
+
+    xhr.upload.onprogress = (event) => {
+        if (!event.lengthComputable) return;
+        const uploadProgress = Math.round((event.loaded / event.total) * 80);
+        setUploadState(gespeichert.id, {
+            progress: Math.max(1, Math.min(uploadProgress, 80)),
+            message: "Bild wird hochgeladen"
+        });
+    };
+
+    xhr.upload.onload = () => {
+        setUploadState(gespeichert.id, {
+            progress: 82,
+            message: "Python verarbeitet das Bild"
+        });
+
+        processingTimer = setInterval(() => {
+            const state = uploadStates.get(gespeichert.id);
+            if (!state || state.progress >= 95) return;
+            setUploadState(gespeichert.id, {
+                progress: state.progress + 1,
+                message: "Python verarbeitet das Bild"
+            });
+        }, 700);
+    };
+
+    xhr.onload = async () => {
+        if (processingTimer) clearInterval(processingTimer);
+        uploadRequests.delete(gespeichert.id);
+
+        try {
+            if (xhr.status < 200 || xhr.status >= 300) {
+                throw new Error("Bild konnte nicht verarbeitet werden");
+            }
+
+            const imgData = JSON.parse(xhr.responseText);
+            gespeichert.bildURL = `/image/${imgData.id}`;
+
+            setUploadState(gespeichert.id, {
+                progress: 98,
+                message: "Bild wird gespeichert"
+            });
+
+            const updateResponse = await fetch(`/api/kleidung/${gespeichert.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(gespeichert)
+            });
+
+            if (!updateResponse.ok) {
+                throw new Error("Bild-URL konnte nicht gespeichert werden");
+            }
+
+            kleidung = kleidung.map(item => item.id === gespeichert.id ? { ...item, bildURL: gespeichert.bildURL } : item);
+            setUploadState(gespeichert.id, {
+                progress: 100,
+                message: "Bild ist fertig"
+            });
+
+            setTimeout(() => cleanupUploadState(gespeichert.id), 900);
+        } catch (error) {
+            console.error("Bildverarbeitung fehlgeschlagen:", error);
+            setUploadState(gespeichert.id, {
+                progress: 100,
+                message: "Bild fehlgeschlagen",
+                error: true
+            });
+        }
+    };
+
+    xhr.onerror = () => {
+        if (processingTimer) clearInterval(processingTimer);
+        uploadRequests.delete(gespeichert.id);
+        setUploadState(gespeichert.id, {
+            progress: 100,
+            message: "Upload fehlgeschlagen",
+            error: true
+        });
+    };
+
+    xhr.onabort = () => {
+        if (processingTimer) clearInterval(processingTimer);
+        uploadRequests.delete(gespeichert.id);
+    };
+
+    xhr.open("POST", `/image/kleidungsstuecke/${gespeichert.id}/image/remove-background`);
+    xhr.send(formData);
+}
+
+function bildInDetailsAendern(event, id) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const item = kleidung.find(k => k.id === id);
+    if (!item) return;
+
+    brecheBildUploadAb(id);
+
+    const previewUrl = URL.createObjectURL(file);
+    uploadStates.set(id, {
+        previewUrl,
+        progress: 1,
+        message: "Bild wird vorbereitet"
+    });
+
+    aktualisiereAnsicht();
+    aktualisiereDetailsWennOffen(id);
+    uploadImageMitFortschritt({ ...item }, file, previewUrl);
+}
+
+async function bildInDetailsLoeschen(id) {
+    brecheBildUploadAb(id);
+
+    const item = kleidung.find(k => k.id === id);
+    if (!item) {
+        aktualisiereAnsicht();
+        return;
+    }
+
+    item.bildURL = "";
+    item.bildurl = "";
+
+    try {
+        const response = await fetch(`/api/kleidung/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(item)
+        });
+
+        if (!response.ok) {
+            throw new Error("Bild konnte nicht gelöscht werden");
+        }
+
+        kleidung = kleidung.map(k => k.id === id ? { ...k, bildURL: "", bildurl: "" } : k);
+    } catch (error) {
+        console.error("Bild konnte nicht gelöscht werden:", error);
+    }
+
+    aktualisiereAnsicht();
+    aktualisiereDetailsWennOffen(id);
 }
 
 // --- Wäschekorb & Löschen ---
@@ -211,6 +470,8 @@ async function toggleWaeschekorb(id) {
 }
 
 async function loeschen(id) {
+    brecheBildUploadAb(id);
+
     await fetch(`/api/kleidung/${id}`, { method: "DELETE" });
     ladeKleidung();
 }
