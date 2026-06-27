@@ -8,19 +8,14 @@ deploy:
   only:
     - main
 
-before_script:
+  before_script:
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519
+    - ssh-keygen -y -f ~/.ssh/id_ed25519 > /dev/null
 
-  - apk add --no-cache openssh-client
-
-  - mkdir -p ~/.ssh
-
-  - printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-
-  - chmod 600 ~/.ssh/id_ed25519
-
-  - ssh-keygen -y -f ~/.ssh/id_ed25519 > /dev/null
-
-script:
+  script:
     - |
       ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no tornakjian@141.22.167.202 "
         cd /home/tornakjian/sea2_projekt &&
