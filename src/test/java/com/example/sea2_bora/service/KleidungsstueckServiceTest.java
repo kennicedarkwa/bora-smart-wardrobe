@@ -192,7 +192,7 @@ class KleidungsstueckServiceTest {
         Kleidungsstueck gespeichert = captor.getValue();
         assertEquals("Poloshirt", gespeichert.getName());
         assertEquals(3, gespeichert.getTemperaturIndex());
-        assertFalse(gespeichert.isIstFuerRegenGeeignet());
+        assertFalse(gespeichert.getIstFuerRegenGeeignet());
         assertEquals(MainCategory.OBERTEIL, gespeichert.getHauptkategorie());
         assertTrue(gespeichert.getTags().contains(Tags.ALLTAG));
         assertTrue(gespeichert.getTags().contains(Tags.ELEGANT));

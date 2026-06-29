@@ -24,8 +24,8 @@ public class Benutzer {
     @ManyToMany
     private List<Kleidungsstueck> kleiderschrank = new ArrayList<>();
 
-    // Outfits des Benutzers
-    @OneToMany
+    // Outfits des Benutzers (angepasst für die bidirektionale Verknüpfung)
+    @OneToMany(mappedBy = "benutzer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Outfit> outfits = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)

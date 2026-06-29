@@ -2,6 +2,8 @@ package com.example.sea2_bora.controller;
 
 import com.example.sea2_bora.implementation.Outfit;
 import com.example.sea2_bora.service.OutfitService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +19,17 @@ public class OutfitController {
         this.service = service;
     }
 
+    // Geändert: Liest die Session aus und zeigt nur eigene Favoriten
     @GetMapping
-    public List<Outfit> getAllOutfits() {
-        return service.getAllOutfits();
+    public ResponseEntity<?> getAllOutfits(HttpSession session) {
+        Long benutzerId = (Long) session.getAttribute("benutzerId");
+
+        if (benutzerId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Nicht eingeloggt");
+        }
+
+        List<Outfit> userOutfits = service.getAllOutfitsForUser(benutzerId);
+        return ResponseEntity.ok(userOutfits);
     }
 
     @GetMapping("/{id}")
@@ -29,9 +39,16 @@ public class OutfitController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // Geändert: Nimmt die Session an, um das Outfit dem richtigen User zuzuweisen
     @PostMapping
-    public ResponseEntity<Outfit> createOutfit(@RequestBody Outfit outfit) {
-        return ResponseEntity.ok(service.createOutfit(outfit));
+    public ResponseEntity<?> createOutfit(@RequestBody Outfit outfit, HttpSession session) {
+        Long benutzerId = (Long) session.getAttribute("benutzerId");
+
+        if (benutzerId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Nicht eingeloggt");
+        }
+
+        return ResponseEntity.ok(service.createOutfit(outfit, benutzerId));
     }
 
     @PutMapping("/{id}")

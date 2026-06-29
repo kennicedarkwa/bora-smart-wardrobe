@@ -181,7 +181,7 @@ class EmpfehlungServiceTest {
     @Test
     void generiereEmpfehlung_itemImWaeschekorb_wirdNichtEmpfohlen() {
         Kleidungsstueck spyShirt = spy(shirtImKorb);
-        doReturn(true).when(spyShirt).isIstImWaeschekorb();
+        doReturn(true).when(spyShirt).getIstImWaeschekorb();
 
         when(kleidungsstueckRepository.findAll()).thenReturn(List.of(shirtAlltag, spyShirt));
         ArgumentCaptor<Empfehlung> captor = ArgumentCaptor.forClass(Empfehlung.class);

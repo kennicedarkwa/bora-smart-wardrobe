@@ -25,6 +25,20 @@ public class Outfit {
     @Enumerated(EnumType.STRING)
     private List<Tags> tags = new ArrayList<>();
 
+    // Zu den anderen Attributen oben hinzufügen:
+    @ManyToOne
+    @JoinColumn(name = "benutzer_id")
+    private Benutzer benutzer;
+
+    // Unten zu den Gettern & Settern hinzufügen:
+    public Benutzer getBenutzer() {
+        return benutzer;
+    }
+
+    public void setBenutzer(Benutzer benutzer) {
+        this.benutzer = benutzer;
+    }
+
     public Outfit() {}
 
     public Outfit(String name, Tags anlass, List<Kleidungsstueck> bestandteile, List<Tags> tags) {

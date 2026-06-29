@@ -62,7 +62,7 @@ class KleidungsstueckTest {
 
         assertEquals("Jeans",                      stueck.getName());
         assertEquals(2,                            stueck.getTemperaturIndex());
-        assertTrue(stueck.isIstFuerRegenGeeignet());
+        assertTrue(stueck.getIstFuerRegenGeeignet());
         assertEquals(MainCategory.UNTERTEIL,       stueck.getHauptkategorie());
         assertEquals("http://bild.de/jeans.jpg",  stueck.getBildURL());
     }
@@ -78,7 +78,7 @@ class KleidungsstueckTest {
     @Test
     void konstruktor_regentauglichFalse_wirdKorrektGesetzt() {
         Kleidungsstueck stueck = new Kleidungsstueck("Sandalen", 5, false, MainCategory.SCHUHE, "");
-        assertFalse(stueck.isIstFuerRegenGeeignet());
+        assertFalse(stueck.getIstFuerRegenGeeignet());
     }
 
     @Test

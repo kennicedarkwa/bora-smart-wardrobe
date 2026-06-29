@@ -1,7 +1,10 @@
 package com.example.sea2_bora.service;
 
+import com.example.sea2_bora.implementation.Benutzer;
 import com.example.sea2_bora.implementation.Outfit;
 import com.example.sea2_bora.implementation.Tags;
+import com.example.sea2_bora.repository.BenutzerRepository;
+import com.example.sea2_bora.repository.KleidungsstueckRepository;
 import com.example.sea2_bora.repository.OutfitRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,59 +20,70 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Testklasse für OutfitService.
- *
- * Mockito ersetzt das OutfitRepository durch ein Fake-Objekt,
- * damit wir die Service-Logik isoliert und ohne Datenbankverbindung prüfen können.
- */
 @ExtendWith(MockitoExtension.class)
 class OutfitServiceTest {
 
     @Mock
     private OutfitRepository repository;
 
+    @Mock
+    private BenutzerRepository benutzerRepository; // 🌟 NEU: Wird für den Service-Konstruktor benötigt
+
+    @Mock
+    private KleidungsstueckRepository kleidungsstueckRepository; // 🌟 NEU: Wird für den Service-Konstruktor benötigt
+
     @InjectMocks
     private OutfitService outfitService;
 
     private Outfit sampleOutfit;
+    private Benutzer sampleBenutzer;
 
     @BeforeEach
     void setUp() {
         sampleOutfit = new Outfit("Sommeroutfit", Tags.ALLTAG, new ArrayList<>(), List.of(Tags.ALLTAG));
+        // Einen Test-Benutzer für die Mocks anlegen
+        sampleBenutzer = new Benutzer("TestUser", "test@sea.de", "password123", "Hamburg");
     }
 
     // --- createOutfit() ---
 
     @Test
     void createOutfit_speichertUndGibtOutfitZurueck() {
+        // 🌟 ANGEPASST: Der Service sucht zuerst nach dem Benutzer in der DB
+        when(benutzerRepository.findById(1L)).thenReturn(Optional.of(sampleBenutzer));
         when(repository.save(sampleOutfit)).thenReturn(sampleOutfit);
 
-        Outfit result = outfitService.createOutfit(sampleOutfit);
+        // 🌟 ANGEPASST: ID '1L' wird jetzt als zweiter Parameter mitgegeben
+        Outfit result = outfitService.createOutfit(sampleOutfit, 1L);
 
         assertNotNull(result);
         assertEquals("Sommeroutfit", result.getName());
+        assertEquals(sampleBenutzer, result.getBenutzer()); // Prüft, ob der User verknüpft wurde
         verify(repository, times(1)).save(sampleOutfit);
     }
 
-    // --- getAllOutfits() ---
+    // --- getAllOutfits() -> jetzt getAllOutfitsForUser() ---
 
     @Test
     void getAllOutfits_gibtAlleZurueck() {
         Outfit zweites = new Outfit("Winteroutfit", Tags.ALLTAG, new ArrayList<>(), new ArrayList<>());
-        when(repository.findAll()).thenReturn(List.of(sampleOutfit, zweites));
+        // 🌟 ANGEPASST: Nutzt jetzt die neue DB-Abfragemethode nach Benutzer-ID
+        when(repository.findByBenutzer_BenutzerId(1L)).thenReturn(List.of(sampleOutfit, zweites));
 
-        List<Outfit> result = outfitService.getAllOutfits();
+        // 🌟 ANGEPASST: Methodenname geändert und ID mitgegeben
+        List<Outfit> result = outfitService.getAllOutfitsForUser(1L);
 
         assertEquals(2, result.size());
-        verify(repository, times(1)).findAll();
+        verify(repository, times(1)).findByBenutzer_BenutzerId(1L);
     }
 
     @Test
     void getAllOutfits_leereListe_gibtLeereListeZurueck() {
-        when(repository.findAll()).thenReturn(List.of());
+        // 🌟 ANGEPASST: Nutzt findByBenutzer_BenutzerId
+        when(repository.findByBenutzer_BenutzerId(1L)).thenReturn(List.of());
 
-        List<Outfit> result = outfitService.getAllOutfits();
+        // 🌟 ANGEPASST: Methodenname geändert und ID mitgegeben
+        List<Outfit> result = outfitService.getAllOutfitsForUser(1L);
 
         assertTrue(result.isEmpty());
     }
