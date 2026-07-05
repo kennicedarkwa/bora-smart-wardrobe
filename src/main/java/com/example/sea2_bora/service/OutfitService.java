@@ -1,7 +1,9 @@
 package com.example.sea2_bora.service;
 
+import com.example.sea2_bora.implementation.Benutzer;
 import com.example.sea2_bora.implementation.Kleidungsstueck;
 import com.example.sea2_bora.implementation.Outfit;
+import com.example.sea2_bora.repository.BenutzerRepository;
 import com.example.sea2_bora.repository.KleidungsstueckRepository;
 import com.example.sea2_bora.repository.OutfitRepository;
 import org.springframework.stereotype.Service;
@@ -17,44 +19,45 @@ public class OutfitService {
 
     private final OutfitRepository repository;
     private final KleidungsstueckRepository kleidungsstueckRepository;
+    private final BenutzerRepository benutzerRepository; // NEU hinzugefügt
 
-    public OutfitService(OutfitRepository repository, KleidungsstueckRepository kleidungsstueckRepository) {
+    public OutfitService(OutfitRepository repository,
+                         KleidungsstueckRepository kleidungsstueckRepository,
+                         BenutzerRepository benutzerRepository) {
         this.repository = repository;
         this.kleidungsstueckRepository = kleidungsstueckRepository;
+        this.benutzerRepository = benutzerRepository;
     }
 
     @Transactional
-    public Outfit createOutfit(Outfit outfit) {
+    public Outfit createOutfit(Outfit outfit, Long benutzerId) {
+        // 1. Den aktuell eingeloggten Benutzer aus der DB laden
+        Benutzer benutzer = benutzerRepository.findById(benutzerId)
+                .orElseThrow(() -> new NoSuchElementException("Benutzer mit ID " + benutzerId + " nicht gefunden!"));
+
         List<Kleidungsstueck> echteBestandteile = new ArrayList<>();
 
-        // Sicherheitscheck: Falls die Liste der Bestandteile komplett null ist
         if (outfit.getBestandteile() != null) {
-
-            // 1. Wir gehen durch alle vom Frontend geschickten Kleidungsstücke
             for (Kleidungsstueck frontendTeil : outfit.getBestandteile()) {
-
-                // NEU: Nur in die Datenbank schauen, wenn das Objekt und die ID existieren!
                 if (frontendTeil != null && frontendTeil.getId() != null) {
-
-                    // 2. Wir holen das echte, vollständige Kleidungsstück aus der Datenbank
                     Kleidungsstueck echtesTeil = kleidungsstueckRepository.findById(frontendTeil.getId())
                             .orElseThrow(() -> new NoSuchElementException("Kleidungsstück mit ID " + frontendTeil.getId() + " nicht gefunden!"));
-
                     echteBestandteile.add(echtesTeil);
                 }
-                // Leere Slots im Frontend (ID = null) werden jetzt einfach übersprungen, ohne abzustürzen!
             }
         }
 
-        // 3. Wir ersetzen die unvollständigen Frontend-Teile durch unsere echten Datenbank-Teile
         outfit.setBestandteile(echteBestandteile);
 
-        // 4. Jetzt können wir das Outfit fehlerfrei speichern!
+        // 2. 🌟 WICHTIG: Das Outfit fest an den Benutzer binden!
+        outfit.setBenutzer(benutzer);
+
         return repository.save(outfit);
     }
 
-    public List<Outfit> getAllOutfits() {
-        return repository.findAll();
+    // Geändert: Gibt nur noch die Outfits des angemeldeten Benutzers zurück
+    public List<Outfit> getAllOutfitsForUser(Long benutzerId) {
+        return repository.findByBenutzer_BenutzerId(benutzerId);
     }
 
     public Optional<Outfit> getOutfitById(Long id) {

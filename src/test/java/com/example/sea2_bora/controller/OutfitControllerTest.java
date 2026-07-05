@@ -41,21 +41,33 @@ class OutfitControllerTest {
 
     @Test
     void getAllOutfits_gibtStatus200() throws Exception {
-        when(service.getAllOutfits()).thenReturn(List.of());
+        // ANGEPASST: Nutzt jetzt getAllOutfitsForUser
+        when(service.getAllOutfitsForUser(1L)).thenReturn(List.of());
 
-        mockMvc.perform(get("/api/outfits"))
+        // ANGEPASST: .sessionAttr simuliert den eingeloggten Benutzer
+        mockMvc.perform(get("/api/outfits")
+                        .sessionAttr("benutzerId", 1L))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void getAllOutfits_nichtEingeloggt_gibt401() throws Exception {
+        // NEUER TEST: Prüft, ob ohne Session sauber blockiert wird
+        mockMvc.perform(get("/api/outfits"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
     void getAllOutfits_gibtListeZurueck() throws Exception {
         Outfit outfit = new Outfit("Sommeroutfit", Tags.ALLTAG, new ArrayList<>(), new ArrayList<>());
-        when(service.getAllOutfits()).thenReturn(List.of(outfit));
+        // ANGEPASST: Nutzt jetzt getAllOutfitsForUser
+        when(service.getAllOutfitsForUser(1L)).thenReturn(List.of(outfit));
 
-        mockMvc.perform(get("/api/outfits"))
+        mockMvc.perform(get("/api/outfits")
+                        .sessionAttr("benutzerId", 1L))
                 .andExpect(status().isOk());
 
-        verify(service).getAllOutfits();
+        verify(service).getAllOutfitsForUser(1L);
     }
 
     // --- GET /api/outfits/{id} ---
@@ -82,31 +94,43 @@ class OutfitControllerTest {
     @Test
     void createOutfit_gibt200MitOutfit() throws Exception {
         Outfit outfit = new Outfit("Neues Outfit", Tags.ELEGANT, new ArrayList<>(), new ArrayList<>());
-        when(service.createOutfit(any(Outfit.class))).thenReturn(outfit);
+        // ANGEPASST: Service-Methode erwartet nun auch die benutzerId
+        when(service.createOutfit(any(Outfit.class), eq(1L))).thenReturn(outfit);
 
         mockMvc.perform(post("/api/outfits")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(outfit)))
+                        .content(objectMapper.writeValueAsString(outfit))
+                        .sessionAttr("benutzerId", 1L)) // Mit Session!
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void createOutfit_nichtEingeloggt_gibt401() throws Exception {
+        Outfit outfit = new Outfit("Test", Tags.ALLTAG, new ArrayList<>(), new ArrayList<>());
+
+        mockMvc.perform(post("/api/outfits")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(outfit))) // Ohne Session!
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
     void createOutfit_ruftServiceAuf() throws Exception {
         Outfit outfit = new Outfit("Test", Tags.ALLTAG, new ArrayList<>(), new ArrayList<>());
-        when(service.createOutfit(any(Outfit.class))).thenReturn(outfit);
+        when(service.createOutfit(any(Outfit.class), eq(1L))).thenReturn(outfit);
 
         mockMvc.perform(post("/api/outfits")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(outfit)));
+                .content(objectMapper.writeValueAsString(outfit))
+                .sessionAttr("benutzerId", 1L));
 
-        verify(service, atLeast(1)).createOutfit(any(Outfit.class));
+        verify(service, atLeast(1)).createOutfit(any(Outfit.class), eq(1L));
     }
 
     // --- PUT /api/outfits/{id} ---
 
     @Test
     void updateOutfit_vorhandeneId_gibt200() throws Exception {
-        // Hier hieß die Variable vorher fälschlicherweise "outfit" statt "neueDaten"
         Outfit neueDaten = new Outfit("Updated", Tags.ELEGANT, new ArrayList<>(), new ArrayList<>());
         when(service.updateOutfit(eq(1L), any(Outfit.class))).thenReturn(neueDaten);
 
@@ -118,7 +142,6 @@ class OutfitControllerTest {
 
     @Test
     void updateOutfit_nichtVorhandeneId_gibt404() throws Exception {
-        // Auch hier die Definition für neueDaten korrigiert
         Outfit neueDaten = new Outfit("Updated", Tags.ELEGANT, new ArrayList<>(), new ArrayList<>());
         when(service.updateOutfit(eq(99L), any(Outfit.class))).thenReturn(null);
 
