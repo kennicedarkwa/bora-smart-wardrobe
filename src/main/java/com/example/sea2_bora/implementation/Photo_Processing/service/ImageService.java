@@ -5,9 +5,7 @@ import com.example.sea2_bora.implementation.Photo_Processing.config.StoragePrope
 import com.example.sea2_bora.implementation.Photo_Processing.dto.ImageResponse;
 import com.example.sea2_bora.implementation.Photo_Processing.entity.StoredImage;
 import com.example.sea2_bora.implementation.Photo_Processing.repository.StoredImageRepository;
-import com.example.sea2_bora.implementation.Kleidungsstueck;
 import com.example.sea2_bora.repository.KleidungsstueckRepository;
-import lombok.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,16 +15,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 @Service
 public class ImageService {
+
+    private static final long MAX_UPLOAD_SIZE_BYTES = 15 * 1024 * 1024;
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of(
+            ".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".tif", ".tiff", ".heic", ".heif"
+    );
 
     private final StoredImageRepository storedImageRepository;
     private final KleidungsstueckRepository kleidungsstueckRepository;
     private final BackgroundRemovalService backgroundRemovalService;
     private final StorageProperties properties;
-
-    private String uploadDir;
 
     public ImageService(
             StoredImageRepository storedImageRepository,
@@ -45,24 +47,24 @@ public class ImageService {
             throw new IllegalArgumentException("Datei ist leer.");
         }
 
-        if (file.getSize() > 5 * 1024 * 1024) {
-            throw new IllegalArgumentException("Datei darf maximal 5MB groß sein.");
+        if (file.getSize() > MAX_UPLOAD_SIZE_BYTES) {
+            throw new IllegalArgumentException("Datei darf maximal 15MB groß sein.");
         }
 
         String originalFilename = StringUtils.cleanPath(
                 file.getOriginalFilename() != null ? file.getOriginalFilename() : "upload"
         );
 
-        String lower = originalFilename.toLowerCase();
-        if (!(lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".webp"))) {
-            throw new IllegalArgumentException("Nur PNG, JPG, JPEG und WEBP sind erlaubt.");
+        String extension = getExtension(originalFilename).toLowerCase();
+        if (!ALLOWED_EXTENSIONS.contains(extension)) {
+            throw new IllegalArgumentException("Erlaubt sind PNG, JPG, JPEG, WEBP, GIF, BMP, TIFF, HEIC und HEIF.");
         }
 
         Path uploadDir = Paths.get(properties.getUploadDir()).toAbsolutePath().normalize();
         Files.createDirectories(uploadDir);
 
         String baseName = UUID.randomUUID().toString();
-        Path inputPath = uploadDir.resolve(baseName + "-input" + getExtension(originalFilename));
+        Path inputPath = uploadDir.resolve(baseName + "-input" + extension);
         Path outputPath = uploadDir.resolve(baseName + "-no-bg.png");
 
         Files.write(inputPath, file.getBytes());

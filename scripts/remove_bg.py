@@ -4,6 +4,13 @@ from pathlib import Path
 from PIL import Image
 from withoutbg import WithoutBG
 
+try:
+    from pillow_heif import register_heif_opener
+
+    register_heif_opener()
+except ImportError:
+    pass
+
 
 def remove_background(input_path: Path, output_path: Path) -> None:
     if not input_path.exists():

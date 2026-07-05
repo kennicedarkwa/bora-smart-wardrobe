@@ -22,6 +22,11 @@ document.getElementById("neuBildFile").addEventListener("change", (event) => {
     const label = document.getElementById("bildNameLabel");
     const btn = document.getElementById("wähleBildBtn");
     if (file) {
+        if (!validiereBildDatei(file)) {
+            clearSelectedImage();
+            return;
+        }
+
         label.innerText = file.name;
         btn.classList.add("selected");
         zeigeBildVorschau(file);
@@ -34,6 +39,30 @@ let kleidung = [];
 const uploadStates = new Map();
 const uploadRequests = new Map();
 let neuBildPreviewUrl = null;
+const erlaubteBildEndungen = [".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".tif", ".tiff", ".heic", ".heif"];
+const bildAcceptWert = `image/*,${erlaubteBildEndungen.join(",")}`;
+const maxBildGroesseBytes = 15 * 1024 * 1024;
+
+document.getElementById("neuBildFile").setAttribute("accept", bildAcceptWert);
+
+function istBildDateiErlaubt(file) {
+    const name = file.name.toLowerCase();
+    return erlaubteBildEndungen.some(endung => name.endsWith(endung));
+}
+
+function validiereBildDatei(file) {
+    if (!istBildDateiErlaubt(file)) {
+        alert("Dieses Bildformat wird nicht unterstützt. Erlaubt sind PNG, JPG, JPEG, WEBP, GIF, BMP, TIFF, HEIC und HEIF.");
+        return false;
+    }
+
+    if (file.size > maxBildGroesseBytes) {
+        alert("Das Bild ist zu groß. Bitte wähle ein Bild mit maximal 15MB.");
+        return false;
+    }
+
+    return true;
+}
 
 function zeigeBildVorschau(file) {
     if (neuBildPreviewUrl) {
@@ -185,7 +214,7 @@ function details(id) {
         <h3>${k.name}</h3>
         ${bildHtml}
         <div class="details-image-actions">
-            <input type="file" id="detailsBildFile-${k.id}" accept="image/*" style="display: none;" onchange="bildInDetailsAendern(event, ${k.id})">
+            <input type="file" id="detailsBildFile-${k.id}" accept="${bildAcceptWert}" style="display: none;" onchange="bildInDetailsAendern(event, ${k.id})">
             <button type="button" onclick="document.getElementById('detailsBildFile-${k.id}').click()">Bild ändern</button>
             ${bildLoeschenButton}
         </div>
@@ -406,6 +435,11 @@ function uploadImageMitFortschritt(gespeichert, file, previewUrl) {
 function bildInDetailsAendern(event, id) {
     const file = event.target.files[0];
     if (!file) return;
+
+    if (!validiereBildDatei(file)) {
+        event.target.value = "";
+        return;
+    }
 
     const item = kleidung.find(k => k.id === id);
     if (!item) return;
