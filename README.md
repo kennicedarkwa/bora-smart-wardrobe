@@ -1,12 +1,31 @@
-# SEA2 Projekt - BORA
+# BORA – Smart Wardrobe
 
-##  Starten & Beenden
-Wir nutzen **Spring Boot** mit Gradle.
+Web app for managing a digital wardrobe. Users store their clothes and get outfit suggestions based on the current weather.
 
-- **Starten:** `./gradlew bootRun` im Terminal eingeben.
-- **Beenden:** `Control + C` im Terminal drücken.
-- **Hinweis:** Die App startet aktuell nur, wenn eine Datenbank (z.B. H2) in den `application.properties` konfiguriert ist.
+Team project in the course Software Engineering & Architecture 2 at HAW Hamburg (7 students, agile).
 
-##  Aktueller Stand (Backend )
-- **Merwe:** Hat den bisherigen Stand des Users angelegt und implementiert ( noch unvollständig)
-- **Ehsan:** Hat die Komponente Userlogin und Wäschekorb geeschrieben und implementiert.Allerdings fehlen die Kommentare!!!!
+## My role: Testing & QA
+
+- Unit and integration tests with **JUnit 5**, **Mockito** and **MockMvc**
+- API testing of the REST endpoints with **Postman**
+- Test documentation, updated with each iteration
+- Responsive layout fixes (CSS media queries)
+
+## Tech stack
+
+- **Backend:** Java, Spring Boot, Gradle
+- **Database:** MariaDB
+- **API:** REST
+- **Frontend:** HTML, CSS, JavaScript
+
+## Running the app
+
+Requirements: Java and a database configured in `src/main/resources/application.properties`.
+
+    ./gradlew bootRun
+
+Stop with `Ctrl + C`.
+
+## Running the tests
+
+    ./gradlew test
