@@ -25,6 +25,7 @@ Requirements: Java and a database configured in `src/main/resources/application.
     ./gradlew bootRun
 
 Stop with `Ctrl + C`.
+Set the database password as environment variable `DB_PASSWORD`.
 
 ## Running the tests
 
